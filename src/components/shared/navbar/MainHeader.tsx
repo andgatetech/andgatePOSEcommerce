@@ -32,17 +32,22 @@ export default function MainHeader() {
             {/* Account & Cart */}
             <ul className="flex items-center gap-x-6">
               {/* Account */}
-              <li className="flex items-center gap-x-4 cursor-pointer relative group">
-                <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
-                  <FaUser className="text-base text-white" />
-                </span>
-                <p className="flex flex-col text-(--color-text-muted) text-sm leading-[22px]">
-                  Account
-                  <span className="text-base leading-6 text-(--color-dark) font-medium">
-                    Log in
+              <li className="flex items-center group">
+                <Link
+                  href="/login"
+                  className="flex items-center gap-x-4 cursor-pointer relative"
+                >
+                  <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
+                    <FaUser className="text-base text-white" />
                   </span>
-                </p>
-                <FaChevronDown className="text-sm text-(--color-dark)" />
+                  <p className="flex flex-col text-(--color-text-muted) text-sm leading-[22px]">
+                    Account
+                    <span className="text-base leading-6 text-(--color-dark) font-medium">
+                      Log in
+                    </span>
+                  </p>
+                  <FaChevronDown className="text-sm text-(--color-dark)" />
+                </Link>
               </li>
 
               {/* Cart */}

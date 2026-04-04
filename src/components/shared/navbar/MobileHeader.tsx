@@ -65,7 +65,7 @@ export default function MobileHeader() {
             ))}
             <li>
               <Link
-                href="/my-account"
+                href="/login"
                 className="text-(--color-dark) text-sm font-medium flex items-center gap-x-2 hover:text-(--color-cta) transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >

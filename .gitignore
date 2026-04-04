@@ -17,6 +17,7 @@
 
 # production
 /build
+CLAUDE.md
 
 # misc
 .DS_Store

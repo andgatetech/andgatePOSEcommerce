@@ -28,6 +28,7 @@ export default function Logo({
       width={width}
       height={height}
       priority
+      style={{ width: 'auto', height: 'auto' }}
       className={`object-contain ${
         variant === "light" ? "brightness-0 invert" : ""
       } ${className}`}
