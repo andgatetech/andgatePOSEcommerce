@@ -1,1 +1,53 @@
 @import "tailwindcss";
+
+/* ============================================================
+   AndGate POS — Brand Design Tokens
+   🎯 CORE PALETTE — Change here, updates everywhere
+   ============================================================ */
+
+:root {
+  /* ── Core Brand Colors (from logo) ── */
+  --color-primary: #2C5F8A;           /* Primary Blue */
+  --color-primary-dark: #1E4060;      /* Darker blue (top bar, buttons hover) */
+  --color-primary-900: #132D45;       /* Darkest blue (footer bg) */
+  --color-primary-light: #3D7AAF;     /* Lighter blue (hover states) */
+  --color-primary-200: #B0CCDE;       /* Light blue (text on dark bg) */
+  --color-primary-100: #E1EBF3;       /* Very light blue (subtle bg) */
+
+  --color-cta: #D8891F;               /* Gold/Orange CTA */
+  --color-cta-hover: #E89D3A;         /* CTA hover (lighter) */
+  --color-cta-dark: #B87318;          /* CTA pressed (darker) */
+
+  --color-dark: #111111;              /* Neutral Dark */
+  --color-bg: #FFFFFF;                /* Background White */
+  --color-border: #E5E5E5;           /* Border Light Gray */
+
+  /* ── Semantic (derived from core) ── */
+  --color-text: #111111;              /* Body text = dark */
+  --color-text-muted: #6B7280;        /* Muted/secondary text */
+  --color-success: #2D8F4E;
+  --color-danger: #D93025;
+  --color-warning: #E8A317;
+}
+
+/* ── Base Styles ── */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+::selection {
+  background-color: var(--color-primary-100);
+  color: var(--color-primary-900);
+}
