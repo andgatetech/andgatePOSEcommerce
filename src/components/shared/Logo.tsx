@@ -24,7 +24,7 @@ export default function Logo({
   const image = (
     <Image
       src="/images/andgatePOS.jpeg"
-      alt="AndGate POS"
+      alt="Andgate POS"
       width={width}
       height={height}
       priority

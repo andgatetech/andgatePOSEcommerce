@@ -31,13 +31,13 @@ const aboutLinks = [
   { label: "About Us", href: "/about" },
   { label: "Terms & Conditions", href: "/terms" },
   { label: "Careers", href: "/careers" },
-  { label: "Latest News", href: "/news" },
+  { label: "Latest News", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
-  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
 ];
 
 const accountLinks = [
-  { label: "Your Account", href: "/account" },
+  { label: "Your Account", href: "/my-account" },
   { label: "Return Policies", href: "/return-policies" },
   { label: "Become a Vendor", href: "/become-vendor" },
   { label: "Wishlist", href: "/wishlist" },
@@ -80,7 +80,7 @@ export default function Footer() {
   return (
     <>
       {/* Newsletter Section */}
-      <section className="px-4 md:px-0 max-w-[932px] mx-auto text-center pb-6 rounded-[160px] -mb-[100px] relative z-10 bg-(--color-bg) shadow-lg">
+      <section className="px-4 md:px-0 max-w-[932px] mx-auto text-center pb-6 rounded-[160px] -mb-[100px] relative z-10 bg-(--color-bg)">
         <div className="pt-10 pb-8 px-6">
           <h3 className="text-2xl md:text-3xl font-bold text-(--color-dark) mb-4">
             Subscribe to our newsletter
@@ -116,7 +116,7 @@ export default function Footer() {
             <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
               <Logo width={180} height={48} />
               <p className="text-(--color-primary-200) text-base">
-                AndGate POS — Your trusted partner for seamless Point of Sale
+                Andgate POS — Your trusted partner for seamless Point of Sale
                 and E-commerce solutions. Empowering businesses across
                 Bangladesh.
               </p>

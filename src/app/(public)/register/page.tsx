@@ -22,7 +22,7 @@ export default function RegisterPage() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold leading-tight mb-3">
-              Join the AndGate<br />POS family
+              Join the Andgate<br />POS family
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-8">
               Create your account and unlock exclusive deals, faster checkout, and order tracking.
