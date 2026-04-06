@@ -1,0 +1,42 @@
+[
+  {
+    "division_id": "1",
+    "name": "Chattagram",
+    "bn_name": "চট্টগ্রাম"
+  },
+  {
+    "division_id": "2",
+    "name": "Rajshahi",
+    "bn_name": "রাজশাহী"
+  },
+  {
+    "division_id": "3",
+    "name": "Khulna",
+    "bn_name": "খুলনা"
+  },
+  {
+    "division_id": "4",
+    "name": "Barisal",
+    "bn_name": "বরিশাল"
+  },
+  {
+    "division_id": "5",
+    "name": "Sylhet",
+    "bn_name": "সিলেট"
+  },
+  {
+    "division_id": "6",
+    "name": "Dhaka",
+    "bn_name": "ঢাকা"
+  },
+  {
+    "division_id": "7",
+    "name": "Rangpur",
+    "bn_name": "রংপুর"
+  },
+  {
+    "division_id": "8",
+    "name": "Mymensingh",
+    "bn_name": "ময়মনসিংহ"
+  }
+]
