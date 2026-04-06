@@ -9,7 +9,7 @@ function renderStars(rating: number) {
   return Array.from({ length: 5 }, (_, index) => (
     <span
       key={index}
-      className={index < rating ? "text-[#f5c044]" : "text-[#d7dee5]"}
+      style={{ color: index < rating ? "var(--color-warning)" : "var(--color-border)" }}
     >
       ★
     </span>
@@ -28,7 +28,7 @@ export default function DealsOfTheDay() {
 
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 text-[17px] font-medium text-[#7a8594] transition hover:text-[var(--color-primary)]"
+            className="inline-flex items-center gap-2 text-[17px] font-medium text-(--color-text-muted) transition hover:text-(--color-primary)"
           >
             All Deals
             <FiChevronRight className="text-base" />
@@ -58,10 +58,10 @@ export default function DealsOfTheDay() {
                     key={`${deal.id}-${labels[index]}`}
                     className="flex min-w-[66px] flex-col items-center rounded-[8px] bg-white px-2 py-[9px] shadow-[0_4px_14px_rgba(15,23,42,0.14)]"
                   >
-                    <span className="text-[17px] font-semibold leading-none text-[#3bb77e]">
+                    <span className="text-[17px] font-semibold leading-none text-(--color-primary)">
                       {value}
                     </span>
-                    <span className="mt-[6px] text-[12px] leading-none text-[#7e7e7e]">
+                    <span className="mt-[6px] text-[12px] leading-none text-(--color-text-muted)">
                       {labels[index]}
                     </span>
                   </div>
@@ -80,30 +80,30 @@ export default function DealsOfTheDay() {
                   <div className="flex items-center gap-[1px]">
                     {renderStars(deal.rating)}
                   </div>
-                  <span className="text-[13px] text-[#b6b6b6]">
+                  <span className="text-[13px] text-(--color-text-muted)">
                     ({deal.rating}.0)
                   </span>
                 </div>
 
                 {/* Vendor */}
-                <p className="mt-2 text-[14px] text-[#7e7e7e]">
-                  By <span className="text-[#3bb77e]">{deal.vendor}</span>
+                <p className="mt-2 text-[14px] text-(--color-text-muted)">
+                  By <span className="text-(--color-primary)">{deal.vendor}</span>
                 </p>
 
                 {/* Price + Add Button */}
                 <div className="mt-4 flex items-center justify-between gap-3">
                   <div className="flex items-end gap-2">
-                    <span className="text-[18px] font-semibold text-[#3bb77e]">
-                      ${deal.price.toFixed(2)}
+                    <span className="text-[18px] font-semibold text-(--color-primary)">
+                      ৳{deal.price.toFixed(2)}
                     </span>
-                    <span className="mb-[2px] text-[13px] font-medium text-[#adadad] line-through">
-                      ${deal.oldPrice}
+                    <span className="mb-[2px] text-[13px] font-medium text-(--color-text-muted) line-through">
+                      ৳{deal.oldPrice}
                     </span>
                   </div>
 
                   <button
                     type="button"
-                    className="inline-flex items-center gap-[6px] rounded-[6px] bg-[#def9ec] px-4 py-[9px] text-[14px] font-semibold text-[#3bb77e] transition hover:bg-[#3bb77e] hover:text-white"
+                    className="inline-flex items-center gap-[6px] rounded-[6px] bg-(--color-primary-100) px-4 py-[9px] text-[14px] font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
                   >
                     <FiShoppingCart className="text-sm" />
                     Add

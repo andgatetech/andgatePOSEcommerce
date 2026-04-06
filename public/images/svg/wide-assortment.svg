@@ -1,0 +1,13 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="16" cy="14" r="8" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4"/>
+  <circle cx="42" cy="14" r="8" fill="var(--color-warning, #E8A317)"/>
+  <path d="M56 6L62 16H50L56 6Z" fill="var(--color-warning, #E8A317)"/>
+  <path d="M16 24V42" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M42 24V34" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M56 24V34" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round"/>
+  <path d="M12 30L16 24L20 30" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M38 30L42 24L46 30" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M52 30L56 24L60 30" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="30" cy="44" r="8" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4"/>
+  <path d="M22 58C22 52.4772 26.4772 48 32 48H34C39.5228 48 44 52.4772 44 58" stroke="var(--color-success, #2D8F4E)" stroke-width="2.4" stroke-linecap="round"/>
+</svg>
