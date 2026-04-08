@@ -1,17 +1,21 @@
-"use client";
+import Footer from "@/components/shared/Footer";
+import Navbar from "@/components/shared/Navbar";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useGetMeQuery } from "@/features/api/authApi";
-import { useAppDispatch } from "@/lib/hooks";
-import { setCredentials, logout } from "@/features/auth/authSlice";
-import { ROUTES } from "@/config/routes";
+// "use client";
+//
+// import { useEffect } from "react";
+// import { useRouter } from "next/navigation";
+// import { useGetMeQuery } from "@/features/api/authApi";
+// import { useAppDispatch } from "@/lib/hooks";
+// import { setCredentials, logout } from "@/features/auth/authSlice";
+// import { ROUTES } from "@/config/routes";
 
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  /*
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { data: user, isLoading, error } = useGetMeQuery();
@@ -34,11 +38,13 @@ export default function ProtectedLayout({
   if (error) {
     return null;
   }
+  */
 
   return (
     <div>
-      {/* Protected Navbar/Sidebar will go here */}
+      <Navbar />
       <main>{children}</main>
+      <Footer />
     </div>
   );
 }

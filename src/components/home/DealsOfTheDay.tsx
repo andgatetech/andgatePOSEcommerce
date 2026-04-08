@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiChevronRight, FiShoppingCart } from "react-icons/fi";
+import { FiArrowUpRight, FiShoppingCart } from "react-icons/fi";
 import { dealsOfTheDay } from "@/components/home/dealsOfTheDayData";
+import { ROUTES } from "@/config/routes";
 
 const labels = ["Days", "Hours", "Mins", "Sec"];
 
@@ -21,17 +22,21 @@ export default function DealsOfTheDay() {
     <section className="px-4 pb-12 pt-2 md:px-8 md:pb-14 lg:px-12 lg:pb-16">
       <div className="mx-auto max-w-[1680px]">
         {/* Section Header */}
-        <div className="mb-8 flex items-center justify-between gap-4">
-          <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[var(--color-primary-900)] md:text-[38px]">
-            Deals Of The Day
-          </h2>
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[var(--color-primary-900)] md:text-[38px]">
+              Deals Of The Day
+            </h2>
+          </div>
 
           <Link
-            href="/shop"
-            className="inline-flex items-center gap-2 text-[17px] font-medium text-(--color-text-muted) transition hover:text-(--color-primary)"
+            href={ROUTES.SHOP}
+            className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             All Deals
-            <FiChevronRight className="text-base" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
+              <FiArrowUpRight className="text-[18px]" />
+            </span>
           </Link>
         </div>
 
@@ -103,7 +108,7 @@ export default function DealsOfTheDay() {
 
                   <button
                     type="button"
-                    className="inline-flex items-center gap-[6px] rounded-[6px] bg-(--color-primary-100) px-4 py-[9px] text-[14px] font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
+                    className="inline-flex items-center gap-[6px] rounded-[6px] bg-(--color-primary) px-4 py-[9px] text-[14px] font-semibold text-white transition hover:bg-(--color-primary-dark)"
                   >
                     <FiShoppingCart className="text-sm" />
                     Add

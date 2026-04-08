@@ -1,10 +1,12 @@
 "use client";
 
 import { useRef } from "react";
+import Link from "next/link";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import {
   featuredCategoryItems,
 } from "@/components/home/featuredCategoriesData";
+import { ROUTES } from "@/config/routes";
 
 const scrollAmount = 320;
 
@@ -23,15 +25,15 @@ export default function FeaturedCategories() {
       <div className="mx-auto max-w-[1600px]">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
-            <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-[var(--color-primary-900)] md:text-[38px]">
+            <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">
               Featured Categories
             </h2>
-            <button
-              type="button"
-              className="rounded-full border border-[var(--color-border)] px-4 py-2 text-sm font-medium text-[var(--color-primary-900)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+            <Link
+              href={ROUTES.CATEGORY}
+              className="rounded-full border border-(--color-border) px-4 py-2 text-sm font-medium text-(--color-primary-900) transition hover:border-(--color-primary) hover:text-(--color-primary)"
             >
               See All
-            </button>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3 self-end lg:self-auto">
@@ -74,10 +76,10 @@ export default function FeaturedCategories() {
                   />
                 </div>
 
-                <h3 className="text-[17px] font-semibold text-[var(--color-primary-900)]">
+                <h3 className="text-[17px] font-semibold text-(--color-primary-900)">
                   {category.name}
                 </h3>
-                <p className="mt-1 text-[15px] text-[var(--color-text-muted)]">
+                <p className="mt-1 text-[15px] text-(--color-text-muted)">
                   {category.itemCount} items
                 </p>
               </article>

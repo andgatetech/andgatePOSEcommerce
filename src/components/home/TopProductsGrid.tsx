@@ -1,6 +1,9 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FiShoppingCart } from "react-icons/fi";
+import { FiArrowUpRight } from "react-icons/fi";
 import { productColumns } from "@/components/home/topProductsData";
+import { ROUTES } from "@/config/routes";
 
 function renderStars(rating: number) {
   return Array.from({ length: 5 }, (_, i) => (
@@ -14,6 +17,27 @@ export default function TopProductsGrid() {
   return (
     <section className="px-4 pb-12 md:px-8 lg:px-12">
       <div className="mx-auto max-w-[1680px]">
+        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-[640px]">
+            <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.24em] text-(--color-primary)">
+              Top Product Picks
+            </span>
+            <h2 className="mt-4 text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">
+              Best Sellers Across Categories
+            </h2>
+          </div>
+
+          <Link
+            href={ROUTES.SHOP}
+            className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
+          >
+            Explore Collection
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
+              <FiArrowUpRight className="text-[18px]" />
+            </span>
+          </Link>
+        </div>
+
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
           {productColumns.map((col) => (
             <div key={col.id}>
@@ -92,7 +116,7 @@ export default function TopProductsGrid() {
 
                         <button
                           type="button"
-                          className="inline-flex items-center gap-[5px] rounded-[6px] bg-(--color-primary-100) px-3 py-[7px] text-[13px] font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
+                          className="inline-flex items-center gap-[5px] rounded-[6px] bg-(--color-primary) px-3 py-[7px] text-[13px] font-semibold text-white transition hover:bg-(--color-primary-dark)"
                         >
                           <FiShoppingCart className="text-[12px]" />
                           Add

@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   FaChevronDown,
@@ -6,8 +8,14 @@ import {
   FaUser,
 } from "react-icons/fa";
 import Logo from "../Logo";
+import { ROUTES } from "@/config/routes";
 
-export default function MainHeader() {
+type MainHeaderProps = {
+  cartCount: number;
+  onCartClick: () => void;
+};
+
+export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) {
   return (
     <div className="py-2.5 hidden xl:block bg-(--color-bg) shadow-sm">
       <div className="mx-auto px-4">
@@ -34,7 +42,7 @@ export default function MainHeader() {
               {/* Account */}
               <li className="flex items-center group">
                 <Link
-                  href="/login"
+                  href={ROUTES.LOGIN}
                   className="flex items-center gap-x-4 cursor-pointer relative"
                 >
                   <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
@@ -52,9 +60,11 @@ export default function MainHeader() {
 
               {/* Cart */}
               <li className="flex items-center">
-                <Link
-                  href="/cart"
-                  className="flex items-center gap-x-4 cursor-pointer group">
+                <button
+                  type="button"
+                  onClick={onCartClick}
+                  className="flex items-center gap-x-4 cursor-pointer group text-left"
+                >
                   <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
                     <FaShoppingCart className="text-base text-white" />
                   </span>
@@ -63,10 +73,10 @@ export default function MainHeader() {
                       Cart
                     </span>
                     <span className="text-[15px] leading-none text-(--color-dark) font-bold">
-                      0 Items
+                      {cartCount} Items
                     </span>
                   </span>
-                </Link>
+                </button>
               </li>
             </ul>
           </div>

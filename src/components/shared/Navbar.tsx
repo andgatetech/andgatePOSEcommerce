@@ -1,15 +1,13 @@
 import TopBar from "./navbar/TopBar";
-import MainHeader from "./navbar/MainHeader";
 import SecondaryNav from "./navbar/SecondaryNav";
-import MobileHeader from "./navbar/MobileHeader";
+import NavbarClient from "./navbar/NavbarClient";
 
 export default function Navbar() {
   return (
     <header>
       <TopBar />
-      <MainHeader />
+      <NavbarClient />
       <SecondaryNav />
-      <MobileHeader />
     </header>
   );
 }

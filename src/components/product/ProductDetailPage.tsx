@@ -12,6 +12,7 @@ import {
   FiPlus,
   FiStar,
 } from "react-icons/fi";
+import { ROUTES } from "@/config/routes";
 
 /* ─── MOCK DATA (replace with real API later) ─────────────────────── */
 const product = {
@@ -124,11 +125,11 @@ export default function ProductDetailPage() {
       <div className="border-b border-[var(--color-border)] py-3">
         <div className="mx-auto max-w-[1680px] px-4 md:px-8 lg:px-12">
           <nav className="flex items-center gap-2 text-[13px]" style={{ color: "var(--color-text-muted)" }}>
-            <Link href="/" className="flex items-center gap-1 hover:text-[var(--color-primary)]">
+            <Link href={ROUTES.HOME} className="flex items-center gap-1 hover:text-[var(--color-primary)]">
               Home
             </Link>
             <FiChevronRight size={12} />
-            <Link href="/shop" className="hover:text-[var(--color-primary)]">
+            <Link href={ROUTES.SHOP} className="hover:text-[var(--color-primary)]">
               Vegetables &amp; Tubers
             </Link>
             <FiChevronRight size={12} />
@@ -261,8 +262,9 @@ export default function ProductDetailPage() {
               </div>
 
               {/* Add to Cart */}
-              <button className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-[10px] px-6 text-[15px] font-semibold text-white transition hover:opacity-90"
-                style={{ backgroundColor: "var(--color-primary)" }}>
+              <button
+                className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-[10px] bg-(--color-primary) px-6 text-[15px] font-semibold text-white transition hover:bg-(--color-primary-dark)"
+              >
                 <FiShoppingCart size={18} />
                 Add to cart
               </button>
@@ -406,7 +408,7 @@ export default function ProductDetailPage() {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {relatedProducts.map((p) => (
-              <Link key={p.id} href={`/shop/${p.id}`} className="group relative overflow-hidden rounded-[16px] border border-[var(--color-border)] bg-white transition hover:shadow-[0_8px_30px_rgba(15,23,42,0.1)]">
+              <Link key={p.id} href={ROUTES.SHOP} className="group relative overflow-hidden rounded-[16px] border border-[var(--color-border)] bg-white transition hover:shadow-[0_8px_30px_rgba(15,23,42,0.1)]">
                 {/* Badge */}
                 <span className={`absolute left-3 top-3 z-10 rounded-[6px] px-3 py-1 text-[12px] font-bold text-white ${p.badgeColor}`}>
                   {p.badge}
@@ -434,7 +436,7 @@ export default function ProductDetailPage() {
                         ৳{p.oldPrice}
                       </span>
                     </div>
-                    <button className="flex items-center gap-1 rounded-[6px] bg-(--color-primary-100) px-3 py-2 text-[13px] font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white">
+                    <button className="flex items-center gap-1 rounded-[6px] bg-(--color-primary) px-3 py-2 text-[13px] font-semibold text-white transition hover:bg-(--color-primary-dark)">
                       <FiShoppingCart size={13} /> Add
                     </button>
                   </div>

@@ -130,9 +130,9 @@ export default function RegisterForm() {
         />
         <label htmlFor="terms" className="text-sm text-[var(--color-text-muted)]">
           I agree to the{" "}
-          <Link href="#" className="text-[var(--color-primary)] hover:underline">Terms of Service</Link>
+          <Link href={ROUTES.TERMS} className="text-[var(--color-primary)] hover:underline">Terms of Service</Link>
           {" "}and{" "}
-          <Link href="#" className="text-[var(--color-primary)] hover:underline">Privacy Policy</Link>
+          <Link href={ROUTES.PRIVACY_POLICY} className="text-[var(--color-primary)] hover:underline">Privacy Policy</Link>
         </label>
       </div>
 

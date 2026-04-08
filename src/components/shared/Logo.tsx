@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ROUTES } from "@/config/routes";
 
 interface LogoProps {
   /** Width of the logo in pixels */
@@ -38,7 +39,7 @@ export default function Logo({
   if (noLink) return image;
 
   return (
-    <Link href="/" className="inline-flex items-center shrink-0">
+    <Link href={ROUTES.HOME} className="inline-flex items-center shrink-0">
       {image}
     </Link>
   );

@@ -1,3 +1,5 @@
+import CheckoutView from "./_components/CheckoutView";
+
 export default function CheckoutPage() {
-  return <div>This is Checkout</div>;
+  return <CheckoutView />;
 }

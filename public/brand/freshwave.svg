@@ -1,0 +1,6 @@
+<svg width="320" height="180" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="180" rx="28" fill="#F7F9FC"/>
+  <path d="M62 104C76 76 104 62 124 74C144 86 138 116 116 124C94 132 74 122 62 104Z" fill="#2D8F4E"/>
+  <path d="M75 95C92 80 112 80 126 92" stroke="#D8891F" stroke-width="8" stroke-linecap="round"/>
+  <text x="146" y="98" fill="#111111" font-size="30" font-family="Arial" font-weight="700">FreshWave</text>
+</svg>

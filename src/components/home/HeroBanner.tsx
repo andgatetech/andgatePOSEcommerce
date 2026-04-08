@@ -9,6 +9,7 @@ import Link from "next/link";
 import { GoArrowUpRight } from "react-icons/go";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useState } from "react";
+import { ROUTES } from "@/config/routes";
 
 // @ts-ignore
 import "swiper/css";
@@ -108,7 +109,7 @@ export default function HeroBanner() {
                       {slide.description}
                     </p>
 
-                    <Link href="/login" className="inline-block">
+                    <Link href={ROUTES.LOGIN} className="inline-block">
                       <button className="group inline-flex items-center gap-2.5 bg-[#facc15] hover:bg-[#eab308] text-[#1a1a2e] font-semibold text-[14px] px-6 py-3 rounded-full transition-all duration-300 cursor-pointer">
                         Shop Now
                         <span className="w-6 h-6 bg-white rounded-full flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">

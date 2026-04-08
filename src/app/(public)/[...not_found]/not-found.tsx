@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ROUTES } from "@/config/routes";
 
 export default function NotFound() {
   return (
@@ -22,7 +23,7 @@ export default function NotFound() {
       </p>
       
       <Link 
-        href="/"
+        href={ROUTES.HOME}
         className="inline-flex items-center justify-center px-8 py-3 text-white bg-(--color-cta) hover:bg-(--color-cta-hover) active:bg-(--color-cta-dark) rounded font-medium transition-colors duration-200 shadow-sm"
       >
         Back to Home

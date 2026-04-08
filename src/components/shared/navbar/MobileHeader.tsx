@@ -4,15 +4,21 @@ import Link from "next/link";
 import { useState } from "react";
 import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
 import Logo from "../Logo";
+import { ROUTES } from "@/config/routes";
 
 const mobileNavLinks = [
-  { label: "About us", href: "/about" },
-  { label: "My Account", href: "/my-account" },
-  { label: "My Wishlist", href: "/wishlist" },
-  { label: "Order Tracking", href: "/order-tracking" },
+  { label: "About us", href: ROUTES.ABOUT },
+  { label: "My Account", href: ROUTES.MY_ACCOUNT },
+  { label: "My Wishlist", href: ROUTES.WISHLIST },
+  { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
 ];
 
-export default function MobileHeader() {
+type MobileHeaderProps = {
+  cartCount: number;
+  onCartClick: () => void;
+};
+
+export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -20,9 +26,12 @@ export default function MobileHeader() {
       <div className="flex items-center justify-between">
         <Logo width={140} height={38} />
         <div className="flex items-center gap-x-4">
-          <Link href="/cart" className="relative">
+          <button type="button" onClick={onCartClick} className="relative">
             <FaShoppingCart className="text-xl text-(--color-primary)" />
-          </Link>
+            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-cta) px-1 text-[10px] font-bold text-white">
+              {cartCount}
+            </span>
+          </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="text-(--color-dark) cursor-pointer"
@@ -65,7 +74,7 @@ export default function MobileHeader() {
             ))}
             <li>
               <Link
-                href="/login"
+                href={ROUTES.LOGIN}
                 className="text-(--color-dark) text-sm font-medium flex items-center gap-x-2 hover:text-(--color-cta) transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >

@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { FaHeadset, FaBolt } from "react-icons/fa";
+import { ROUTES } from "@/config/routes";
 
 const topRightLinks = [
-  { label: "About us", href: "/about" },
-  { label: "My Account", href: "/my-account" },
-  { label: "My Wishlist", href: "/wishlist" },
-  { label: "Order Tracking", href: "/order-tracking" },
+  { label: "About us", href: ROUTES.ABOUT },
+  { label: "My Account", href: ROUTES.MY_ACCOUNT },
+  { label: "My Wishlist", href: ROUTES.WISHLIST },
+  { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
 ];
 
 export default function TopBar() {

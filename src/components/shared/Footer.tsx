@@ -26,32 +26,33 @@ import {
 } from "react-icons/hi";
 import { MdOutlineEmail } from "react-icons/md";
 import Logo from "./Logo";
+import { ROUTES } from "@/config/routes";
 
 const aboutLinks = [
-  { label: "About Us", href: "/about" },
-  { label: "Terms & Conditions", href: "/terms" },
-  { label: "Careers", href: "/careers" },
-  { label: "Latest News", href: "/blog" },
-  { label: "Contact Us", href: "/contact" },
-  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "About Us", href: ROUTES.ABOUT },
+  { label: "Terms & Conditions", href: ROUTES.TERMS },
+  { label: "Careers", href: ROUTES.CAREERS },
+  { label: "Latest News", href: ROUTES.BLOG },
+  { label: "Contact Us", href: ROUTES.CONTACT },
+  { label: "Privacy Policy", href: ROUTES.PRIVACY_POLICY },
 ];
 
 const accountLinks = [
-  { label: "Your Account", href: "/my-account" },
-  { label: "Return Policies", href: "/return-policies" },
-  { label: "Become a Vendor", href: "/become-vendor" },
-  { label: "Wishlist", href: "/wishlist" },
-  { label: "Affiliate Program", href: "/affiliate" },
-  { label: "FAQs", href: "/faqs" },
+  { label: "Your Account", href: ROUTES.MY_ACCOUNT },
+  { label: "Return Policies", href: ROUTES.RETURN_POLICIES },
+  { label: "Become a Vendor", href: ROUTES.BECOME_VENDOR },
+  { label: "Wishlist", href: ROUTES.WISHLIST },
+  { label: "Affiliate Program", href: ROUTES.AFFILIATE },
+  { label: "FAQs", href: ROUTES.FAQS },
 ];
 
 const categoryLinks = [
-  { label: "Healthcare", href: "/category/healthcare" },
-  { label: "Fashion", href: "/category/fashion" },
-  { label: "Organic", href: "/category/organic" },
-  { label: "Beauty", href: "/category/beauty" },
-  { label: "Groceries", href: "/category/groceries" },
-  { label: "Electronics", href: "/category/electronics" },
+  { label: "Healthcare", href: ROUTES.CATEGORY },
+  { label: "Fashion", href: ROUTES.CATEGORY },
+  { label: "Organic", href: ROUTES.CATEGORY },
+  { label: "Beauty", href: ROUTES.CATEGORY },
+  { label: "Groceries", href: ROUTES.CATEGORY },
+  { label: "Electronics", href: ROUTES.CATEGORY },
 ];
 
 const socialLinks = [
