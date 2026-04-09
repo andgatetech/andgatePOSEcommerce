@@ -1,44 +1,45 @@
+"use client"
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
-
-// "use client";
-//
-// import { useEffect } from "react";
-// import { useRouter } from "next/navigation";
-// import { useGetMeQuery } from "@/features/api/authApi";
-// import { useAppDispatch } from "@/lib/hooks";
-// import { setCredentials, logout } from "@/features/auth/authSlice";
-// import { ROUTES } from "@/config/routes";
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { logout } from "@/features/auth/authSlice";
+import { ROUTES } from "@/config/routes";
+import { clearStoredAuth, isTokenExpired } from "@/features/auth/authStorage";
+import PageLoader from "@/components/shared/PageLoader";
 
 export default function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  /*
   const router = useRouter();
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
-  const { data: user, isLoading, error } = useGetMeQuery();
+  const { isAuthenticated, isHydrated, expiresAt } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
-    if (user) {
-      dispatch(setCredentials(user));
+    if (!isHydrated) {
+      return;
     }
 
-    if (error) {
+    if (!isAuthenticated || isTokenExpired(expiresAt)) {
+      clearStoredAuth();
       dispatch(logout());
-      router.push(ROUTES.LOGIN);
+      const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      router.replace(`${loginUrl.pathname}${loginUrl.search}`);
     }
-  }, [user, error, dispatch, router]);
+  }, [dispatch, expiresAt, isAuthenticated, isHydrated, pathname, router]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
+  if (!isHydrated) {
+    return <PageLoader />;
   }
 
-  if (error) {
+  if (!isAuthenticated || isTokenExpired(expiresAt)) {
     return null;
   }
-  */
 
   return (
     <div>

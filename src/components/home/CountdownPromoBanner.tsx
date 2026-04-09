@@ -15,6 +15,13 @@ type CountdownState = {
   seconds: string;
 };
 
+const initialCountdownState: CountdownState = {
+  days: "00",
+  hours: "00",
+  minutes: "00",
+  seconds: "00",
+};
+
 function getTimeLeft(): CountdownState {
   const diff = countdownTarget.getTime() - Date.now();
 
@@ -49,9 +56,11 @@ const timerCards = [
 ] as const;
 
 export default function CountdownPromoBanner() {
-  const [timeLeft, setTimeLeft] = useState<CountdownState>(getTimeLeft);
+  const [timeLeft, setTimeLeft] = useState<CountdownState>(initialCountdownState);
 
   useEffect(() => {
+    setTimeLeft(getTimeLeft());
+
     const interval = window.setInterval(() => {
       setTimeLeft(getTimeLeft());
     }, 1000);

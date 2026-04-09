@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { type ComponentType, useState } from "react";
+import { type ComponentType, useEffect, useState } from "react";
 import {
   FiGrid,
   FiHeart,
@@ -18,6 +18,7 @@ import MyAccountOrdersListPanel from "./MyAccountOrdersListPanel";
 import MyAccountOrderTrackingPanel from "./MyAccountOrderTrackingPanel";
 import MyAccountProfilePanel from "./MyAccountProfilePanel";
 import { ROUTES } from "@/config/routes";
+import { useAuthSession } from "@/features/auth/useAuthSession";
 
 type AccountTab = "dashboard" | "orders" | "tracking" | "wishlist" | "address" | "account" | "logout";
 
@@ -72,27 +73,15 @@ function DashboardPanel() {
   );
 }
 
-function PlaceholderPanel({
-  title,
-  description,
-}: {
-  title: string;
-  description: string;
-}) {
-  return (
-    <div>
-      <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
-        {title}
-      </h1>
-      <div className="mt-8 rounded-[24px] border border-(--color-border) bg-(--color-bg) p-7 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-        <p className="max-w-3xl text-base leading-8 text-(--color-text-muted)">{description}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function MyAccountView() {
   const [activeTab, setActiveTab] = useState<AccountTab>("dashboard");
+  const { logoutAndRedirect } = useAuthSession();
+
+  useEffect(() => {
+    if (activeTab === "logout") {
+      logoutAndRedirect();
+    }
+  }, [activeTab, logoutAndRedirect]);
 
   function renderPanel() {
     switch (activeTab) {
@@ -106,13 +95,6 @@ export default function MyAccountView() {
         return <MyAccountAddressPanel />;
       case "account":
         return <MyAccountProfilePanel />;
-      case "logout":
-        return (
-          <PlaceholderPanel
-            title="Log Out"
-            description="The logout action can be connected here later when authentication is wired dynamically."
-          />
-        );
       case "dashboard":
       default:
         return <DashboardPanel />;

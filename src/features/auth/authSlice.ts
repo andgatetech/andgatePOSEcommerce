@@ -1,25 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthState, User } from "@/types";
+import { AuthData, AuthState } from "@/types";
 
 const initialState: AuthState = {
   user: null,
+  token: null,
+  expiresAt: null,
   isAuthenticated: false,
+  isHydrated: false,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setCredentials: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
+    setCredentials: (state, action: PayloadAction<AuthData>) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.expiresAt = action.payload.expires_at;
       state.isAuthenticated = true;
     },
     logout: (state) => {
       state.user = null;
+      state.token = null;
+      state.expiresAt = null;
       state.isAuthenticated = false;
+    },
+    setHydrated: (state, action: PayloadAction<boolean>) => {
+      state.isHydrated = action.payload;
     },
   },
 });
 
-export const { setCredentials, logout } = authSlice.actions;
+export const { setCredentials, logout, setHydrated } = authSlice.actions;
 export default authSlice.reducer;

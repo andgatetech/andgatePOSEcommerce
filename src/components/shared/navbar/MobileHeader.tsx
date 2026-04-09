@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes } from "react-icons/fa";
+import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import Logo from "../Logo";
 import { ROUTES } from "@/config/routes";
+import { useAppSelector } from "@/lib/hooks";
+import { useAuthSession } from "@/features/auth/useAuthSession";
 
 const mobileNavLinks = [
   { label: "About us", href: ROUTES.ABOUT },
@@ -20,18 +22,23 @@ type MobileHeaderProps = {
 
 export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
+  const { logoutAndRedirect } = useAuthSession();
+  const showAuthenticatedMenu = isHydrated && isAuthenticated && !!user;
+
+  const accountMenuItems = [
+    { label: "My Account", href: ROUTES.MY_ACCOUNT },
+    { label: "My Wishlist", href: ROUTES.WISHLIST },
+    { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
+    { label: "Profile", href: ROUTES.MY_ACCOUNT },
+  ];
 
   return (
     <div className="xl:hidden bg-(--color-bg) border-b border-(--color-border) py-3 px-4 shadow-sm">
       <div className="flex items-center justify-between">
         <Logo width={140} height={38} />
         <div className="flex items-center gap-x-4">
-          <button type="button" onClick={onCartClick} className="relative">
-            <FaShoppingCart className="text-xl text-(--color-primary)" />
-            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-cta) px-1 text-[10px] font-bold text-white">
-              {cartCount}
-            </span>
-          </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="text-(--color-dark) cursor-pointer"
@@ -41,6 +48,12 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
             ) : (
               <FaBars className="text-xl" />
             )}
+          </button>
+          <button type="button" onClick={onCartClick} className="relative">
+            <FaShoppingCart className="text-xl text-(--color-primary)" />
+            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-cta) px-1 text-[10px] font-bold text-white">
+              {cartCount}
+            </span>
           </button>
         </div>
       </div>
@@ -73,15 +86,73 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
               </li>
             ))}
             <li>
-              <Link
-                href={ROUTES.LOGIN}
-                className="text-(--color-dark) text-sm font-medium flex items-center gap-x-2 hover:text-(--color-cta) transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
+              <button
+                type="button"
+                className="text-(--color-dark) text-sm font-medium flex w-full items-center justify-between gap-x-2 hover:text-(--color-cta) transition-colors"
+                onClick={() => setAccountMenuOpen((current) => !current)}
               >
-                <FaUser className="text-sm" />
-                Account / Log in
-              </Link>
+                <span className="flex items-center gap-x-2">
+                  <FaUser className="text-sm" />
+                  {showAuthenticatedMenu ? user.name : "Login / Register"}
+                </span>
+                <FaChevronDown className={`text-xs transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} />
+              </button>
             </li>
+            {accountMenuOpen ? (
+              <li className="rounded-[16px] border border-(--color-border) bg-white p-2">
+                {showAuthenticatedMenu ? (
+                  <>
+                    {accountMenuItems.map((item) => (
+                      <Link
+                        key={item.label}
+                        href={item.href}
+                        className="block rounded-[10px] px-3 py-2 text-(--color-dark) text-sm font-medium hover:bg-(--color-primary-100) hover:text-(--color-cta) transition-colors"
+                        onClick={() => {
+                          setAccountMenuOpen(false);
+                          setMobileMenuOpen(false);
+                        }}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                    <button
+                      type="button"
+                      className="block w-full rounded-[10px] px-3 py-2 text-left text-(--color-dark) text-sm font-medium hover:bg-(--color-primary-100) hover:text-(--color-cta) transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setMobileMenuOpen(false);
+                        logoutAndRedirect();
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={ROUTES.LOGIN}
+                      className="block rounded-[10px] px-3 py-2 text-(--color-dark) text-sm font-medium hover:bg-(--color-primary-100) hover:text-(--color-cta) transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href={ROUTES.REGISTER}
+                      className="block rounded-[10px] px-3 py-2 text-(--color-dark) text-sm font-medium hover:bg-(--color-primary-100) hover:text-(--color-cta) transition-colors"
+                      onClick={() => {
+                        setAccountMenuOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                    >
+                      Register
+                    </Link>
+                  </>
+                )}
+              </li>
+            ) : null}
           </ul>
         </nav>
       )}

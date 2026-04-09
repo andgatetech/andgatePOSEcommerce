@@ -1,6 +1,6 @@
 import { baseApi } from "./baseApi";
+import { API_ROUTES } from "@/config/apiRoutes";
 import {
-  User,
   LoginRequest,
   RegisterRequest,
   AuthResponse,
@@ -10,7 +10,7 @@ export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: "/login",
+        url: API_ROUTES.ECOMMERCE_AUTH.LOGIN,
         method: "POST",
         body: credentials,
       }),
@@ -19,24 +19,11 @@ export const authApi = baseApi.injectEndpoints({
 
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (data) => ({
-        url: "/register",
+        url: API_ROUTES.ECOMMERCE_AUTH.REGISTER,
         method: "POST",
         body: data,
       }),
       invalidatesTags: ["Auth"],
-    }),
-
-    logout: builder.mutation<{ message: string }, void>({
-      query: () => ({
-        url: "/logout",
-        method: "POST",
-      }),
-      invalidatesTags: ["Auth"],
-    }),
-
-    getMe: builder.query<User, void>({
-      query: () => "/me",
-      providesTags: ["Auth"],
     }),
   }),
 });
@@ -44,6 +31,4 @@ export const authApi = baseApi.injectEndpoints({
 export const {
   useLoginMutation,
   useRegisterMutation,
-  useLogoutMutation,
-  useGetMeQuery,
 } = authApi;

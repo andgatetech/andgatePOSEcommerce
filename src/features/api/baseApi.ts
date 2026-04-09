@@ -6,10 +6,24 @@ import {
   FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { logout } from "@/features/auth/authSlice";
+import { clearStoredAuth, isTokenExpired, loadStoredAuth } from "@/features/auth/authStorage";
+import type { RootState } from "@/lib/store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  credentials: "include",
+  prepareHeaders: (headers, { getState }) => {
+    headers.set("Accept", "application/json");
+
+    const state = getState() as RootState;
+    const token = state.auth.token ?? loadStoredAuth()?.token;
+    const expiresAt = state.auth.expiresAt ?? loadStoredAuth()?.expires_at ?? null;
+
+    if (token && !isTokenExpired(expiresAt)) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    return headers;
+  },
 });
 
 const baseQueryWithAuth: BaseQueryFn<
@@ -20,6 +34,7 @@ const baseQueryWithAuth: BaseQueryFn<
   const result = await baseQuery(args, api, extraOptions);
 
   if (result.error && result.error.status === 401) {
+    clearStoredAuth();
     api.dispatch(logout());
   }
 
