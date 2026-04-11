@@ -1,17 +1,25 @@
 "use client";
 
-import { useRef } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
-import {
-  featuredCategoryItems,
-} from "@/components/home/featuredCategoriesData";
-import { ROUTES } from "@/config/routes";
+import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
+import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
+import { resolveImageUrl } from "@/lib/imageUrl";
 
 const scrollAmount = 320;
 
 export default function FeaturedCategories() {
   const railRef = useRef<HTMLDivElement | null>(null);
+
+  const { data, isLoading } = useGetCategoriesQuery({
+    per_page: 10,
+    sort_field: "name",
+    sort_direction: "asc",
+  });
+
+  const categories = data?.items ?? [];
 
   const scrollRail = (direction: "left" | "right") => {
     railRef.current?.scrollBy({
@@ -58,33 +66,46 @@ export default function FeaturedCategories() {
 
         <div
           ref={railRef}
-          className="flex gap-4 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex gap-5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {featuredCategoryItems.map((category) => {
-            const Icon = category.icon;
+          {isLoading
+            ? Array.from({ length: 8 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="min-w-[160px] flex-1 animate-pulse px-4 py-6 sm:min-w-[180px]"
+                  style={{ minHeight: 210 }}
+                />
+              ))
+            : categories.map((category) => {
+                return (
+                  <Link
+                    key={category.id}
+                    href={ROUTE_BUILDERS.categoryDetail(category.slug)}
+                    className="group min-w-[160px] flex-1 px-4 py-6 text-center transition-transform duration-300 hover:-translate-y-1 sm:min-w-[180px]"
+                  >
+                    <div
+                      className="mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-full bg-[#F3F4F6] transition-transform duration-200 group-hover:scale-105 group-hover:shadow-[0_14px_30px_rgba(44,95,138,0.12)]"
+                    >
+                      {resolveImageUrl(category.image_url) ? (
+                        <Image
+                          src={resolveImageUrl(category.image_url)!}
+                          alt={category.name}
+                          width={92}
+                          height={92}
+                          unoptimized
+                          className="h-auto w-auto max-h-[88px] max-w-[88px] object-contain"
+                        />
+                      ) : (
+                        <div className="h-16 w-16 rounded-full bg-(--color-primary-100)" aria-hidden />
+                      )}
+                    </div>
 
-            return (
-              <article
-                key={category.id}
-                className="min-w-[150px] flex-1 rounded-[20px] px-4 py-6 text-center transition-transform duration-300 hover:-translate-y-1 sm:min-w-[160px]"
-                style={{ backgroundColor: category.background }}
-              >
-                <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-white/70 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-                  <Icon
-                    className="text-[44px]"
-                    style={{ color: category.accent }}
-                  />
-                </div>
-
-                <h3 className="text-[17px] font-semibold text-(--color-primary-900)">
-                  {category.name}
-                </h3>
-                <p className="mt-1 text-[15px] text-(--color-text-muted)">
-                  {category.itemCount} items
-                </p>
-              </article>
-            );
-          })}
+                    <h3 className="line-clamp-2 text-[17px] font-semibold leading-[1.35] text-(--color-primary-900)">
+                      {category.name}
+                    </h3>
+                  </Link>
+                );
+              })}
         </div>
       </div>
     </section>

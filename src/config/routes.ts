@@ -32,6 +32,8 @@ export const ROUTES = {
 
 export const ROUTE_BUILDERS = {
   storeDetail: (slug: string) => `${ROUTES.STORE}/${slug}`,
+  categoryDetail: (slug: string) => `${ROUTES.CATEGORY}/${slug}`,
+  brandDetail: (slug: string) => `${ROUTES.BRAND}/${slug}`,
 } as const;
 
 export const PUBLIC_ROUTES = [

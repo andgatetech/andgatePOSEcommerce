@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FaChevronDown,
   FaSearch,
@@ -19,11 +19,17 @@ type MainHeaderProps = {
 };
 
 export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) {
+  const [hasMounted, setHasMounted] = useState(false);
   const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
   const { logoutAndRedirect } = useAuthSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
   const showAuthenticatedMenu = isHydrated && isAuthenticated && !!user;
+  const accountLabel = hasMounted && showAuthenticatedMenu ? user.name : "Login / Register";
 
   const accountMenuItems = [
     { label: "My Account", href: ROUTES.MY_ACCOUNT },
@@ -88,7 +94,7 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                   </span>
                   <p className="flex flex-col text-(--color-text-muted) text-sm leading-[22px]">
                     <span className="text-base leading-6 text-(--color-dark) font-medium">
-                      {showAuthenticatedMenu ? user.name : "Login / Register"}
+                      {accountLabel}
                     </span>
                   </p>
                   <FaChevronDown
@@ -100,7 +106,7 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                     isMenuOpen ? "visible opacity-100" : "invisible opacity-0"
                   }`}
                 >
-                  {showAuthenticatedMenu ? (
+                  {hasMounted && showAuthenticatedMenu ? (
                     <>
                       {accountMenuItems.map((item) => (
                         <Link

@@ -44,6 +44,6 @@ const baseQueryWithAuth: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithAuth,
-  tagTypes: ["Auth", "User", "Order"],
+  tagTypes: ["Auth", "User", "Order", "Category", "Brand"],
   endpoints: () => ({}),
 });

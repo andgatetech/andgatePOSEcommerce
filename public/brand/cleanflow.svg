@@ -1,6 +1,0 @@
-<svg width="320" height="180" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="320" height="180" rx="28" fill="#F7F9FC"/>
-  <path d="M80 52C98 82 114 98 114 116C114 134 98 148 80 148C62 148 46 134 46 116C46 98 62 82 80 52Z" fill="#2C5F8A"/>
-  <path d="M96 82C112 96 126 112 126 128C126 146 112 160 94 160C76 160 62 146 62 128C62 112 76 96 96 82Z" fill="#2D8F4E"/>
-  <text x="146" y="98" fill="#111111" font-size="30" font-family="Arial" font-weight="700">CleanFlow</text>
-</svg>

@@ -1,43 +1,81 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import Link from "next/link";
+import { useMemo } from "react";
+import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
+import { useListQuery } from "@/hooks/useListQuery";
+import SearchInput from "@/components/shared/SearchInput";
+import Pagination from "@/components/shared/Pagination";
+import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
+import { ROUTE_BUILDERS } from "@/config/routes";
+import { resolveImageUrl } from "@/lib/imageUrl";
+import type { Category, ListQueryParams, PaginatedPayload } from "@/types";
 
-type CategoryItem = {
-  id: string;
-  name: string;
-  image: string;
-};
+const SORT_OPTIONS: SortOption[] = [
+  { label: "Name (A–Z)", field: "name", direction: "asc" },
+  { label: "Name (Z–A)", field: "name", direction: "desc" },
+  { label: "Newest", field: "created_at", direction: "desc" },
+  { label: "Oldest", field: "created_at", direction: "asc" },
+];
 
-export default function CategoryGallery() {
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
+interface CategoryGalleryProps {
+  initialData: PaginatedPayload<Category> | null;
+  initialParams: ListQueryParams;
+  defaultPerPage: number;
+  defaultSortField: string;
+  defaultSortDirection: "asc" | "desc";
+}
 
-  useEffect(() => {
-    let active = true;
+function sameParams(a: ListQueryParams, b: ListQueryParams): boolean {
+  return (
+    (a.search ?? "") === (b.search ?? "") &&
+    (a.page ?? 1) === (b.page ?? 1) &&
+    (a.per_page ?? 0) === (b.per_page ?? 0) &&
+    (a.sort_field ?? "") === (b.sort_field ?? "") &&
+    (a.sort_direction ?? "") === (b.sort_direction ?? "")
+  );
+}
 
-    async function loadCategories() {
-      const response = await fetch("/category/categories.json");
-      const data = (await response.json()) as CategoryItem[];
-      if (active) {
-        setCategories(data);
-      }
-    }
+export default function CategoryGallery({
+  initialData,
+  initialParams,
+  defaultPerPage,
+  defaultSortField,
+  defaultSortDirection,
+}: CategoryGalleryProps) {
+  const { params, search, setSearch, setSort, setPage } = useListQuery({
+    defaultPerPage,
+    defaultSortField,
+    defaultSortDirection,
+  });
 
-    loadCategories().catch(() => {
-      if (active) {
-        setCategories([]);
-      }
-    });
+  // While the client params still equal the server-rendered ones, use the SSR
+  // payload directly and skip the client fetch.
+  const isInitial = useMemo(
+    () => sameParams(params, initialParams),
+    [params, initialParams],
+  );
 
-    return () => {
-      active = false;
-    };
-  }, []);
+  const { data, isFetching, isError } = useGetCategoriesQuery(params, {
+    skip: isInitial && initialData !== null,
+  });
+
+  const payload: PaginatedPayload<Category> | null =
+    isInitial && initialData ? initialData : (data ?? null);
+
+  const items = payload?.items ?? [];
+  const pagination = payload?.pagination;
+
+  const sortValue = {
+    field: params.sort_field ?? defaultSortField,
+    direction: params.sort_direction ?? defaultSortDirection,
+  };
 
   return (
     <section className="bg-(--color-bg) px-4 pb-8 pt-12 md:px-8 md:pb-10 md:pt-14 lg:px-12 lg:pb-14 lg:pt-16">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-12 text-center">
+        <div className="mb-10 text-center">
           <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-(--color-primary)">
             Category
           </span>
@@ -45,33 +83,72 @@ export default function CategoryGallery() {
             Category
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-(--color-text-muted) md:text-base">
-            Production-ready mock category listing for now. The layout is structured so these cards can be replaced with dynamic category data later without changing the overall design.
+            Browse the full master category catalog. Search, sort and paginate to find exactly what you need.
           </p>
         </div>
 
-        <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-4 shadow-[0_24px_60px_rgba(17,17,17,0.06)] md:p-5 xl:p-6">
-          <div className="grid grid-cols-3 gap-x-2 gap-y-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-9 xl:gap-x-3 xl:gap-y-7">
-            {categories.map((category) => (
-              <article
-                key={category.id}
-                className="group flex flex-col items-center text-center"
-              >
-                <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#F7F7F8] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_rgba(44,95,138,0.14)] sm:h-[94px] sm:w-[94px] md:h-[102px] md:w-[102px]">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    width={84}
-                    height={84}
-                    className="h-auto w-auto max-h-[68px] max-w-[68px] object-contain sm:max-h-[76px] sm:max-w-[76px] md:max-h-[84px] md:max-w-[84px]"
-                  />
-                </div>
-                <h2 className="mt-3 max-w-[112px] text-[12px] font-semibold leading-[1.18] tracking-[-0.03em] text-(--color-dark) sm:text-[13px] md:max-w-[124px] md:text-[14px]">
-                  {category.name}
-                </h2>
-              </article>
-            ))}
-          </div>
+        <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Search categories..."
+            className="sm:max-w-sm"
+          />
+          <SortSelect
+            options={SORT_OPTIONS}
+            value={sortValue}
+            onChange={setSort}
+          />
         </div>
+
+        <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-4 shadow-[0_24px_60px_rgba(17,17,17,0.06)] md:p-5 xl:p-6">
+          {isError && !payload ? (
+            <p className="py-16 text-center text-sm text-(--color-text-muted)">
+              Failed to load categories. Please try again.
+            </p>
+          ) : items.length === 0 && !isFetching ? (
+            <p className="py-16 text-center text-sm text-(--color-text-muted)">
+              No categories found.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 gap-x-2 gap-y-6 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-9 xl:gap-x-3 xl:gap-y-7">
+              {items.map((category) => (
+                <Link
+                  key={category.id}
+                  href={ROUTE_BUILDERS.categoryDetail(category.slug)}
+                  className="group flex flex-col items-center text-center"
+                >
+                  <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#F7F7F8] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_rgba(44,95,138,0.14)] sm:h-[94px] sm:w-[94px] md:h-[102px] md:w-[102px]">
+                    {resolveImageUrl(category.image_url) ? (
+                      <Image
+                        src={resolveImageUrl(category.image_url)!}
+                        alt={category.name}
+                        width={84}
+                        height={84}
+                        unoptimized
+                        className="h-auto w-auto max-h-[68px] max-w-[68px] object-contain sm:max-h-[76px] sm:max-w-[76px] md:max-h-[84px] md:max-w-[84px]"
+                      />
+                    ) : (
+                      <div
+                        className="h-[68px] w-[68px] rounded-full bg-[#ECECEE] sm:h-[76px] sm:w-[76px] md:h-[84px] md:w-[84px]"
+                        aria-hidden
+                      />
+                    )}
+                  </div>
+                  <h2 className="mt-3 max-w-[112px] text-[12px] font-semibold leading-[1.18] tracking-[-0.03em] text-(--color-dark) sm:text-[13px] md:max-w-[124px] md:text-[14px]">
+                    {category.name}
+                  </h2>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {pagination && (
+          <div className="mt-8">
+            <Pagination pagination={pagination} onPageChange={setPage} />
+          </div>
+        )}
       </div>
     </section>
   );

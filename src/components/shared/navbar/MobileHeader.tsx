@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import Logo from "../Logo";
 import { ROUTES } from "@/config/routes";
@@ -23,9 +23,15 @@ type MobileHeaderProps = {
 export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [hasMounted, setHasMounted] = useState(false);
   const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
   const { logoutAndRedirect } = useAuthSession();
   const showAuthenticatedMenu = isHydrated && isAuthenticated && !!user;
+  const accountLabel = hasMounted && showAuthenticatedMenu ? user.name : "Login / Register";
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
 
   const accountMenuItems = [
     { label: "My Account", href: ROUTES.MY_ACCOUNT },
@@ -93,14 +99,14 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
               >
                 <span className="flex items-center gap-x-2">
                   <FaUser className="text-sm" />
-                  {showAuthenticatedMenu ? user.name : "Login / Register"}
+                  {accountLabel}
                 </span>
                 <FaChevronDown className={`text-xs transition-transform ${accountMenuOpen ? "rotate-180" : ""}`} />
               </button>
             </li>
             {accountMenuOpen ? (
               <li className="rounded-[16px] border border-(--color-border) bg-white p-2">
-                {showAuthenticatedMenu ? (
+                {hasMounted && showAuthenticatedMenu ? (
                   <>
                     {accountMenuItems.map((item) => (
                       <Link

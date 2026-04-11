@@ -3,4 +3,8 @@ export const API_ROUTES = {
     LOGIN: "/login",
     REGISTER: "/register",
   },
+  ECOMMERCE_CATALOG: {
+    CATEGORIES: "/categories",
+    BRANDS: "/brands",
+  },
 } as const;

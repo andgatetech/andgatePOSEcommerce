@@ -47,3 +47,28 @@ export interface ApiResponse<T> {
 }
 
 export type AuthResponse = ApiResponse<AuthData>;
+
+export interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Brand {
+  id: number;
+  name: string;
+  slug: string;
+  image_url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type {
+  Pagination,
+  PaginatedPayload,
+  PaginatedResponse,
+  ListQueryParams,
+} from "./pagination";
