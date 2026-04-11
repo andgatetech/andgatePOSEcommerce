@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'FAQs | Andgate E-Commerce',
+  title: 'FAQs | Hawkeri',
   description: 'Frequently Asked Questions',
 };
 

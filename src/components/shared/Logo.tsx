@@ -25,7 +25,7 @@ export default function Logo({
   const image = (
     <Image
       src="/images/andgatePOS.jpeg"
-      alt="Andgate POS"
+      alt="Hawkeri"
       width={width}
       height={height}
       priority

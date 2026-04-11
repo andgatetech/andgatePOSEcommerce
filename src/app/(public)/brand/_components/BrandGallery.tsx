@@ -71,18 +71,12 @@ export default function BrandGallery({
   };
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-8 pt-12 md:px-8 md:pb-10 md:pt-14 lg:px-12 lg:pb-14 lg:pt-16">
+    <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
       <div className="mx-auto max-w-[1600px]">
-        <div className="mb-10 text-center">
-          <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.24em] text-(--color-primary)">
-            Brand
-          </span>
-          <h1 className="mt-5 text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark) md:text-[46px]">
+        <div className="mb-4 flex justify-center">
+          <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
             Brand
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-(--color-text-muted) md:text-base">
-            Browse the full master brand catalog. Search, sort and paginate through our verified brand partners.
-          </p>
         </div>
 
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

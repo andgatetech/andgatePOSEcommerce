@@ -6,5 +6,6 @@ export const API_ROUTES = {
   ECOMMERCE_CATALOG: {
     CATEGORIES: "/categories",
     BRANDS: "/brands",
+    STORES: "/stores",
   },
 } as const;

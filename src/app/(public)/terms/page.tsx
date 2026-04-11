@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Andgate E-Commerce',
+  title: 'Terms of Service | Hawkeri',
   description: 'Terms and conditions for purchasing physical goods.',
 };
 
@@ -15,7 +15,7 @@ export default function TermsPage() {
           
           <div className="prose prose-lg max-w-none text-(--color-text-muted)">
             <h2 className="text-2xl font-bold text-(--color-primary-dark) mt-8 mb-4">Introduction</h2>
-            <p>Please read these Terms carefully before using the Andgate E-commerce platform to browse or purchase products. Your use of the Service is conditioned on your acceptance of and compliance with these Terms.</p>
+            <p>Please read these Terms carefully before using the Hawkeri platform to browse or purchase products. Your use of the Service is conditioned on your acceptance of and compliance with these Terms.</p>
 
             <h2 className="text-2xl font-bold text-(--color-primary-dark) mt-8 mb-4">Purchases</h2>
             <p>If you wish to purchase any product made available through the Service ("Purchase"), you may be asked to supply certain information relevant to your Purchase including, but not limited to, your credit card number, expiration date, billing address, and your shipping information.</p>

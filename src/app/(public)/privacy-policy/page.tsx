@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy | Andgate E-Commerce',
+  title: 'Privacy Policy | Hawkeri',
   description: 'How we manage your data.',
 };
 

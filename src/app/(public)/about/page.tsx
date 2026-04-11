@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaShippingFast, FaCheckCircle, FaMoneyBillWave, FaHeadset } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'About Us | Andgate E-Commerce',
+  title: 'About Us | Hawkeri',
   description: 'Learn about our mission to bring the best products to your doorstep.',
 };
 
@@ -17,7 +17,7 @@ export default function AboutPage() {
           <span className="text-(--color-cta) font-bold tracking-widest uppercase text-sm mb-4 block">Our Story</span>
           <h1 className="text-4xl md:text-6xl font-bold mb-6">Your Premium Shopping Destination</h1>
           <p className="text-lg md:text-xl text-(--color-primary-100) max-w-3xl mx-auto leading-relaxed">
-            At Andgate, our mission is to provide shoppers in Bangladesh with a seamless, reliable, and exciting online shopping experience. We bring millions of products from verified vendors directly to your doorstep.
+            At Hawkeri, our mission is to provide shoppers in Bangladesh with a seamless, reliable, and exciting online shopping experience. We bring millions of products from verified vendors directly to your doorstep.
           </p>
         </div>
       </div>

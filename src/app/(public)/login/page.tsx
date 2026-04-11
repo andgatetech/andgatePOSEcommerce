@@ -21,7 +21,7 @@ export default function LoginPage() {
               </svg>
             </div>
             <h2 className="text-3xl font-bold leading-tight mb-3">
-              Welcome back to<br />Andgate POS
+              Welcome back to<br />Hawkeri
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-8">
               Manage your orders, track deliveries, and enjoy a seamless shopping experience.

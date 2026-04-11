@@ -1,85 +1,93 @@
 "use client";
 
-import Link from "next/link";
-import { useState } from "react";
-import { FiGrid, FiHome, FiList, FiSearch } from "react-icons/fi";
+import { useMemo } from "react";
 import StoreCard from "./StoreCard";
-import { storeMockData } from "./storeMockData";
-import { ROUTES } from "@/config/routes";
+import StoreListToolbar from "./shared/StoreListToolbar";
+import { sameStoreParams } from "./shared/storeListShared";
+import Pagination from "@/components/shared/Pagination";
+import { useGetStoresQuery } from "@/features/catalog/storeApi";
+import { useListQuery } from "@/hooks/useListQuery";
+import type { ListQueryParams, PaginatedPayload, Store } from "@/types";
 
-export default function StoreListPageContent() {
-  const [view, setView] = useState<"grid" | "list">("grid");
+interface StoreListPageContentProps {
+  initialData: PaginatedPayload<Store> | null;
+  initialParams: ListQueryParams;
+  defaultPerPage: number;
+  defaultSortField: string;
+  defaultSortDirection: "asc" | "desc";
+}
+
+export default function StoreListPageContent({
+  initialData,
+  initialParams,
+  defaultPerPage,
+  defaultSortField,
+  defaultSortDirection,
+}: StoreListPageContentProps) {
+  const { params, search, setSearch, setSort, setPage } = useListQuery({
+    defaultPerPage,
+    defaultSortField,
+    defaultSortDirection,
+  });
+
+  const isInitial = useMemo(
+    () => sameStoreParams(params, initialParams),
+    [params, initialParams],
+  );
+
+  const { data, isFetching, isError } = useGetStoresQuery(params, {
+    skip: isInitial && initialData !== null,
+  });
+
+  const payload: PaginatedPayload<Store> | null =
+    isInitial && initialData ? initialData : (data ?? null);
+
+  const items = payload?.items ?? [];
+  const pagination = payload?.pagination;
+  const sortValue = {
+    field: params.sort_field ?? defaultSortField,
+    direction: params.sort_direction ?? defaultSortDirection,
+  };
 
   return (
-    <section className="bg-(--color-bg)">
-      <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
-        <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
-          <Link
-            href={ROUTES.HOME}
-            className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)"
-          >
-            <FiHome className="text-[17px]" />
-            <span>Home</span>
-          </Link>
-          <span>&bull;</span>
-          <span>Seller Grid</span>
+    <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
+      <div className="mx-auto max-w-[1600px]">
+        <div className="mb-4 flex justify-center">
+          <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
+            Store
+          </h1>
         </div>
 
-        <h1 className="mb-6 text-center text-[30px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[24px]">
-          Store List
-        </h1>
+        <StoreListToolbar
+          search={search}
+          sortValue={sortValue}
+          onSearchChange={setSearch}
+          onSortChange={setSort}
+        />
 
-        <div className="mb-9 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-          <div className="flex flex-wrap items-center gap-4 text-sm">
-            <button
-              type="button"
-              onClick={() => setView("list")}
-              className={`flex h-[46px] w-[46px] items-center justify-center rounded-full transition ${
-                view === "list"
-                  ? "bg-(--color-primary) text-white shadow-[0_10px_24px_rgba(44,95,138,0.16)]"
-                  : "border border-(--color-border) text-(--color-text-muted) hover:border-(--color-primary) hover:text-(--color-primary)"
-              }`}
-            >
-              <FiList className="text-[20px]" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setView("grid")}
-              className={`flex h-[46px] w-[46px] items-center justify-center rounded-full transition ${
-                view === "grid"
-                  ? "bg-(--color-primary) text-white shadow-[0_10px_24px_rgba(44,95,138,0.16)]"
-                  : "border border-(--color-border) text-(--color-text-muted) hover:border-(--color-primary) hover:text-(--color-primary)"
-              }`}
-            >
-              <FiGrid className="text-[18px]" />
-            </button>
-            <p className="text-[17px] text-(--color-dark)">Showing 1-4 of 4 results</p>
-          </div>
-
-          <div className="flex flex-col gap-4 md:flex-row xl:w-[560px] xl:justify-end">
-            <div className="relative flex-1">
-              <FiSearch className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[24px] text-(--color-text-muted)" />
-              <input
-                type="text"
-                placeholder="Search Company"
-                className="h-[56px] w-full rounded-full border border-(--color-border) bg-(--color-bg) pl-14 pr-5 text-sm text-(--color-dark) outline-none transition focus:border-(--color-primary) placeholder:text-(--color-text-muted)"
-              />
+        {isError && !payload ? (
+          <p className="py-16 text-center text-sm text-(--color-text-muted)">
+            Failed to load stores. Please try again.
+          </p>
+        ) : items.length === 0 && !isFetching ? (
+          <p className="py-16 text-center text-sm text-(--color-text-muted)">
+            No stores found.
+          </p>
+        ) : (
+          <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-4 shadow-[0_24px_60px_rgba(17,17,17,0.06)] md:p-5 xl:p-6">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+              {items.map((store) => (
+                <StoreCard key={store.id} store={store} view="grid" />
+              ))}
             </div>
-
-            <select className="h-[56px] min-w-[140px] rounded-full border border-(--color-border) bg-(--color-bg) px-5 text-sm text-(--color-text-muted) outline-none transition focus:border-(--color-primary)">
-              <option>Sorting</option>
-              <option>Name</option>
-              <option>Newest</option>
-              <option>Rating</option>
-            </select>
           </div>
-        </div>
+        )}
 
-        <div className={view === "grid" ? "grid gap-5 md:grid-cols-2 xl:grid-cols-4" : "space-y-5"}>
-          {storeMockData.map((store) => (
-            <StoreCard key={store.id} store={store} view={view} />
-          ))}
-        </div>
+        {pagination && (
+          <div className="mt-8">
+            <Pagination pagination={pagination} onPageChange={setPage} />
+          </div>
+        )}
       </div>
     </section>
   );

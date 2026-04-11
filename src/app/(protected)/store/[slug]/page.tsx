@@ -1,8 +1,46 @@
+import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FiChevronRight, FiHome } from "react-icons/fi";
-import { storeMockData } from "../_components/storeMockData";
+import { FiChevronRight, FiHome, FiMapPin, FiPhone, FiShoppingBag } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
+import { resolveStoreLogoUrl } from "@/lib/storeLogo";
+import { serverFetchJson } from "@/lib/serverFetch";
+import type { PaginatedResponse, Store } from "@/types";
+
+async function getStoreBySlug(slug: string): Promise<Store | null> {
+  try {
+    const response = await serverFetchJson<PaginatedResponse<Store>>("/stores", {
+      per_page: 100,
+      sort_field: "store_name",
+      sort_direction: "asc",
+    });
+
+    return response.data.items.find((item) => item.slug === slug) ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const store = await getStoreBySlug(slug);
+
+  if (!store) {
+    return {
+      title: "Store Not Found | Hawkeri",
+    };
+  }
+
+  return {
+    title: `${store.store_name} | Hawkeri`,
+    description: `Browse ${store.store_name} on Hawkeri.`,
+  };
+}
 
 export default async function StoreDetailPage({
   params,
@@ -10,15 +48,19 @@ export default async function StoreDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const store = storeMockData.find((item) => item.slug === slug);
+  const store = await getStoreBySlug(slug);
 
   if (!store) {
     notFound();
   }
 
+  const logoUrl = resolveStoreLogoUrl(store.logo_path);
+  const phone = store.store_contact || store.store_number || "Not available";
+  const location = store.store_location || "Location not provided";
+
   return (
     <section className="bg-(--color-bg)">
-      <div className="mx-auto px-4 py-8 md:px-5 lg:px-7 xl:px-8 xl:py-10">
+      <div className="mx-auto max-w-[1600px] px-4 py-8 md:px-5 lg:px-7 xl:px-8 xl:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
@@ -32,18 +74,70 @@ export default async function StoreDetailPage({
             Store
           </Link>
           <FiChevronRight className="text-[14px]" />
-          <span>{store.name}</span>
+          <span>{store.store_name}</span>
         </div>
 
-        <div className="rounded-[26px] border border-(--color-border) bg-(--color-bg) p-8">
-          <h1 className="text-[30px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-            {store.name}
-          </h1>
-          <p className="mt-4 max-w-[720px] text-sm leading-7 text-(--color-text-muted)">
-            This is a mock store detail page for slug routing. Later you can replace this with dynamic
-            vendor data, store products, ratings, banners, policies, and contact information loaded by
-            slug.
-          </p>
+        <div className="overflow-hidden rounded-[30px] border border-(--color-border) bg-white shadow-[0_18px_60px_rgba(19,45,69,0.06)]">
+          <div className="grid gap-8 bg-[radial-gradient(circle_at_top_left,rgba(220,234,246,0.95),transparent_48%),linear-gradient(135deg,#ffffff_0%,#f8fbff_100%)] p-8 md:grid-cols-[1.2fr_0.8fr] lg:p-10">
+            <div>
+              <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.22em] text-(--color-primary)">
+                Ecommerce Store
+              </span>
+              <h1 className="mt-5 text-[30px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[40px]">
+                {store.store_name}
+              </h1>
+              <p className="mt-4 max-w-[720px] text-sm leading-7 text-(--color-text-muted) md:text-[15px]">
+                This route now resolves real ecommerce-enabled stores from the backend API by slug.
+              </p>
+
+              <div className="mt-6 grid gap-4 text-sm text-(--color-dark) sm:grid-cols-2">
+                <div className="flex items-start gap-3 rounded-[18px] border border-(--color-border) bg-white/70 px-4 py-4">
+                  <FiPhone className="mt-0.5 shrink-0 text-[18px] text-(--color-primary)" />
+                  <div>
+                    <p className="font-semibold">Phone</p>
+                    <p className="mt-1 text-(--color-text-muted)">{phone}</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 rounded-[18px] border border-(--color-border) bg-white/70 px-4 py-4">
+                  <FiMapPin className="mt-0.5 shrink-0 text-[18px] text-(--color-primary)" />
+                  <div>
+                    <p className="font-semibold">Location</p>
+                    <p className="mt-1 text-(--color-text-muted)">{location}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link
+                  href={ROUTES.STORE}
+                  className="inline-flex items-center rounded-full border border-(--color-border) bg-white px-4 py-2 text-[13px] font-semibold text-(--color-primary-900) transition hover:border-(--color-primary-200) hover:text-(--color-primary)"
+                >
+                  <FiShoppingBag className="mr-2 text-[14px]" />
+                  Back to all stores
+                </Link>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="flex min-h-[240px] w-full max-w-[340px] items-center justify-center rounded-[24px] border border-white/70 bg-white/75 p-6 shadow-[0_14px_38px_rgba(19,45,69,0.08)] backdrop-blur">
+                {logoUrl ? (
+                  <div className="relative h-[220px] w-full">
+                    <Image
+                      src={logoUrl}
+                      alt={store.store_name}
+                      fill
+                      unoptimized
+                      className="object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex h-[220px] w-full items-center justify-center rounded-[18px] border border-dashed border-(--color-primary-200) bg-(--color-primary-100) px-6 text-center text-sm font-medium text-(--color-primary)">
+                    {store.store_name}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

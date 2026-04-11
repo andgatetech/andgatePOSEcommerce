@@ -1,24 +1,10 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 import PopularProductCard, {
   type PopularProduct,
 } from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
-
-async function getPopularProducts() {
-  const filePath = path.join(
-    process.cwd(),
-    "public",
-    "data",
-    "home",
-    "popular-products.json",
-  );
-
-  const fileContent = await readFile(filePath, "utf-8");
-  return JSON.parse(fileContent) as PopularProduct[];
-}
+import { getPopularProducts } from "@/lib/mockProducts";
 
 export default async function PopularProductsSection() {
   const products = await getPopularProducts();

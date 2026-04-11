@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Andgate POS Ecommerce",
-  description: "Andgate Point of Sale & Ecommerce Platform",
+  title: "Hawkeri",
+  description: "Hawkeri Ecommerce Platform",
 };
 
 export default function RootLayout({

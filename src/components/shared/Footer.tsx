@@ -117,9 +117,8 @@ export default function Footer() {
             <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
               <Logo width={180} height={48} />
               <p className="text-(--color-primary-200) text-base">
-                Andgate POS — Your trusted partner for seamless Point of Sale
-                and E-commerce solutions. Empowering businesses across
-                Bangladesh.
+                Hawkeri is your trusted destination for seamless online
+                shopping and modern ecommerce experiences across Bangladesh.
               </p>
               <div className="flex flex-wrap gap-x-4 gap-y-4">
                 {socialLinks.map((social, index) => (
@@ -318,7 +317,7 @@ export default function Footer() {
               />
             </svg>
             <p className="text-(--color-primary-200) text-sm pt-4">
-              © {new Date().getFullYear()} Copyright By Andgate Technologies
+              © {new Date().getFullYear()} Copyright By Hawkeri
             </p>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaLink, FaShareSquare, FaRegMoneyBillAlt } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Affiliate Program | Andgate E-Commerce',
+  title: 'Affiliate Program | Hawkeri',
   description: 'Refer products and earn money.',
 };
 
@@ -13,7 +13,7 @@ export default function AffiliatePage() {
       <div className="bg-gradient-to-br from-(--color-primary-900) to-(--color-primary-dark) pt-24 pb-36 text-center relative overflow-hidden rounded-b-[3rem]">
         <h1 className="text-4xl md:text-6xl font-extrabold text-white mb-6 relative z-10">Promote & <span className="text-(--color-cta)">Earn</span></h1>
         <p className="text-xl text-(--color-primary-200) max-w-2xl mx-auto mb-10 relative z-10 px-4">
-          Share your favorite products from Andgate E-Commerce with your audience and earn a commission on every successful sale.
+          Share your favorite products from Hawkeri with your audience and earn a commission on every successful sale.
         </p>
         <button className="bg-(--color-cta) hover:bg-(--color-cta-hover) text-white font-bold py-4 px-10 rounded-full text-lg shadow-[0_0_20px_rgba(216,137,31,0.5)] transition-all relative z-10">
           Join Now for Free

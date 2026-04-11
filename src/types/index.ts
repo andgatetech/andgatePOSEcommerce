@@ -66,6 +66,16 @@ export interface Brand {
   updated_at: string;
 }
 
+export interface Store {
+  id: number;
+  store_name: string;
+  slug: string;
+  store_location: string | null;
+  store_number: string | null;
+  store_contact: string | null;
+  logo_path: string | null;
+}
+
 export type {
   Pagination,
   PaginatedPayload,

@@ -3,8 +3,8 @@ import { Metadata } from 'next';
 import { FaBriefcase, FaGraduationCap, FaLaptopCode } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Careers | Andgate Technologies',
-  description: 'Join our team at Andgate Technologies.',
+  title: 'Careers | Hawkeri',
+  description: 'Join our team at Hawkeri.',
 };
 
 export default function CareersPage() {
