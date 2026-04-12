@@ -77,7 +77,7 @@ export default function ProductFiltersSidebar({
                     name="product-category"
                     checked={checked}
                     onChange={() => onCategoryChange(category.slug)}
-                    className="h-4 w-4 accent-[var(--color-primary)]"
+                    className="h-4 w-4 accent-(--color-primary)"
                   />
                   <span className="text-sm text-(--color-dark)">{category.name}</span>
                 </label>
@@ -114,7 +114,7 @@ export default function ProductFiltersSidebar({
                     name="product-brand"
                     checked={checked}
                     onChange={() => onBrandChange(brand.slug)}
-                    className="h-4 w-4 accent-[var(--color-primary)]"
+                    className="h-4 w-4 accent-(--color-primary)"
                   />
                   <span className="text-sm text-(--color-dark)">{brand.name}</span>
                 </label>
