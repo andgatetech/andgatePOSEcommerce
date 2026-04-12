@@ -18,7 +18,7 @@ export default function EditorialPromoGrid() {
           </div>
 
           <Link
-            href={ROUTES.SHOP}
+            href={ROUTES.CATEGORY}
             className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             Explore Collection
@@ -39,30 +39,33 @@ export default function EditorialPromoGrid() {
               />
             </div>
 
-            <div className="absolute inset-x-5 bottom-5 z-10 rounded-[26px] bg-[#f2d0bf]/54 p-5 backdrop-blur-[2px] md:p-6">
+            <div className="absolute inset-x-5 bottom-5 z-10 rounded-[26px] bg-white/55 p-5 backdrop-blur-[2px] md:p-6">
               <p className="text-[12px] font-semibold uppercase tracking-[0.22em] text-(--color-primary-900)/78">
                 Glow Skin Edit
               </p>
-              <div className="mt-3 flex items-end justify-between gap-4">
-                <div>
-                  <h4 className="text-[22px] font-semibold tracking-[-0.03em] text-(--color-primary-900)">
-                    Skincare picks,
-                    <br />
-                    glow essentials
-                  </h4>
-                  <p className="mt-2 text-[14px] font-medium leading-6 text-(--color-primary-900)/72">
-                    Fresh beauty picks for radiant, everyday skin.
-                  </p>
-                </div>
-
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
-                  <FiArrowUpRight className="text-[18px]" />
-                </span>
+              <div className="mt-3">
+                <h4 className="text-[22px] font-semibold tracking-[-0.03em] text-(--color-primary-900)">
+                  Skincare picks,
+                  <br />
+                  glow essentials
+                </h4>
+                <p className="mt-2 text-[14px] font-medium leading-6 text-(--color-primary-900)/72">
+                  Fresh beauty picks for radiant, everyday skin.
+                </p>
+                <Link
+                  href={ROUTES.CATEGORY}
+                  className="mt-4 inline-flex items-center gap-3 rounded-full bg-(--color-cta) px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(216,137,31,0.28)] transition hover:bg-(--color-cta-hover)"
+                >
+                  Shop skincare
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
+                    <FiArrowUpRight className="text-[16px]" />
+                  </span>
+                </Link>
               </div>
             </div>
           </article>
 
-          <article className="group relative min-h-[250px] overflow-hidden rounded-[30px] bg-[#f2cc1f] lg:col-span-4 lg:row-span-2">
+          <article className="group relative min-h-[250px] overflow-hidden rounded-[30px] bg-(--color-cta) lg:col-span-4 lg:row-span-2">
             <div className="absolute inset-0">
               <Image
                 src="/images/banner/promo-bg-3.jpg"
@@ -72,8 +75,8 @@ export default function EditorialPromoGrid() {
               />
             </div>
             <div className="relative z-10 flex h-full p-6 md:p-7">
-              <div className="ml-auto mt-auto translate-y-3 w-full max-w-[270px] rounded-[22px] bg-[#fff0a0]/28 p-3.5 backdrop-blur-[2px] md:max-w-[300px] md:translate-y-5">
-                <span className="inline-flex rounded-full bg-[#c2ebe0] px-3 py-1 text-[11px] font-semibold text-(--color-primary-900)">
+              <div className="ml-auto mt-auto translate-y-3 w-full max-w-[270px] rounded-[22px] bg-white/30 p-3.5 backdrop-blur-[2px] md:max-w-[300px] md:translate-y-5">
+                <span className="inline-flex rounded-full bg-(--color-primary-100) px-3 py-1 text-[11px] font-semibold text-(--color-primary-900)">
                   Enjoy 20% savings
                 </span>
                 <h3 className="mt-3 text-[18px] font-semibold leading-[1.08] tracking-[-0.04em] text-(--color-primary-900) md:text-[21px]">
@@ -86,11 +89,11 @@ export default function EditorialPromoGrid() {
                 </p>
 
                 <Link
-                  href={ROUTES.STORE}
-                  className="mt-4 ml-auto inline-flex w-fit items-center gap-3 rounded-full bg-[#16787f] px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(22,120,127,0.28)] transition hover:bg-[#126269]"
+                  href={ROUTES.BRAND}
+                  className="mt-4 ml-auto inline-flex w-fit items-center gap-3 rounded-full bg-(--color-primary) px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
                 >
                   Shop Gift Sets
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#16787f]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
                     <FiArrowUpRight className="text-[16px]" />
                   </span>
                 </Link>
@@ -121,7 +124,7 @@ export default function EditorialPromoGrid() {
                 High-contrast color, portrait imagery, and a clean CTA block for a sharper eCommerce feel.
               </p>
               <Link
-                href={ROUTES.SHOP}
+                href={ROUTES.CATEGORY}
                 className="mt-3 inline-flex items-center gap-2 text-[12px] font-semibold text-(--color-primary-900)"
               >
                 Browse now
@@ -130,7 +133,10 @@ export default function EditorialPromoGrid() {
             </div>
           </article>
 
-          <article className="group relative overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] lg:col-span-2 lg:row-span-1">
+          <Link
+            href={ROUTES.CATEGORY}
+            className="group relative block overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 lg:col-span-2 lg:row-span-1"
+          >
             <div className="absolute inset-0">
               <Image
                 src="/images/banner/promo-bg-1.png"
@@ -155,9 +161,12 @@ export default function EditorialPromoGrid() {
                 </p>
               </div>
             </div>
-          </article>
+          </Link>
 
-          <article className="group relative overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 lg:col-span-2 lg:row-span-1">
+          <Link
+            href={ROUTES.BRAND}
+            className="group relative block overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 lg:col-span-2 lg:row-span-1"
+          >
             <div className="absolute inset-0 bg-[#f8f8f8]">
               <Image
                 src="/images/banner/smart-watch-1.png"
@@ -174,7 +183,10 @@ export default function EditorialPromoGrid() {
               </span>
 
               <div className="p-1">
-                <h3 className="text-[15px] font-semibold tracking-[-0.03em] text-white md:text-[16px]">
+                <p className="text-[11px] leading-5 text-white/88 md:text-[12px]">
+                  Smart watch promo
+                </p>
+                <h3 className="mt-1 text-[15px] font-semibold tracking-[-0.03em] text-white md:text-[16px]">
                   Smart watch spotlight
                 </h3>
                 <p className="mt-1.5 text-[11px] leading-5 text-white/88 md:text-[12px]">
@@ -182,7 +194,7 @@ export default function EditorialPromoGrid() {
                 </p>
               </div>
             </div>
-          </article>
+          </Link>
         </div>
       </div>
     </section>
