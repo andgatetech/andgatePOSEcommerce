@@ -25,9 +25,10 @@ export const ROUTES = {
 
   // Temporary fallbacks until dedicated pages are added.
   BLOG: "/about",
-  DEALS: "/category",
+  DEALS: "/#deals-of-the-day",
   SHOP: "/category",
-  TOP_PICKS: "/category",
+  TOP_PICKS: "/#best-sellers",
+  TRENDING: "/#trending",
 } as const;
 
 export const ROUTE_BUILDERS = {

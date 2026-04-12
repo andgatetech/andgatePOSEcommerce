@@ -10,7 +10,7 @@ export default async function PopularProductsSection() {
   const products = await getPopularProducts();
 
   return (
-    <section className="px-4 pb-8 md:px-8 md:pb-10 lg:px-10 lg:pb-14">
+    <section id="trending" className="px-4 pb-8 md:px-8 md:pb-10 lg:px-10 lg:pb-14">
       <div className="mx-auto max-w-[1720px]">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>

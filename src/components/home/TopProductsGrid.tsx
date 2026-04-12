@@ -15,7 +15,7 @@ function renderStars(rating: number) {
 
 export default function TopProductsGrid() {
   return (
-    <section className="px-4 pb-12 md:px-8 lg:px-12">
+    <section id="best-sellers" className="px-4 pb-12 md:px-8 lg:px-12">
       <div className="mx-auto max-w-[1680px]">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-[640px]">
