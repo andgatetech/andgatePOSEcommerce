@@ -4,22 +4,63 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import type { ListQueryParams } from "@/types";
 
+export interface ExtraListQueryParamConfig {
+  key: string;
+  type?: "string" | "number";
+  defaultValue?: string | number;
+}
+
 export interface UseListQueryOptions {
   defaultPerPage?: number;
   defaultSortField?: string;
   defaultSortDirection?: "asc" | "desc";
   searchDebounceMs?: number;
+  extraParams?: ExtraListQueryParamConfig[];
 }
 
-export interface UseListQueryResult {
+export interface UseListQueryResult<
+  TExtra extends Record<string, string | number | undefined> = Record<
+    string,
+    string | number | undefined
+  >,
+> {
   /** Params to pass to the RTK Query hook. Reflects debounced search. */
-  params: ListQueryParams;
+  params: ListQueryParams & TExtra;
   /** Raw (non-debounced) search input value for controlled <input>. */
   search: string;
   setSearch: (value: string) => void;
   setSort: (field: string, direction: "asc" | "desc") => void;
   setPage: (page: number) => void;
   setPerPage: (perPage: number) => void;
+  extraParams: TExtra;
+  setExtraParams: (patch: Partial<TExtra>) => void;
+  resetExtraParams: () => void;
+}
+
+function readExtraParams(
+  searchParams: URLSearchParams,
+  configs: ExtraListQueryParamConfig[],
+): Record<string, string | number | undefined> {
+  const out: Record<string, string | number | undefined> = {};
+
+  configs.forEach(({ key, type = "string", defaultValue }) => {
+    const raw = searchParams.get(key);
+
+    if (raw === null || raw === "") {
+      out[key] = defaultValue;
+      return;
+    }
+
+    if (type === "number") {
+      const parsed = Number(raw);
+      out[key] = Number.isFinite(parsed) ? parsed : defaultValue;
+      return;
+    }
+
+    out[key] = raw;
+  });
+
+  return out;
 }
 
 /**
@@ -30,12 +71,18 @@ export interface UseListQueryResult {
  * - Resets page to 1 on search/sort change.
  * - Strips default/empty values so the URL stays clean.
  */
-export function useListQuery(options: UseListQueryOptions = {}): UseListQueryResult {
+export function useListQuery<
+  TExtra extends Record<string, string | number | undefined> = Record<
+    string,
+    string | number | undefined
+  >,
+>(options: UseListQueryOptions = {}): UseListQueryResult<TExtra> {
   const {
     defaultPerPage = 15,
     defaultSortField = "name",
     defaultSortDirection = "asc",
     searchDebounceMs = 350,
+    extraParams: extraParamConfigs = [],
   } = options;
 
   const router = useRouter();
@@ -48,6 +95,10 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
   const urlSortField = searchParams.get("sort_field") ?? defaultSortField;
   const urlSortDirection =
     (searchParams.get("sort_direction") as "asc" | "desc" | null) ?? defaultSortDirection;
+  const urlExtraParams = useMemo(
+    () => readExtraParams(searchParams, extraParamConfigs),
+    [searchParams, extraParamConfigs],
+  );
 
   // `search` is the raw controlled input value. It's seeded from the URL but
   // diverges from it briefly while the user is typing (debounce window).
@@ -66,6 +117,7 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
       per_page?: number;
       sort_field?: string;
       sort_direction?: "asc" | "desc";
+      extraParams?: Record<string, string | number | undefined>;
     }) => {
       const qs = new URLSearchParams();
       const mergedSearch = next.search ?? urlSearch;
@@ -73,6 +125,10 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
       const mergedPerPage = next.per_page ?? urlPerPage;
       const mergedSortField = next.sort_field ?? urlSortField;
       const mergedSortDirection = next.sort_direction ?? urlSortDirection;
+      const mergedExtraParams = {
+        ...urlExtraParams,
+        ...(next.extraParams ?? {}),
+      };
 
       if (mergedSearch) qs.set("search", mergedSearch);
       if (mergedPage > 1) qs.set("page", String(mergedPage));
@@ -80,6 +136,18 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
       if (mergedSortField !== defaultSortField) qs.set("sort_field", mergedSortField);
       if (mergedSortDirection !== defaultSortDirection)
         qs.set("sort_direction", mergedSortDirection);
+      extraParamConfigs.forEach(({ key, defaultValue }) => {
+        const value = mergedExtraParams[key];
+        if (
+          value === undefined ||
+          value === null ||
+          value === "" ||
+          value === defaultValue
+        ) {
+          return;
+        }
+        qs.set(key, String(value));
+      });
 
       const query = qs.toString();
       router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
@@ -92,9 +160,11 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
       urlPerPage,
       urlSortField,
       urlSortDirection,
+      urlExtraParams,
       defaultPerPage,
       defaultSortField,
       defaultSortDirection,
+      extraParamConfigs,
     ],
   );
 
@@ -137,16 +207,44 @@ export function useListQuery(options: UseListQueryOptions = {}): UseListQueryRes
     [pushUrl],
   );
 
-  const params = useMemo<ListQueryParams>(
+  const setExtraParams = useCallback(
+    (patch: Partial<TExtra>) => {
+      pushUrl({
+        page: 1,
+        extraParams: patch as Record<string, string | number | undefined>,
+      });
+    },
+    [pushUrl],
+  );
+
+  const resetExtraParams = useCallback(() => {
+    const cleared = Object.fromEntries(
+      extraParamConfigs.map(({ key, defaultValue }) => [key, defaultValue]),
+    ) as Record<string, string | number | undefined>;
+    pushUrl({ page: 1, extraParams: cleared });
+  }, [extraParamConfigs, pushUrl]);
+
+  const params = useMemo<ListQueryParams & TExtra>(
     () => ({
       search: urlSearch || undefined,
       page: urlPage,
       per_page: urlPerPage,
       sort_field: urlSortField,
       sort_direction: urlSortDirection,
+      ...(urlExtraParams as TExtra),
     }),
-    [urlSearch, urlPage, urlPerPage, urlSortField, urlSortDirection],
+    [urlSearch, urlPage, urlPerPage, urlSortField, urlSortDirection, urlExtraParams],
   );
 
-  return { params, search, setSearch, setSort, setPage, setPerPage };
+  return {
+    params,
+    search,
+    setSearch,
+    setSort,
+    setPage,
+    setPerPage,
+    extraParams: urlExtraParams as TExtra,
+    setExtraParams,
+    resetExtraParams,
+  };
 }

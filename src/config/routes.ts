@@ -23,6 +23,8 @@ export const ROUTES = {
   STORE: "/store",
   WISHLIST: "/wishlist",
 
+  PRODUCT: "/product",
+
   // Temporary fallbacks until dedicated pages are added.
   BLOG: "/about",
   DEALS: "/#deals-of-the-day",
@@ -35,6 +37,7 @@ export const ROUTE_BUILDERS = {
   storeDetail: (slug: string) => `${ROUTES.STORE}/${slug}`,
   categoryDetail: (slug: string) => `${ROUTES.CATEGORY}/${slug}`,
   brandDetail: (slug: string) => `${ROUTES.BRAND}/${slug}`,
+  productDetail: (slug: string) => `${ROUTES.PRODUCT}/${slug}`,
 } as const;
 
 export const PUBLIC_ROUTES = [
@@ -50,6 +53,7 @@ export const PUBLIC_ROUTES = [
   ROUTES.LOGIN,
   ROUTES.ORDER_TRACKING,
   ROUTES.PRIVACY_POLICY,
+  ROUTES.PRODUCT,
   ROUTES.REGISTER,
   ROUTES.RETURN_POLICIES,
   ROUTES.TERMS,

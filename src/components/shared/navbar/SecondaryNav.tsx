@@ -17,8 +17,7 @@ import {
 } from "react-icons/fa";
 import { FiArrowRight, FiGrid } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
-import { useGetBrandsQuery } from "@/features/catalog/brandApi";
-import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
+import type { Brand, Category } from "@/types";
 
 const navLinks = [
   { label: "Deal", href: ROUTES.DEALS, hasDropdown: false, icon: FaFireAlt },
@@ -29,30 +28,20 @@ const navLinks = [
   { label: "Brand", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
 ];
 
-export default function SecondaryNav() {
+interface SecondaryNavProps {
+  categories: Category[];
+  brands: Brand[];
+}
+
+export default function SecondaryNav({ categories, brands }: SecondaryNavProps) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
-  const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery({
-    per_page: 12,
-    sort_field: "name",
-    sort_direction: "asc",
-  });
-
-  const { data: brandsData } = useGetBrandsQuery({
-    per_page: 18,
-    sort_field: "name",
-    sort_direction: "asc",
-  });
-
-  const categories = categoriesData?.items ?? [];
-
   const brandColumns = useMemo(() => {
-    const brands = brandsData?.items ?? [];
     const col: typeof brands[] = [[], [], []];
     brands.forEach((brand, i) => col[i % 3].push(brand));
     return col;
-  }, [brandsData]);
+  }, [brands]);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -205,13 +194,7 @@ export default function SecondaryNav() {
 
               {/* Category grid */}
               <div className="p-4">
-                {categoriesLoading ? (
-                  <div className="grid grid-cols-4 gap-2">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                      <div key={i} className="animate-pulse rounded-[12px] bg-[#f2f2f2] py-5" />
-                    ))}
-                  </div>
-                ) : categories.length === 0 ? (
+                {categories.length === 0 ? (
                   <p className="py-8 text-center text-sm text-(--color-text-muted)">
                     No categories found.
                   </p>

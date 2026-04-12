@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   FaChevronDown,
-  FaSearch,
   FaShoppingCart,
   FaUser,
 } from "react-icons/fa";
 import Logo from "../Logo";
+import ProductSearchBox from "../ProductSearchBox";
 import { ROUTES } from "@/config/routes";
 import { useAppSelector } from "@/lib/hooks";
 import { useAuthSession } from "@/features/auth/useAuthSession";
@@ -49,14 +49,10 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
           <div className="flex items-center w-full justify-end gap-x-[54px]">
             {/* Search Bar */}
             <div className="relative w-full 2xl:max-w-[800px] xl:max-w-[600px]">
-              <div className="flex items-center border border-(--color-border) rounded-full px-6 py-3 focus-within:border-(--color-primary) focus-within:ring-1 focus-within:ring-(--color-primary-light) transition-all">
-                <input
-                  type="text"
-                  placeholder="Search for the Items"
-                  className="flex-1 text-base outline-none bg-transparent text-(--color-dark) placeholder:text-gray-400"
-                />
-                <FaSearch className="text-(--color-primary) text-lg" />
-              </div>
+              <ProductSearchBox
+                placeholder="Search products, brands, categories"
+                inputClassName="text-base"
+              />
             </div>
 
             {/* Account & Cart */}

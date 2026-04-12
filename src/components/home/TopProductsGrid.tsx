@@ -1,19 +1,27 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiShoppingCart } from "react-icons/fi";
-import { FiArrowUpRight } from "react-icons/fi";
-import { productColumns } from "@/components/home/topProductsData";
-import { ROUTES } from "@/config/routes";
+import { FiShoppingCart, FiArrowUpRight } from "react-icons/fi";
+import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
+import { resolveImageUrl } from "@/lib/imageUrl";
+import type { EcommerceProduct } from "@/types";
 
-function renderStars(rating: number) {
-  return Array.from({ length: 5 }, (_, i) => (
-    <span key={i} style={{ color: i < rating ? "var(--color-warning)" : "var(--color-border)" }}>
-      ★
-    </span>
-  ));
+const columnLabels = ["Top Selling", "Trending Products", "Recently Added", "Top Rated"];
+
+interface TopProductsGridProps {
+  products: EcommerceProduct[];
 }
 
-export default function TopProductsGrid() {
+export default function TopProductsGrid({ products }: TopProductsGridProps) {
+  if (products.length === 0) return null;
+
+  // Split products evenly into 4 columns (3 per column ideally)
+  const perColumn = Math.max(1, Math.ceil(products.length / 4));
+  const columns = columnLabels.map((label, i) => ({
+    id: label.toLowerCase().replace(/\s+/g, "-"),
+    label,
+    products: products.slice(i * perColumn, (i + 1) * perColumn),
+  })).filter((col) => col.products.length > 0);
+
   return (
     <section id="best-sellers" className="px-4 pb-12 md:px-8 lg:px-12">
       <div className="mx-auto max-w-[1680px]">
@@ -39,9 +47,8 @@ export default function TopProductsGrid() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-4">
-          {productColumns.map((col) => (
+          {columns.map((col) => (
             <div key={col.id}>
-              {/* Column Header */}
               <div className="mb-6">
                 <h3
                   className="text-[22px] font-semibold"
@@ -49,7 +56,6 @@ export default function TopProductsGrid() {
                 >
                   {col.label}
                 </h3>
-                {/* Underline: full gray line + short accent */}
                 <div className="relative mt-3 h-[2px] w-full bg-(--color-border)">
                   <span
                     className="absolute left-0 top-0 h-full w-[60px]"
@@ -58,73 +64,68 @@ export default function TopProductsGrid() {
                 </div>
               </div>
 
-              {/* Product List */}
               <ul className="flex flex-col divide-y divide-(--color-border)">
-                {col.products.map((product) => (
-                  <li
-                    key={product.id}
-                    className="group flex items-center gap-4 py-4"
-                  >
-                    {/* Thumbnail */}
-                    <div
-                      className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[12px]"
-                      style={{ backgroundColor: "var(--color-primary-100)" }}
-                    >
-                      <Image
-                        src={product.image}
-                        alt={product.title}
-                        fill
-                        unoptimized
-                        className="object-cover transition duration-300 group-hover:scale-[1.05]"
-                      />
-                    </div>
+                {col.products.map((product) => {
+                  const image = resolveImageUrl(product.images[0]?.url ?? null);
+                  const price = parseFloat(product.price);
 
-                    {/* Details */}
-                    <div className="min-w-0 flex-1">
-                      {/* Title */}
-                      <p
-                        className="line-clamp-2 text-[14px] font-semibold leading-[1.4] transition-colors duration-200 group-hover:text-(--color-primary)"
-                        style={{ color: "var(--color-primary-900)" }}
+                  return (
+                    <li key={product.id} className="group">
+                      <Link
+                        href={ROUTE_BUILDERS.productDetail(product.slug)}
+                        className="flex items-center gap-4 py-4"
                       >
-                        {product.title}
-                      </p>
-
-                      {/* Stars */}
-                      <div className="mt-1 flex items-center gap-1 text-[13px] leading-none">
-                        <div className="flex">{renderStars(product.rating)}</div>
-                        <span style={{ color: "var(--color-text-muted)" }}>
-                          ({product.rating}.0)
-                        </span>
-                      </div>
-
-                      {/* Price + Add Button */}
-                      <div className="mt-[6px] flex items-center justify-between gap-2">
-                        <div className="flex items-end gap-2">
-                          <span
-                            className="text-[16px] font-bold"
-                            style={{ color: "var(--color-primary)" }}
-                          >
-                            ৳{product.price.toFixed(2)}
-                          </span>
-                          <span
-                            className="mb-px text-[13px] line-through"
-                            style={{ color: "var(--color-text-muted)" }}
-                          >
-                            ৳{product.oldPrice}
-                          </span>
+                        <div
+                          className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[12px]"
+                          style={{ backgroundColor: "var(--color-primary-100)" }}
+                        >
+                          {image ? (
+                            <Image
+                              src={image}
+                              alt={product.product_name}
+                              fill
+                              unoptimized
+                              className="object-cover transition duration-300 group-hover:scale-[1.05]"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center text-[10px] text-(--color-text-muted) px-1 text-center">
+                              {product.product_name}
+                            </div>
+                          )}
                         </div>
 
-                        <button
-                          type="button"
-                          className="inline-flex items-center gap-[5px] rounded-[6px] bg-(--color-primary) px-3 py-[7px] text-[13px] font-semibold text-white transition hover:bg-(--color-primary-dark)"
-                        >
-                          <FiShoppingCart className="text-[12px]" />
-                          Add
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-                ))}
+                        <div className="min-w-0 flex-1">
+                          <p
+                            className="line-clamp-2 text-[14px] font-semibold leading-[1.4] transition-colors duration-200 group-hover:text-(--color-primary)"
+                            style={{ color: "var(--color-primary-900)" }}
+                          >
+                            {product.product_name}
+                          </p>
+
+                          {product.sold_by && (
+                            <p className="mt-1 text-[12px] text-(--color-text-muted)">
+                              By <span className="text-(--color-primary)">{product.sold_by.store_name}</span>
+                            </p>
+                          )}
+
+                          <div className="mt-[6px] flex items-center justify-between gap-2">
+                            <span
+                              className="text-[16px] font-bold"
+                              style={{ color: "var(--color-primary)" }}
+                            >
+                              ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
+                            </span>
+
+                            <span className="inline-flex items-center gap-[5px] rounded-[6px] bg-(--color-primary) px-3 py-[7px] text-[13px] font-semibold text-white">
+                              <FiShoppingCart className="text-[12px]" />
+                              Add
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

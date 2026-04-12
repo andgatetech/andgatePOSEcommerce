@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaSearch, FaShoppingCart, FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaShoppingCart, FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import Logo from "../Logo";
+import ProductSearchBox from "../ProductSearchBox";
 import { ROUTES } from "@/config/routes";
 import { useAppSelector } from "@/lib/hooks";
 import { useAuthSession } from "@/features/auth/useAuthSession";
@@ -66,14 +67,11 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
 
       {/* Mobile Search */}
       <div className="mt-3">
-        <div className="flex items-center border border-(--color-border) rounded-full px-4 py-2 focus-within:border-(--color-primary) transition-all">
-          <input
-            type="text"
-            placeholder="Search for the Items"
-            className="flex-1 text-sm outline-none bg-transparent text-(--color-dark) placeholder:text-gray-400"
-          />
-          <FaSearch className="text-(--color-primary)" />
-        </div>
+        <ProductSearchBox
+          compact
+          placeholder="Search products"
+          inputClassName="text-sm"
+        />
       </div>
 
       {/* Mobile Menu Dropdown */}

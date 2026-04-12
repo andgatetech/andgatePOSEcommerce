@@ -7,5 +7,6 @@ export const API_ROUTES = {
     CATEGORIES: "/categories",
     BRANDS: "/brands",
     STORES: "/stores",
+    PRODUCTS: "/products",
   },
 } as const;

@@ -1,9 +1,13 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ProductCollectionPage from "@/components/product/ProductCollectionPage";
+import ProductCollectionPage from "@/app/(public)/product/_components/ProductCollectionPage";
 import { serverFetchJson } from "@/lib/serverFetch";
-import { getPopularProducts } from "@/lib/mockProducts";
-import type { Brand, PaginatedResponse } from "@/types";
+import type {
+  Brand,
+  EcommerceProduct,
+  PaginatedResponse,
+  ApiResponse,
+} from "@/types";
 
 interface BrandDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -16,10 +20,21 @@ async function getBrandBySlug(slug: string): Promise<Brand | null> {
       sort_field: "name",
       sort_direction: "asc",
     });
-
     return response.data.items.find((brand) => brand.slug === slug) ?? null;
   } catch {
     return null;
+  }
+}
+
+async function getProductsByBrand(brandSlug: string): Promise<EcommerceProduct[]> {
+  try {
+    const response = await serverFetchJson<ApiResponse<{ items: EcommerceProduct[] }>>(
+      "/products",
+      { brand: brandSlug, per_page: 50, sort_field: "product_name", sort_direction: "asc" },
+    );
+    return response.data.items;
+  } catch {
+    return [];
   }
 }
 
@@ -30,30 +45,25 @@ export async function generateMetadata({
   const brand = await getBrandBySlug(slug);
 
   if (!brand) {
-    return {
-      title: "Brand Not Found | Hawkeri",
-    };
+    return { title: "Brand Not Found | Hawkeri" };
   }
 
   return {
-    title: `${brand.name} | Hawkeri`,
+    title: `${brand.name} Products | Hawkeri`,
     description: `Browse products for the ${brand.name} brand on Hawkeri.`,
   };
 }
 
-export default async function BrandDetailPage({
-  params,
-}: BrandDetailPageProps) {
+export default async function BrandDetailPage({ params }: BrandDetailPageProps) {
   const { slug } = await params;
-  const brand = await getBrandBySlug(slug);
+  const [brand, products] = await Promise.all([
+    getBrandBySlug(slug),
+    getProductsByBrand(slug),
+  ]);
 
   if (!brand) {
     notFound();
   }
-
-  const products = (await getPopularProducts()).filter(
-    (product) => product.brand.toLowerCase() === brand.name.toLowerCase(),
-  );
 
   return <ProductCollectionPage entity={brand} kind="brand" products={products} />;
 }

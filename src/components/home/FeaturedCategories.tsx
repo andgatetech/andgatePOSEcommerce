@@ -4,22 +4,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
-import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import type { Category } from "@/types";
 
 const scrollAmount = 320;
 
-export default function FeaturedCategories() {
+interface FeaturedCategoriesProps {
+  categories: Category[];
+}
+
+export default function FeaturedCategories({ categories }: FeaturedCategoriesProps) {
   const railRef = useRef<HTMLDivElement | null>(null);
-
-  const { data, isLoading } = useGetCategoriesQuery({
-    per_page: 10,
-    sort_field: "name",
-    sort_direction: "asc",
-  });
-
-  const categories = data?.items ?? [];
 
   const scrollRail = (direction: "left" | "right") => {
     railRef.current?.scrollBy({
@@ -68,44 +64,36 @@ export default function FeaturedCategories() {
           ref={railRef}
           className="flex gap-5 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {isLoading
-            ? Array.from({ length: 8 }).map((_, i) => (
+          {categories.map((category) => {
+            return (
+              <Link
+                key={category.id}
+                href={ROUTE_BUILDERS.categoryDetail(category.slug)}
+                className="group min-w-[160px] flex-1 px-4 py-6 text-center transition-transform duration-300 hover:-translate-y-1 sm:min-w-[180px]"
+              >
                 <div
-                  key={i}
-                  className="min-w-[160px] flex-1 animate-pulse px-4 py-6 sm:min-w-[180px]"
-                  style={{ minHeight: 210 }}
-                />
-              ))
-            : categories.map((category) => {
-                return (
-                  <Link
-                    key={category.id}
-                    href={ROUTE_BUILDERS.categoryDetail(category.slug)}
-                    className="group min-w-[160px] flex-1 px-4 py-6 text-center transition-transform duration-300 hover:-translate-y-1 sm:min-w-[180px]"
-                  >
-                    <div
-                      className="mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-full bg-[#F3F4F6] transition-transform duration-200 group-hover:scale-105 group-hover:shadow-[0_14px_30px_rgba(44,95,138,0.12)]"
-                    >
-                      {resolveImageUrl(category.image_url) ? (
-                        <Image
-                          src={resolveImageUrl(category.image_url)!}
-                          alt={category.name}
-                          width={92}
-                          height={92}
-                          unoptimized
-                          className="h-auto w-auto max-h-[88px] max-w-[88px] object-contain"
-                        />
-                      ) : (
-                        <div className="h-16 w-16 rounded-full bg-(--color-primary-100)" aria-hidden />
-                      )}
-                    </div>
+                  className="mx-auto mb-5 flex h-28 w-28 items-center justify-center rounded-full bg-[#F3F4F6] transition-transform duration-200 group-hover:scale-105 group-hover:shadow-[0_14px_30px_rgba(44,95,138,0.12)]"
+                >
+                  {resolveImageUrl(category.image_url) ? (
+                    <Image
+                      src={resolveImageUrl(category.image_url)!}
+                      alt={category.name}
+                      width={92}
+                      height={92}
+                      unoptimized
+                      className="h-auto w-auto max-h-[88px] max-w-[88px] object-contain"
+                    />
+                  ) : (
+                    <div className="h-16 w-16 rounded-full bg-(--color-primary-100)" aria-hidden />
+                  )}
+                </div>
 
-                    <h3 className="line-clamp-2 text-[17px] font-semibold leading-[1.35] text-(--color-primary-900)">
-                      {category.name}
-                    </h3>
-                  </Link>
-                );
-              })}
+                <h3 className="line-clamp-2 text-[17px] font-semibold leading-[1.35] text-(--color-primary-900)">
+                  {category.name}
+                </h3>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

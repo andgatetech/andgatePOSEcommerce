@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FiChevronRight, FiHome } from "react-icons/fi";
-import PopularProductCard, {
-  type PopularProduct,
-} from "@/app/(public)/product/_components/PopularProductCard";
+import PopularProductCard from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import type { EcommerceProduct } from "@/types";
 
 type CollectionEntity = {
   name: string;
@@ -16,7 +15,7 @@ type CollectionEntity = {
 interface ProductCollectionPageProps {
   entity: CollectionEntity;
   kind: "brand" | "category";
-  products: PopularProduct[];
+  products: EcommerceProduct[];
 }
 
 export default function ProductCollectionPage({
@@ -27,10 +26,6 @@ export default function ProductCollectionPage({
   const listingHref = kind === "brand" ? ROUTES.BRAND : ROUTES.CATEGORY;
   const listingLabel = kind === "brand" ? "Brand" : "Category";
   const eyebrow = kind === "brand" ? "Brand Collection" : "Category Collection";
-  const description =
-    kind === "brand"
-      ? `Browse the current mock product catalog filtered for ${entity.name}. Replace this with live brand product data when the backend product endpoint is ready.`
-      : `Browse the current mock product catalog filtered for ${entity.name}. Replace this with live category product data when the backend product endpoint is ready.`;
 
   return (
     <section className="bg-(--color-bg)">
@@ -60,9 +55,6 @@ export default function ProductCollectionPage({
               <h1 className="mt-5 text-[30px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[40px]">
                 {entity.name}
               </h1>
-              <p className="mt-4 max-w-[720px] text-sm leading-7 text-(--color-text-muted) md:text-[15px]">
-                {description}
-              </p>
               <div className="mt-6 flex flex-wrap gap-3">
                 <span className="inline-flex rounded-full bg-(--color-primary-900) px-4 py-2 text-[13px] font-semibold text-white">
                   {products.length} products
@@ -106,13 +98,11 @@ export default function ProductCollectionPage({
             ) : (
               <div className="rounded-[24px] border border-dashed border-(--color-border) bg-[linear-gradient(180deg,#fbfdff_0%,#f5f9fc_100%)] px-6 py-12 text-center">
                 <h2 className="text-[22px] font-semibold tracking-[-0.02em] text-(--color-primary-900)">
-                  No products mapped yet
+                  No products found
                 </h2>
                 <p className="mx-auto mt-3 max-w-[640px] text-sm leading-7 text-(--color-text-muted)">
-                  This route is live, but the current mock product dataset does not contain items
-                  matched to <span className="font-semibold text-(--color-primary-900)">{entity.name}</span>.
-                  When your real product endpoint is connected, this page can render the full filtered
-                  catalog for the selected {kind}.
+                  There are currently no products listed under{" "}
+                  <span className="font-semibold text-(--color-primary-900)">{entity.name}</span>.
                 </p>
               </div>
             )}

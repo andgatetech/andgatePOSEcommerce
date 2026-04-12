@@ -7,17 +7,45 @@ import EditorialPromoGrid from "@/components/home/EditorialPromoGrid";
 import TopProductsGrid from "@/components/home/TopProductsGrid";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import CountdownPromoBanner from "@/components/home/CountdownPromoBanner";
+import { serverFetchJson } from "@/lib/serverFetch";
+import { getSharedCategories } from "@/lib/catalog";
+import type { EcommerceProduct, PaginatedResponse } from "@/types";
 
-export default function HomePage() {
+async function getProducts(): Promise<EcommerceProduct[]> {
+  try {
+    const response = await serverFetchJson<PaginatedResponse<EcommerceProduct>>(
+      "/products",
+      { page: 1, per_page: 30, sort_field: "created_at", sort_direction: "desc" },
+      { revalidate: 30 },
+    );
+    return response.data.items;
+  } catch (err) {
+    console.error("[HomePage] Failed to fetch products:", err);
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const [products, categories] = await Promise.all([getProducts(), getSharedCategories()]);
+  const featuredCategories = categories.slice(0, 10);
+
+  const popularProducts = products.slice(0, 12);
+  const dealProducts = products.slice(12, 16).length >= 4
+    ? products.slice(12, 16)
+    : products.slice(0, 4);
+  const topProducts = products.slice(16, 28).length >= 4
+    ? products.slice(16, 28)
+    : products.slice(0, 12);
+
   return (
     <main>
       <HeroBanner />
-      <FeaturedCategories />
-      <PopularProductsSection />
+      <FeaturedCategories categories={featuredCategories} />
+      <PopularProductsSection products={popularProducts} />
       <ProductPromoBanners />
-      <DealsOfTheDay />
+      <DealsOfTheDay products={dealProducts} />
       <EditorialPromoGrid />
-      <TopProductsGrid />
+      <TopProductsGrid products={topProducts} />
       <ServiceHighlights />
       <CountdownPromoBanner />
     </main>

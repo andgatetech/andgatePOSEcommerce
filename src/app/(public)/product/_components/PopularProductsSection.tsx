@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
-import PopularProductCard, {
-  type PopularProduct,
-} from "./PopularProductCard";
+import PopularProductCard from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
-import { getPopularProducts } from "@/lib/mockProducts";
+import type { EcommerceProduct } from "@/types";
 
-export default async function PopularProductsSection() {
-  const products = await getPopularProducts();
+interface PopularProductsSectionProps {
+  products: EcommerceProduct[];
+}
 
+export default function PopularProductsSection({ products }: PopularProductsSectionProps) {
   return (
     <section id="trending" className="px-4 pb-8 md:px-8 md:pb-10 lg:px-10 lg:pb-14">
       <div className="mx-auto max-w-[1720px]">
@@ -23,7 +23,7 @@ export default async function PopularProductsSection() {
           </div>
 
           <Link
-            href={ROUTES.CATEGORY}
+            href={ROUTES.PRODUCT}
             className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             Explore Collection
@@ -33,11 +33,17 @@ export default async function PopularProductsSection() {
           </Link>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
-          {products.map((product) => (
-            <PopularProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+            {products.map((product) => (
+              <PopularProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-[24px] border border-dashed border-(--color-border) bg-(--color-primary-100) px-6 py-12 text-center">
+            <p className="text-sm text-(--color-text-muted)">No products available yet.</p>
+          </div>
+        )}
       </div>
     </section>
   );

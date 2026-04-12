@@ -82,3 +82,65 @@ export type {
   PaginatedResponse,
   ListQueryParams,
 } from "./pagination";
+
+// ── Ecommerce product types ───────────────────────────────────────────────────
+
+export interface EcommerceProductImage {
+  id: number;
+  url: string;
+}
+
+export interface EcommerceProductSoldBy {
+  store_name: string;
+  store_slug: string;
+}
+
+export interface EcommerceProductCategory {
+  name: string;
+  slug: string;
+  image_url: string | null;
+}
+
+export interface EcommerceProductBrand {
+  name: string;
+  slug: string;
+  image_url: string | null;
+}
+
+export interface EcommerceProductVariant {
+  slug: string;
+  sku: string;
+  price: string;
+  quantity: string;
+  variant_data: Record<string, string> | null;
+  images: EcommerceProductImage[];
+}
+
+export interface EcommerceProduct {
+  id: number;
+  product_name: string;
+  description: string;
+  slug: string;
+  sku: string;
+  price: string;
+  quantity: string;
+  images: EcommerceProductImage[];
+  variant_data: Record<string, string> | null;
+  sold_by: EcommerceProductSoldBy;
+  category: EcommerceProductCategory | null;
+  brand: EcommerceProductBrand | null;
+  other_variants?: EcommerceProductVariant[];
+}
+
+export interface ProductListParams {
+  search?: string;
+  category?: string;
+  brand?: string;
+  store?: string;
+  min_price?: number;
+  max_price?: number;
+  sort_field?: "product_name" | "price" | "quantity" | "created_at";
+  sort_direction?: "asc" | "desc";
+  page?: number;
+  per_page?: number;
+}
