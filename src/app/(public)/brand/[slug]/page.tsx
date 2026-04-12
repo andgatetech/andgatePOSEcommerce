@@ -1,13 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ProductCollectionPage from "@/app/(public)/product/_components/ProductCollectionPage";
+import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type {
-  Brand,
-  EcommerceProduct,
-  PaginatedResponse,
-  ApiResponse,
-} from "@/types";
+import type { Brand, PaginatedResponse } from "@/types";
 
 interface BrandDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -23,18 +18,6 @@ async function getBrandBySlug(slug: string): Promise<Brand | null> {
     return response.data.items.find((brand) => brand.slug === slug) ?? null;
   } catch {
     return null;
-  }
-}
-
-async function getProductsByBrand(brandSlug: string): Promise<EcommerceProduct[]> {
-  try {
-    const response = await serverFetchJson<ApiResponse<{ items: EcommerceProduct[] }>>(
-      "/products",
-      { brand: brandSlug, per_page: 50, sort_field: "product_name", sort_direction: "asc" },
-    );
-    return response.data.items;
-  } catch {
-    return [];
   }
 }
 
@@ -56,14 +39,11 @@ export async function generateMetadata({
 
 export default async function BrandDetailPage({ params }: BrandDetailPageProps) {
   const { slug } = await params;
-  const [brand, products] = await Promise.all([
-    getBrandBySlug(slug),
-    getProductsByBrand(slug),
-  ]);
+  const brand = await getBrandBySlug(slug);
 
   if (!brand) {
     notFound();
   }
 
-  return <ProductCollectionPage entity={brand} kind="brand" products={products} />;
+  return <ProductPageDataProvider initialBrand={brand.slug} />;
 }

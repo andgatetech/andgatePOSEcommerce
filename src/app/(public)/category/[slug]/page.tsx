@@ -1,13 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import ProductCollectionPage from "@/app/(public)/product/_components/ProductCollectionPage";
+import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type {
-  Category,
-  EcommerceProduct,
-  PaginatedResponse,
-  ApiResponse,
-} from "@/types";
+import type { Category, PaginatedResponse } from "@/types";
 
 interface CategoryDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -25,25 +20,6 @@ async function getCategoryBySlug(slug: string): Promise<Category | null> {
     );
   } catch {
     return null;
-  }
-}
-
-async function getProductsByCategory(
-  categorySlug: string,
-): Promise<EcommerceProduct[]> {
-  try {
-    const response = await serverFetchJson<ApiResponse<{ items: EcommerceProduct[] }>>(
-      "/products",
-      {
-        category: categorySlug,
-        per_page: 50,
-        sort_field: "product_name",
-        sort_direction: "asc",
-      },
-    );
-    return response.data.items;
-  } catch {
-    return [];
   }
 }
 
@@ -67,16 +43,11 @@ export default async function CategoryDetailPage({
   params,
 }: CategoryDetailPageProps) {
   const { slug } = await params;
-  const [category, products] = await Promise.all([
-    getCategoryBySlug(slug),
-    getProductsByCategory(slug),
-  ]);
+  const category = await getCategoryBySlug(slug);
 
   if (!category) {
     notFound();
   }
 
-  return (
-    <ProductCollectionPage entity={category} kind="category" products={products} />
-  );
+  return <ProductPageDataProvider initialCategory={category.slug} />;
 }

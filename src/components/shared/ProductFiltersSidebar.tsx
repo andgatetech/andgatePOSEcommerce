@@ -41,7 +41,7 @@ export default function ProductFiltersSidebar({
 }: ProductFiltersSidebarProps) {
   return (
     <aside
-      className={`rounded-[24px] border border-(--color-border) bg-white p-5 shadow-[0_18px_50px_rgba(19,45,69,0.06)] lg:sticky lg:top-24 ${className}`}
+      className={`rounded-[24px] border border-(--color-border) bg-white p-5 shadow-[0_18px_50px_rgba(19,45,69,0.06)] lg:sticky lg:top-24 lg:self-start ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
         <div>

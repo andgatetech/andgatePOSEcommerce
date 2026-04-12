@@ -33,11 +33,15 @@ const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "desc";
 interface ProductPageContentProps {
   categories: Category[];
   brands: Brand[];
+  initialCategory?: string;
+  initialBrand?: string;
 }
 
 export default function ProductPageContent({
   categories,
   brands,
+  initialCategory,
+  initialBrand,
 }: ProductPageContentProps) {
   const {
     params,
@@ -52,8 +56,8 @@ export default function ProductPageContent({
     defaultSortField: DEFAULT_SORT_FIELD,
     defaultSortDirection: DEFAULT_SORT_DIRECTION,
     extraParams: [
-      { key: "category" },
-      { key: "brand" },
+      { key: "category", defaultValue: initialCategory },
+      { key: "brand", defaultValue: initialBrand },
       { key: "min_price", type: "number" },
       { key: "max_price", type: "number" },
     ],
