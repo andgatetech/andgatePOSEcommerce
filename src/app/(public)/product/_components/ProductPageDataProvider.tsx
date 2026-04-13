@@ -6,11 +6,13 @@ import { useProductData } from "@/lib/product-data-context";
 interface ProductPageDataProviderProps {
   initialCategory?: string;
   initialBrand?: string;
+  initialStore?: string;
 }
 
 export default function ProductPageDataProvider({
   initialCategory,
   initialBrand,
+  initialStore,
 }: ProductPageDataProviderProps) {
   const { categories, brands } = useProductData();
 
@@ -20,6 +22,7 @@ export default function ProductPageDataProvider({
       brands={brands}
       initialCategory={initialCategory}
       initialBrand={initialBrand}
+      initialStore={initialStore}
     />
   );
 }

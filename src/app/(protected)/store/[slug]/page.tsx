@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FiChevronRight, FiHome, FiMapPin, FiPhone, FiShoppingBag } from "react-icons/fi";
+import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
 import { ROUTES } from "@/config/routes";
 import { resolveStoreLogoUrl } from "@/lib/storeLogo";
 import { serverFetchJson } from "@/lib/serverFetch";
@@ -87,7 +88,7 @@ export default async function StoreDetailPage({
                 {store.store_name}
               </h1>
               <p className="mt-4 max-w-[720px] text-sm leading-7 text-(--color-text-muted) md:text-[15px]">
-                This route now resolves real ecommerce-enabled stores from the backend API by slug.
+                Products below now read their category and brand values directly from the ecommerce API for this store.
               </p>
 
               <div className="mt-6 grid gap-4 text-sm text-(--color-dark) sm:grid-cols-2">
@@ -139,6 +140,21 @@ export default async function StoreDetailPage({
             </div>
           </div>
         </div>
+
+        <div className="mt-8">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.22em] text-(--color-primary)">
+                Store Products
+              </span>
+              <h2 className="mt-4 text-[24px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[32px]">
+                Products from {store.store_name}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        <ProductPageDataProvider initialStore={store.slug} />
       </div>
     </section>
   );

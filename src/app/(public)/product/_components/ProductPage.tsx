@@ -35,6 +35,7 @@ interface ProductPageContentProps {
   brands: Brand[];
   initialCategory?: string;
   initialBrand?: string;
+  initialStore?: string;
 }
 
 export default function ProductPageContent({
@@ -42,6 +43,7 @@ export default function ProductPageContent({
   brands,
   initialCategory,
   initialBrand,
+  initialStore,
 }: ProductPageContentProps) {
   const {
     params,
@@ -70,12 +72,13 @@ export default function ProductPageContent({
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,
+      store: initialStore,
       category: extraParams.category,
       brand: extraParams.brand,
       min_price: extraParams.min_price,
       max_price: extraParams.max_price,
     }),
-    [params, extraParams],
+    [params, extraParams, initialStore],
   );
 
   const { data, isFetching, isError } = useGetProductsQuery(queryParams);

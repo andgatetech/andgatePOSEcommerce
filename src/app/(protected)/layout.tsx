@@ -1,6 +1,7 @@
 import Footer from "@/components/shared/Footer";
 import Navbar from "@/components/shared/Navbar";
 import { getSharedBrands, getSharedCategories } from "@/lib/catalog";
+import { ProductDataProvider } from "@/lib/product-data-context";
 import ProtectedLayoutClient from "./ProtectedLayoutClient";
 
 export default async function ProtectedLayout({
@@ -16,9 +17,11 @@ export default async function ProtectedLayout({
   return (
     <div>
       <Navbar categories={categories} brands={brands} />
-      <main>
-        <ProtectedLayoutClient>{children}</ProtectedLayoutClient>
-      </main>
+      <ProductDataProvider categories={categories} brands={brands}>
+        <main>
+          <ProtectedLayoutClient>{children}</ProtectedLayoutClient>
+        </main>
+      </ProductDataProvider>
       <Footer />
     </div>
   );
