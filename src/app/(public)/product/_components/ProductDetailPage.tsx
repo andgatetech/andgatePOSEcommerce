@@ -168,9 +168,9 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg)]">
+    <div className="min-h-screen bg-(--color-bg)">
       {/* ── Breadcrumb ──────────────────────────────────────────────── */}
-      <div className="border-b border-[var(--color-border)] py-3">
+      <div className="border-b border-(--color-border) py-3">
         <div className="mx-auto max-w-[1680px] px-4 md:px-8 lg:px-12">
           <nav
             className="flex items-center gap-2 text-[13px]"
@@ -178,7 +178,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
           >
             <Link
               href={ROUTES.HOME}
-              className="flex items-center gap-1 hover:text-[var(--color-primary)]"
+              className="flex items-center gap-1 hover:text-()"
             >
               <FiHome size={13} />
               <span>Home</span>
@@ -188,7 +188,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               <>
                 <Link
                   href={ROUTE_BUILDERS.categoryDetail(product.category.slug)}
-                  className="hover:text-[var(--color-primary)]"
+                  className="hover:text-()"
                 >
                   {product.category.name}
                 </Link>
@@ -211,7 +211,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
           {/* LEFT – Image Gallery */}
           <div>
-            <div className="relative overflow-hidden rounded-[18px] border border-[var(--color-border)] bg-[var(--color-primary-100)]">
+            <div className="relative overflow-hidden rounded-[18px] border border-() bg-()">
               <div className="relative aspect-square w-full">
                 {resolvedImages.length > 0 ? (
                   <Image
@@ -222,7 +222,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                     className="object-cover transition duration-500"
                   />
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-sm text-[var(--color-text-muted)]">
+                  <div className="flex h-full w-full items-center justify-center text-sm text-()">
                     No image available
                   </div>
                 )}
@@ -237,8 +237,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                     onClick={() => setActiveImage(i)}
                     className={`relative overflow-hidden rounded-[12px] border-2 transition ${
                       activeImage === i
-                        ? "border-[var(--color-primary)] shadow-md"
-                        : "border-[var(--color-border)] hover:border-[var(--color-primary-200)]"
+                        ? "border-() shadow-md"
+                        : "border-() hover:border-()"
                     }`}
                   >
                     <div className="relative aspect-square w-full">
@@ -317,7 +317,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </p>
             )}
 
-            <div className="h-px bg-[var(--color-border)]" />
+            <div className="h-px bg-()" />
 
             {/* Current variant attributes */}
             {variantEntries.length > 0 && (
@@ -331,7 +331,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                       {key}:
                     </span>
                     <span
-                      className="rounded-[6px] border border-[var(--color-primary)] bg-[var(--color-primary-100)] px-3 py-1 font-medium"
+                      className="rounded-[6px] border border-() bg-() px-3 py-1 font-medium"
                       style={{ color: "var(--color-primary)" }}
                     >
                       {val}
@@ -363,8 +363,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         onClick={() => setSelectedVariantSlug(variant.slug)}
                         className={`rounded-[8px] border px-4 py-2 text-[14px] font-medium transition ${
                           isSelected
-                            ? "border-[var(--color-primary)] bg-[var(--color-primary)] text-white"
-                            : "border-[var(--color-border)] bg-white text-[var(--color-primary-900)] hover:border-[var(--color-primary)]"
+                            ? "border-() bg-() text-white"
+                            : "border-() bg-white text-() hover:border-()"
                         }`}
                       >
                         {label}
@@ -377,10 +377,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
             {/* Qty + Add to Cart + Wishlist + Share */}
             <div className="flex flex-wrap items-center gap-3">
-              <div className="flex items-center overflow-hidden rounded-[10px] border border-[var(--color-border)]">
+              <div className="flex items-center overflow-hidden rounded-[10px] border border-()">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="flex h-[46px] w-[46px] items-center justify-center hover:bg-[var(--color-primary-100)] transition"
+                  className="flex h-[46px] w-[46px] items-center justify-center hover:bg-() transition"
                   style={{ color: "var(--color-primary)" }}
                 >
                   <FiMinus size={16} />
@@ -397,7 +397,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                       stockCount > 0 ? Math.min(stockCount, q + 1) : q,
                     )
                   }
-                  className="flex h-[46px] w-[46px] items-center justify-center hover:bg-[var(--color-primary-100)] transition"
+                  className="flex h-[46px] w-[46px] items-center justify-center hover:bg-() transition"
                   style={{ color: "var(--color-primary)" }}
                 >
                   <FiPlus size={16} />
@@ -416,27 +416,27 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               <button
                 onClick={handleToggleWishlist}
                 disabled={isTogglingWishlist}
-                className={`flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] disabled:opacity-50 ${
+                className={`flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border transition hover:border-() hover:text-() disabled:opacity-50 ${
                   isWishlisted
-                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                    : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+                    ? "border-() text-()"
+                    : "border-() text-()"
                 }`}
               >
-                <FiHeart size={18} className={isWishlisted ? "fill-[var(--color-primary)]" : ""} />
+                <FiHeart size={18} className={isWishlisted ? "fill-()" : ""} />
               </button>
 
               <div ref={shareMenuRef} className="relative">
                 <button
                   type="button"
                   onClick={() => setShareMenuOpen((open) => !open)}
-                  className="flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border border-[var(--color-border)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
+                  className="flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border border-() transition hover:border-() hover:text-()"
                   style={{ color: "var(--color-text-muted)" }}
                 >
                   <FiShare2 size={18} />
                 </button>
 
                 {shareMenuOpen ? (
-                  <div className="absolute right-0 top-[calc(100%+10px)] z-30 min-w-[220px] rounded-[18px] border border-[var(--color-border)] bg-white p-2 shadow-[0_20px_45px_rgba(17,17,17,0.12)]">
+                  <div className="absolute right-0 top-[calc(100%+10px)] z-30 min-w-[220px] rounded-[18px] border border-() bg-white p-2 shadow-[0_20px_45px_rgba(17,17,17,0.12)]">
                     <div className="flex items-center justify-between gap-2 px-2 py-1.5">
                       <p
                         className="text-[12px] font-semibold uppercase tracking-[0.12em]"
@@ -448,7 +448,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         <button
                           type="button"
                           onClick={handleNativeShare}
-                          className="rounded-full bg-[var(--color-primary-100)] px-3 py-1 text-[11px] font-semibold text-[var(--color-primary)] transition hover:bg-[var(--color-primary-200)]"
+                          className="rounded-full bg-() px-3 py-1 text-[11px] font-semibold text-() transition hover:bg-()"
                         >
                           More
                         </button>
@@ -474,7 +474,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         onClick={handleCopyLink}
                         disabled={!shareUrl}
                         aria-label="Copy link"
-                        className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-border)] bg-white text-[var(--color-primary-900)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] disabled:cursor-not-allowed disabled:opacity-50"
+                        className="flex h-11 w-11 items-center justify-center rounded-full border border-() bg-white text-() transition hover:border-() hover:text-() disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         {copied ? <FiCheck size={16} /> : <FiCopy size={16} />}
                       </button>
@@ -484,7 +484,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </div>
             </div>
 
-            <div className="h-px bg-[var(--color-border)]" />
+            <div className="h-px bg-()" />
 
             {/* Meta info */}
             <div className="grid grid-cols-2 gap-x-8 gap-y-3 text-[14px]">
@@ -516,16 +516,16 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
         </div>
 
         {/* ── Tabs Section ─────────────────────────────────────────────── */}
-        <div className="mt-14 rounded-[18px] border border-[var(--color-border)] bg-white">
-          <div className="flex gap-1 border-b border-[var(--color-border)] px-6">
+        <div className="mt-14 rounded-[18px] border border-() bg-white">
+          <div className="flex gap-1 border-b border-() px-6">
             {tabs.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
                 className={`-mb-px border-b-2 px-5 py-4 text-[15px] font-medium transition ${
                   activeTab === tab.key
-                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
-                    : "border-transparent hover:text-[var(--color-primary)]"
+                    ? "border-() text-()"
+                    : "border-transparent hover:text-()"
                 }`}
                 style={{
                   color:
@@ -551,7 +551,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
             {activeTab === "additional" && (
               <table className="w-full text-left text-[15px]">
-                <tbody className="divide-y divide-[var(--color-border)]">
+                <tbody className="divide-y divide-()">
                   {[
                     product.category && ["Category", product.category.name],
                     product.brand && ["Brand", product.brand.name],

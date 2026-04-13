@@ -15,9 +15,9 @@ export default function WishlistThumbnail({ item }: { item: WishlistItem }) {
 
       {item.thumbnail === "monitor" ? (
         <>
-          <div className="absolute left-[18px] top-[37px] h-[34px] w-[55px] -rotate-[16deg] rounded-[10px] bg-[#ebedf1]" />
-          <div className="absolute left-[23px] top-[42px] h-[24px] w-[45px] -rotate-[16deg] rounded-[8px] bg-[#ffffff]" />
-          <div className="absolute left-[30px] top-[47px] h-[14px] w-[30px] -rotate-[16deg] rounded bg-[#d6dde8]" />
+          <div className="absolute left-[18px] top-[37px] h-[34px] w-[55px] -rotate-16 rounded-[10px] bg-[#ebedf1]" />
+          <div className="absolute left-[23px] top-[42px] h-[24px] w-[45px] -rotate-16 rounded-[8px] bg-[#ffffff]" />
+          <div className="absolute left-[30px] top-[47px] h-[14px] w-[30px] -rotate-16 rounded bg-[#d6dde8]" />
           <div className="absolute left-[58px] top-[30px] h-[40px] w-[15px] -rotate-12 rounded-[4px] bg-[#36383b]" />
           <div className="absolute left-[61px] top-[34px] h-[32px] w-[9px] -rotate-12 rounded-[3px] bg-[#4e5258]" />
           <div className="absolute left-[30px] top-[45px] h-[4px] w-[4px] rounded-full bg-[#f4c019]" />
