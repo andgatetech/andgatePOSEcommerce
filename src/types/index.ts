@@ -83,6 +83,57 @@ export type {
   ListQueryParams,
 } from "./pagination";
 
+// ── Cart & Wishlist types ─────────────────────────────────────────────────────
+
+export interface CartStockImage {
+  id: number;
+  url: string;
+}
+
+export interface CartStock {
+  id: number;
+  slug: string;
+  sku: string;
+  price: number | string;
+  available_qty: number;
+  variant_data: Record<string, string> | null;
+  product_name: string;
+  description: string;
+  images: CartStockImage[];
+}
+
+export interface CartStoreRef {
+  id: number;
+  store_name: string;
+  slug: string;
+}
+
+export interface CartItemData {
+  id: number;
+  quantity: number;
+  subtotal: number;
+  stock: CartStock;
+  store: CartStoreRef;
+}
+
+export interface CartData {
+  items: CartItemData[];
+  item_count: number;
+  cart_total: number;
+}
+
+export interface WishlistItemData {
+  id: number;
+  stock: CartStock;
+  store: CartStoreRef;
+  added_at: string;
+}
+
+export interface WishlistData {
+  items: WishlistItemData[];
+  count: number;
+}
+
 // ── Ecommerce product types ───────────────────────────────────────────────────
 
 export interface EcommerceProductImage {

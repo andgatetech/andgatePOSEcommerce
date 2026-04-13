@@ -2,9 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import toast from "react-hot-toast";
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
 import { ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { useAppSelector } from "@/lib/hooks";
+import { useAddToCartMutation } from "@/features/cart/cartApi";
+import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import type { EcommerceProduct } from "@/types";
 
 type PopularProductCardProps = {
@@ -16,6 +20,42 @@ export default function PopularProductCard({ product }: PopularProductCardProps)
   const price = parseFloat(product.price).toLocaleString("en-BD");
   const stockCount = parseFloat(product.quantity);
 
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
+  const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+
+  const isWishlisted = wishlistData?.items.some((item) => item.stock.id === product.id) ?? false;
+
+  async function handleAddToCart(e: React.MouseEvent) {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to cart.");
+      return;
+    }
+    const result = await addToCart({ stock_id: product.id });
+    if ("error" in result) {
+      toast.error("Failed to add to cart.");
+    } else if ("data" in result) {
+      toast.success(result.data.message ?? "Added to cart!");
+    }
+  }
+
+  async function handleToggleWishlist(e: React.MouseEvent) {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error("Please login to save items.");
+      return;
+    }
+    const result = await toggleWishlist({ stock_id: product.id });
+    if ("error" in result) {
+      toast.error("Failed to update wishlist.");
+    } else if ("data" in result) {
+      toast.success(result.data.data.added ? "Added to wishlist." : "Removed from wishlist.");
+    }
+  }
+
   return (
     <Link
       href={ROUTE_BUILDERS.productDetail(product.slug)}
@@ -25,10 +65,13 @@ export default function PopularProductCard({ product }: PopularProductCardProps)
         <button
           type="button"
           aria-label={`Save ${product.product_name} to wishlist`}
-          onClick={(e) => e.preventDefault()}
-          className="absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 text-(--color-primary-900) shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary)"
+          onClick={handleToggleWishlist}
+          disabled={isTogglingWishlist}
+          className={`absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-50 ${
+            isWishlisted ? "text-(--color-primary)" : "text-(--color-primary-900)"
+          }`}
         >
-          <FiHeart className="text-[18px]" />
+          <FiHeart className={`text-[18px] ${isWishlisted ? "fill-(--color-primary)" : ""}`} />
         </button>
 
         <div className="relative flex h-[176px] items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(180deg,var(--color-primary-100),#ffffff)]">
@@ -87,11 +130,12 @@ export default function PopularProductCard({ product }: PopularProductCardProps)
 
         <button
           type="button"
-          onClick={(e) => e.preventDefault()}
-          className="mt-3 inline-flex w-full items-center justify-center gap-[6px] rounded-[12px] bg-(--color-primary) px-4 py-[10px] text-[14px] font-semibold text-white transition hover:bg-(--color-primary-dark)"
+          disabled={isAddingToCart || stockCount === 0}
+          onClick={handleAddToCart}
+          className="mt-3 inline-flex w-full items-center justify-center gap-[6px] rounded-[12px] bg-(--color-primary) px-4 py-[10px] text-[14px] font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <FiShoppingCart className="text-sm" />
-          Add to Cart
+          {isAddingToCart ? "Adding…" : "Add to Cart"}
         </button>
       </div>
     </Link>

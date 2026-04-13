@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import toast from "react-hot-toast";
 import {
   FiShoppingCart,
   FiHeart,
@@ -19,6 +20,9 @@ import { FaFacebookF, FaWhatsapp } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { useAppSelector } from "@/lib/hooks";
+import { useAddToCartMutation, useUpdateCartItemMutation } from "@/features/cart/cartApi";
+import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import type { EcommerceProduct } from "@/types";
 
 interface ProductDetailPageProps {
@@ -35,6 +39,45 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+
+  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+
+  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
+  const [updateCartItem] = useUpdateCartItemMutation();
+  const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
+  const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
+
+  const isWishlisted = wishlistData?.items.some((item) => item.stock.id === product.id) ?? false;
+
+  async function handleAddToCart() {
+    if (!isAuthenticated) {
+      toast.error("Please login to add items to cart.");
+      return;
+    }
+    const result = await addToCart({ stock_id: product.id });
+    if ("error" in result) {
+      toast.error("Failed to add to cart.");
+      return;
+    }
+    // If user selected qty > 1, update to the desired quantity
+    if (quantity > 1 && "data" in result && result.data.data) {
+      await updateCartItem({ cart_id: result.data.data.id, quantity });
+    }
+    toast.success(result.data?.message ?? "Added to cart!");
+  }
+
+  async function handleToggleWishlist() {
+    if (!isAuthenticated) {
+      toast.error("Please login to save items.");
+      return;
+    }
+    const result = await toggleWishlist({ stock_id: product.id });
+    if ("error" in result) {
+      toast.error("Failed to update wishlist.");
+    } else if ("data" in result) {
+      toast.success(result.data.data.added ? "Added to wishlist." : "Removed from wishlist.");
+    }
+  }
 
   const resolvedImages = product.images
     .map((img) => resolveImageUrl(img.url))
@@ -362,18 +405,24 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </div>
 
               <button
-                disabled={stockCount === 0}
+                onClick={handleAddToCart}
+                disabled={stockCount === 0 || isAddingToCart}
                 className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-[10px] bg-(--color-primary) px-6 text-[15px] font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FiShoppingCart size={18} />
-                Add to cart
+                {isAddingToCart ? "Adding…" : "Add to cart"}
               </button>
 
               <button
-                className="flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border border-[var(--color-border)] transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]"
-                style={{ color: "var(--color-text-muted)" }}
+                onClick={handleToggleWishlist}
+                disabled={isTogglingWishlist}
+                className={`flex h-[46px] w-[46px] items-center justify-center rounded-[10px] border transition hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] disabled:opacity-50 ${
+                  isWishlisted
+                    ? "border-[var(--color-primary)] text-[var(--color-primary)]"
+                    : "border-[var(--color-border)] text-[var(--color-text-muted)]"
+                }`}
               >
-                <FiHeart size={18} />
+                <FiHeart size={18} className={isWishlisted ? "fill-[var(--color-primary)]" : ""} />
               </button>
 
               <div ref={shareMenuRef} className="relative">

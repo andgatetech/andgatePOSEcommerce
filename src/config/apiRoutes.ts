@@ -9,4 +9,14 @@ export const API_ROUTES = {
     STORES: "/stores",
     PRODUCTS: "/products",
   },
+  ECOMMERCE_CART: {
+    CART: "/cart",
+    CART_CLEAR: "/cart/clear",
+    CART_ITEM: (id: number) => `/cart/${id}` as const,
+  },
+  ECOMMERCE_WISHLIST: {
+    WISHLIST: "/wishlist",
+    WISHLIST_TOGGLE: "/wishlist/toggle",
+    WISHLIST_ITEM: (id: number) => `/wishlist/${id}` as const,
+  },
 } as const;
