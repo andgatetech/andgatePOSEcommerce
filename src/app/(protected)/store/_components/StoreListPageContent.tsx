@@ -69,7 +69,14 @@ export default function StoreListPageContent({
           <p className="py-16 text-center text-sm text-(--color-text-muted)">
             Failed to load stores. Please try again.
           </p>
-        ) : items.length === 0 && !isFetching ? (
+        ) : isFetching && items.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
+            <p className="mt-4 text-sm font-medium tracking-[0.12em] text-(--color-text-muted) uppercase">
+              Loading stores...
+            </p>
+          </div>
+        ) : items.length === 0 ? (
           <p className="py-16 text-center text-sm text-(--color-text-muted)">
             No stores found.
           </p>
