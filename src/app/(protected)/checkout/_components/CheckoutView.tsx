@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
   FiChevronRight,
   FiCreditCard,
@@ -11,10 +13,18 @@ import {
 } from "react-icons/fi";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import AddressDetailsForm, { type AddressFormValue } from "@/components/shared/AddressDetailsForm";
-import { ROUTES } from "@/config/routes";
+import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
+import { useGetMyAddressQuery } from "@/features/account/myAddressApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
-import { useGetCartQuery } from "@/features/cart/cartApi";
-import type { CartItemData } from "@/types";
+import {
+  emptyAddressFormValue,
+  formValueToShippingAddress,
+  getAddressDisplayLines,
+  shippingAddressToFormValue,
+} from "@/lib/address";
+import { useClearCartMutation, useGetCartQuery } from "@/features/cart/cartApi";
+import { useCreateOrderMutation } from "@/features/orders/ordersApi";
+import type { CartItemData, CreateOrderRequest } from "@/types";
 
 type PaymentOption = {
   id: string;
@@ -40,7 +50,7 @@ const paymentOptions: PaymentOption[] = [
   {
     id: "card",
     label: "Credit / Debit Card",
-    logo: "/images/payment/6220ac4b912013c51947f9c5.png",
+    logo: "/images/payment/card.png",
     logoAlt: "Credit and debit card",
   },
   {
@@ -52,8 +62,33 @@ const paymentOptions: PaymentOption[] = [
   },
 ];
 
+const paymentMethodMap: Record<string, string> = {
+  bkash: "bkash",
+  nagad: "nagad",
+  card: "card",
+  "cash-on-delivery": "cash_on_delivery",
+};
+
 function formatPrice(value: number | string) {
   return `৳${Number(value).toFixed(2)}`;
+}
+
+function getOrderErrorMessage(error: unknown) {
+  if (!error || typeof error !== "object" || !("data" in error)) {
+    return "Order could not be placed.";
+  }
+
+  const responseData = (error as { data?: unknown }).data;
+
+  if (!responseData || typeof responseData !== "object") {
+    return "Order could not be placed.";
+  }
+
+  if ("message" in responseData && typeof responseData.message === "string" && responseData.message.trim()) {
+    return responseData.message;
+  }
+
+  return "Order could not be placed.";
 }
 
 function CheckoutItemRow({ item }: { item: CartItemData }) {
@@ -136,30 +171,130 @@ function CheckoutItemRow({ item }: { item: CartItemData }) {
 }
 
 export default function CheckoutView() {
+  const router = useRouter();
   const { data: cartData, isLoading } = useGetCartQuery();
+  const { data: myAddressData, isFetching: isLoadingMyAddress } = useGetMyAddressQuery();
+  const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
+  const [clearCart] = useClearCartMutation();
 
-  const [addressValue, setAddressValue] = useState<AddressFormValue>({
-    fullName: "",
-    phone: "",
-    districtId: "",
-    zoneId: "",
-    areaId: "",
-    addressLine: "",
-    note: "",
-    label: "home",
-  });
+  const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
+  const [showAddressForm, setShowAddressForm] = useState(false);
   const [paymentId, setPaymentId] = useState(paymentOptions[0].id);
 
   const items = cartData?.items ?? [];
   const cartTotal = cartData?.cart_total ?? 0;
   const itemCount = cartData?.item_count ?? 0;
+  const savedAddress = myAddressData?.shipping_address ?? null;
+  const activeShippingAddress = !showAddressForm && savedAddress ? savedAddress : null;
+  const displayAddress = activeShippingAddress ? getAddressDisplayLines(activeShippingAddress) : null;
 
   const subtotal = Number(cartTotal);
-  const shippingFee = addressValue.districtId ? (addressValue.districtId === "1" ? 50 : 85) : 0;
+  const shippingFee =
+    activeShippingAddress?.city || addressValue.districtName
+      ? (activeShippingAddress?.city ?? addressValue.districtName).trim().toLowerCase() === "dhaka"
+        ? 50
+        : 85
+      : 0;
   const total = subtotal + shippingFee;
 
+  useEffect(() => {
+    if (savedAddress) {
+      setShowAddressForm(false);
+      setAddressValue(shippingAddressToFormValue(savedAddress));
+    } else {
+      setShowAddressForm(true);
+      setAddressValue(emptyAddressFormValue);
+    }
+  }, [savedAddress]);
+
+  useEffect(() => {
+    if (!isSubmitting) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [isSubmitting]);
+
+  async function handlePlaceOrder() {
+    if (items.length === 0 || isSubmitting) {
+      return;
+    }
+
+    const shippingAddress = activeShippingAddress ?? formValueToShippingAddress(addressValue);
+
+    if (!shippingAddress.name.trim()) {
+      toast.error("Full name is required.");
+      return;
+    }
+
+    if (!shippingAddress.phone.trim()) {
+      toast.error("Phone number is required.");
+      return;
+    }
+
+    if (!shippingAddress.address_line.trim()) {
+      toast.error("Address line is required.");
+      return;
+    }
+
+    if (!shippingAddress.city.trim() || !shippingAddress.zone?.trim() || !shippingAddress.area?.trim()) {
+      toast.error("District, zone, and area are required.");
+      return;
+    }
+
+    const payload: CreateOrderRequest = {
+      name: shippingAddress.name,
+      phone: shippingAddress.phone,
+      address_line: shippingAddress.address_line,
+      city: shippingAddress.city,
+      zone: shippingAddress.zone ?? "",
+      area: shippingAddress.area ?? "",
+      payment_method: paymentMethodMap[paymentId] ?? paymentId,
+      shipping_fee: shippingFee,
+      notes: addressValue.note.trim() || undefined,
+      shipping_address: {
+        ...shippingAddress,
+        zone: shippingAddress.zone ?? "",
+        area: shippingAddress.area ?? "",
+      },
+      customer_name: shippingAddress.name,
+      customer_phone: shippingAddress.phone,
+      address: shippingAddress.address_line,
+      address_type: addressValue.label,
+    };
+
+    try {
+      const order = await createOrder(payload).unwrap();
+      try {
+        await clearCart().unwrap();
+      } catch {
+        toast.error("Order placed, but cart could not be cleared automatically.");
+      }
+      router.push(ROUTE_BUILDERS.orderSuccess(encodeURIComponent(order.order_number)));
+    } catch (error) {
+      toast.error(getOrderErrorMessage(error));
+    }
+  }
+
   return (
-    <section className="bg-(--color-bg)">
+    <section className="relative bg-(--color-bg)">
+      {isSubmitting ? (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
+          <div className="flex min-w-[220px] flex-col items-center gap-4 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
+            <div className="text-center">
+              <p className="text-base font-semibold text-(--color-dark)">Creating your order</p>
+              <p className="mt-1 text-sm text-(--color-text-muted)">Please wait and do not click anywhere.</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
         {/* Breadcrumb */}
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
@@ -194,7 +329,61 @@ export default function CheckoutView() {
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="space-y-5">
-            <AddressDetailsForm value={addressValue} onChange={setAddressValue} />
+            {isLoadingMyAddress && !myAddressData ? (
+              <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg) p-5">
+                <div className="h-[210px] animate-pulse rounded-[18px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+              </section>
+            ) : activeShippingAddress && !showAddressForm && displayAddress ? (
+              <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
+                <div className="flex items-center justify-between gap-4 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
+                  <div>
+                    <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
+                      Delivery Address
+                    </h2>
+                    <p className="text-sm text-(--color-text-muted)">
+                      Your saved address is ready for this checkout.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddressForm(true)}
+                    className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-5 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
+                  >
+                    Add New Address
+                  </button>
+                </div>
+
+                <div className="grid gap-5 px-5 py-5 md:grid-cols-[minmax(0,1fr)_220px]">
+                  <div className="space-y-2 text-[15px] leading-8 text-(--color-dark)">
+                    <p className="font-semibold">{displayAddress.name}</p>
+                    <p>{displayAddress.phone}</p>
+                    <p>{displayAddress.addressLine}</p>
+                    <p className="text-(--color-text-muted)">{displayAddress.locationLine}</p>
+                  </div>
+                  <div className="rounded-[18px] border border-(--color-border) bg-[#fbfcfd] p-4 text-sm leading-7 text-(--color-text-muted)">
+                    Checkout will use this saved address. Choose add new address only if this order needs another location.
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <div className="space-y-4">
+                <AddressDetailsForm value={addressValue} onChange={setAddressValue} />
+                {savedAddress ? (
+                  <div className="flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddressForm(false);
+                        setAddressValue(shippingAddressToFormValue(savedAddress));
+                      }}
+                      className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-5 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
+                    >
+                      Use saved address instead
+                    </button>
+                  </div>
+                ) : null}
+              </div>
+            )}
 
             {/* Cart Items */}
             <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
@@ -289,7 +478,9 @@ export default function CheckoutView() {
             <div className="mb-5 rounded-full bg-[#eef6ef] px-4.5 py-3 text-sm font-semibold text-(--color-dark)">
               <span className="text-(--color-primary)">Delivery Charge:</span>{" "}
               <span className="text-[#0d7a74]">
-                {addressValue.districtId ? formatPrice(shippingFee) : "Select district first"}
+                {activeShippingAddress?.city || addressValue.districtName
+                  ? formatPrice(shippingFee)
+                  : "Select district first"}
               </span>
             </div>
 
@@ -319,11 +510,12 @@ export default function CheckoutView() {
             <div className="mt-7 space-y-3">
               <button
                 type="button"
-                disabled={items.length === 0 || isLoading}
+                onClick={handlePlaceOrder}
+                disabled={items.length === 0 || isLoading || isSubmitting}
                 className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FiShoppingBag className="mr-2" />
-                Place order
+                {isSubmitting ? "Placing order..." : "Place order"}
               </button>
 
               <Link

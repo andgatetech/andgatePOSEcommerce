@@ -12,9 +12,9 @@ import {
   FiTruck,
   FiUser,
 } from "react-icons/fi";
+import OrdersListView from "@/components/orders/OrdersListView";
 import AccountWishlistPanel from "./AccountWishlistPanel";
 import MyAccountAddressPanel from "./MyAccountAddressPanel";
-import MyAccountOrdersListPanel from "./MyAccountOrdersListPanel";
 import MyAccountOrderTrackingPanel from "./MyAccountOrderTrackingPanel";
 import MyAccountProfilePanel from "./MyAccountProfilePanel";
 import { ROUTES } from "@/config/routes";
@@ -53,19 +53,19 @@ function DashboardPanel() {
         <div className="rounded-[24px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
           <h2 className="text-lg font-semibold text-(--color-dark)">Recent Orders</h2>
           <p className="mt-3 text-sm leading-7 text-(--color-text-muted)">
-            Order history will appear here once the account data is connected dynamically.
+            Review recent orders, payment status, and delivery progress from your account workspace.
           </p>
         </div>
         <div className="rounded-[24px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
           <h2 className="text-lg font-semibold text-(--color-dark)">Saved Address</h2>
           <p className="mt-3 text-sm leading-7 text-(--color-text-muted)">
-            Shipping and billing address cards can be plugged in here in the next step.
+            Keep one default shipping address saved for faster checkout and easier account management.
           </p>
         </div>
         <div className="rounded-[24px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
           <h2 className="text-lg font-semibold text-(--color-dark)">Account Overview</h2>
           <p className="mt-3 text-sm leading-7 text-(--color-text-muted)">
-            This area is structured for future dynamic account settings, password and profile data.
+            Update your profile, email, and password details from the account settings panel.
           </p>
         </div>
       </div>
@@ -88,7 +88,7 @@ export default function MyAccountView() {
       case "wishlist":
         return <AccountWishlistPanel />;
       case "orders":
-        return <MyAccountOrdersListPanel />;
+        return <OrdersListView embedded />;
       case "tracking":
         return <MyAccountOrderTrackingPanel />;
       case "address":

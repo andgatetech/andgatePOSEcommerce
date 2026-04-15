@@ -14,6 +14,16 @@ export const API_ROUTES = {
     CART_CLEAR: "/cart/clear",
     CART_ITEM: (id: number) => `/cart/${id}` as const,
   },
+  ECOMMERCE_ORDERS: {
+    ORDERS: "/orders",
+    ORDER_DETAIL: (orderNumber: string) => `/orders/${orderNumber}` as const,
+    ORDER_CANCEL: (orderNumber: string) => `/orders/${orderNumber}/cancel` as const,
+    ORDER_TRACKING: (orderNumber: string) => `/order-tracking/${orderNumber}` as const,
+  },
+  ECOMMERCE_ACCOUNT: {
+    MY_ADDRESS: "/my-address",
+    MY_ACCOUNT: "/my-account",
+  },
   ECOMMERCE_WISHLIST: {
     WISHLIST: "/wishlist",
     WISHLIST_TOGGLE: "/wishlist/toggle",

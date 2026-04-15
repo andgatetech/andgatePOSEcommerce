@@ -19,7 +19,7 @@ export const cartApi = baseApi.injectEndpoints({
     getCart: builder.query<CartData, void>({
       query: () => API_ROUTES.ECOMMERCE_CART.CART,
       transformResponse: (response: CartResponse) => response.data,
-      providesTags: ["Cart"],
+      providesTags: [{ type: "Cart", id: "LIST" }],
     }),
 
     addToCart: builder.mutation<CartItemResponse, { stock_id: number }>({
@@ -28,7 +28,7 @@ export const cartApi = baseApi.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["Cart"],
+      invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
 
     updateCartItem: builder.mutation<CartItemResponse, { cart_id: number; quantity: number }>({
@@ -37,7 +37,7 @@ export const cartApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { quantity },
       }),
-      invalidatesTags: ["Cart"],
+      invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
 
     removeCartItem: builder.mutation<CartItemResponse, number>({
@@ -45,7 +45,7 @@ export const cartApi = baseApi.injectEndpoints({
         url: API_ROUTES.ECOMMERCE_CART.CART_ITEM(cart_id),
         method: "DELETE",
       }),
-      invalidatesTags: ["Cart"],
+      invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
 
     clearCart: builder.mutation<{ success: boolean; message: string; data: null }, void>({
@@ -53,7 +53,7 @@ export const cartApi = baseApi.injectEndpoints({
         url: API_ROUTES.ECOMMERCE_CART.CART_CLEAR,
         method: "DELETE",
       }),
-      invalidatesTags: ["Cart"],
+      invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
   }),
 });

@@ -7,8 +7,11 @@ export type AddressFormValue = {
   fullName: string;
   phone: string;
   districtId: string;
+  districtName: string;
   zoneId: string;
+  zoneName: string;
   areaId: string;
+  areaName: string;
   addressLine: string;
   note: string;
   label: "home" | "office" | "others";
@@ -91,6 +94,22 @@ export default function AddressDetailsForm({
     };
   }, []);
 
+  useEffect(() => {
+    if (!value.districtId && value.districtName && cities.length > 0) {
+      const matchedCity = cities.find(
+        (city) => city.city_name.toLowerCase() === value.districtName.toLowerCase(),
+      );
+
+      if (matchedCity) {
+        onChange({
+          ...value,
+          districtId: String(matchedCity.city_id),
+          districtName: matchedCity.city_name,
+        });
+      }
+    }
+  }, [cities, onChange, value]);
+
   async function ensureZonesLoaded() {
     if (zonesByCity) return;
     const response = await fetch("/data/pathao/pathao-zones-by-city.json");
@@ -105,16 +124,37 @@ export default function AddressDetailsForm({
     setAreasByZone(data);
   }
 
+  useEffect(() => {
+    if (value.districtId && !zonesByCity) {
+      startLoadingZones(() => {
+        void ensureZonesLoaded();
+      });
+    }
+  }, [value.districtId, zonesByCity]);
+
+  useEffect(() => {
+    if (value.zoneId && !areasByZone) {
+      startLoadingAreas(() => {
+        void ensureAreasLoaded();
+      });
+    }
+  }, [value.zoneId, areasByZone]);
+
   function updateField<Key extends keyof AddressFormValue>(field: Key, fieldValue: AddressFormValue[Key]) {
     onChange({ ...value, [field]: fieldValue });
   }
 
   function handleDistrictChange(nextDistrictId: string) {
+    const selectedCity = cities.find((city) => String(city.city_id) === nextDistrictId);
+
     onChange({
       ...value,
       districtId: nextDistrictId,
+      districtName: selectedCity?.city_name ?? "",
       zoneId: "",
+      zoneName: "",
       areaId: "",
+      areaName: "",
     });
 
     if (!nextDistrictId) return;
@@ -124,10 +164,14 @@ export default function AddressDetailsForm({
   }
 
   function handleZoneChange(nextZoneId: string) {
+    const selectedZone = zones.find((zone) => String(zone.zone_id) === nextZoneId);
+
     onChange({
       ...value,
       zoneId: nextZoneId,
+      zoneName: selectedZone?.zone_name ?? "",
       areaId: "",
+      areaName: "",
     });
 
     if (!nextZoneId) return;
@@ -138,6 +182,38 @@ export default function AddressDetailsForm({
 
   const zones = value.districtId && zonesByCity ? zonesByCity[value.districtId] ?? [] : [];
   const areas = value.zoneId && areasByZone ? areasByZone[value.zoneId] ?? [] : [];
+
+  useEffect(() => {
+    if (!value.zoneId && value.zoneName && zones.length > 0) {
+      const matchedZone = zones.find(
+        (zone) => zone.zone_name.toLowerCase() === value.zoneName.toLowerCase(),
+      );
+
+      if (matchedZone) {
+        onChange({
+          ...value,
+          zoneId: String(matchedZone.zone_id),
+          zoneName: matchedZone.zone_name,
+        });
+      }
+    }
+  }, [onChange, value, zones]);
+
+  useEffect(() => {
+    if (!value.areaId && value.areaName && areas.length > 0) {
+      const matchedArea = areas.find(
+        (area) => area.area_name.toLowerCase() === value.areaName.toLowerCase(),
+      );
+
+      if (matchedArea) {
+        onChange({
+          ...value,
+          areaId: String(matchedArea.area_id),
+          areaName: matchedArea.area_name,
+        });
+      }
+    }
+  }, [areas, onChange, value]);
 
   return (
     <section className={`overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg) ${className}`}>
@@ -215,7 +291,16 @@ export default function AddressDetailsForm({
           <span className="font-medium text-(--color-dark)">Area</span>
           <select
             value={value.areaId}
-            onChange={(event) => updateField("areaId", event.target.value)}
+            onChange={(event) => {
+              const nextAreaId = event.target.value;
+              const selectedArea = areas.find((area) => String(area.area_id) === nextAreaId);
+
+              onChange({
+                ...value,
+                areaId: nextAreaId,
+                areaName: selectedArea?.area_name ?? "",
+              });
+            }}
             disabled={!value.zoneId || loadingAreas}
             className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition disabled:cursor-not-allowed disabled:bg-[#f8fafc] disabled:text-(--color-text-muted) focus:border-(--color-primary)"
           >

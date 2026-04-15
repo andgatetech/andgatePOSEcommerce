@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FiHeart, FiShoppingCart } from "react-icons/fi";
-import { ROUTE_BUILDERS } from "@/config/routes";
+import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
@@ -16,6 +17,8 @@ type PopularProductCardProps = {
 };
 
 export default function PopularProductCard({ product }: PopularProductCardProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const primaryImage = resolveImageUrl(product.images[0]?.url ?? null);
   const price = parseFloat(product.price).toLocaleString("en-BD");
   const stockCount = parseFloat(product.quantity);
@@ -31,7 +34,9 @@ export default function PopularProductCard({ product }: PopularProductCardProps)
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
     if (!isAuthenticated) {
-      toast.error("Please login to add items to cart.");
+      const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      router.push(`${loginUrl.pathname}${loginUrl.search}`);
       return;
     }
     const result = await addToCart({ stock_id: product.id });

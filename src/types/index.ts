@@ -3,6 +3,7 @@ export interface User {
   name: string;
   email: string | null;
   mobile_number: string | null;
+  shipping_address?: EcommerceOrderShippingAddress | null;
   status: "active" | "blocked" | "disabled";
   otp_verify: 0 | 1;
   created_at: string;
@@ -132,6 +133,127 @@ export interface WishlistItemData {
 export interface WishlistData {
   items: WishlistItemData[];
   count: number;
+}
+
+// ── Order types ───────────────────────────────────────────────────────────────
+
+export type EcommerceOrderStatus =
+  | "pending"
+  | "confirmed"
+  | "processing"
+  | "shipped"
+  | "delivered"
+  | "cancelled";
+
+export type EcommercePaymentStatus = "pending" | "paid" | "failed";
+
+export interface EcommerceOrderShippingAddress {
+  name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  zone?: string;
+  area?: string;
+  postal_code: string;
+}
+
+export interface MyAddressData {
+  shipping_address: EcommerceOrderShippingAddress | null;
+}
+
+export interface MyAccountData {
+  user: User;
+}
+
+export interface UpdateMyAccountRequest {
+  name?: string;
+  email?: string | null;
+  current_password?: string;
+  new_password?: string;
+  new_password_confirmation?: string;
+}
+
+export interface EcommerceOrderImage {
+  url: string;
+}
+
+export interface EcommerceOrderItem {
+  id: number;
+  product_name: string;
+  slug: string;
+  sku: string;
+  variant_data: Record<string, string> | null;
+  description: string | null;
+  images: EcommerceOrderImage[];
+  unit_price: number;
+  quantity: number;
+  subtotal: number;
+  store_id: number;
+}
+
+export interface EcommerceOrderSummary {
+  order_number: string;
+  status: EcommerceOrderStatus;
+  item_count: number;
+  subtotal: number;
+  shipping_fee: number;
+  total: number;
+  payment_method: string;
+  payment_status: EcommercePaymentStatus;
+  created_at: string;
+}
+
+export interface EcommerceOrder extends EcommerceOrderSummary {
+  shipping_address: EcommerceOrderShippingAddress;
+  notes: string | null;
+  items: EcommerceOrderItem[];
+}
+
+export interface EcommerceOrderTrackingData {
+  order_number: string;
+  status: EcommerceOrderStatus;
+  payment_method: string;
+  payment_status: EcommercePaymentStatus;
+  item_count: number;
+  subtotal: number;
+  shipping_fee: number;
+  total: number;
+  shipping_address: EcommerceOrderShippingAddress;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EcommerceOrderListData {
+  orders: EcommerceOrderSummary[];
+  total: number;
+  per_page: number;
+  current_page: number;
+  last_page: number;
+}
+
+export interface CreateOrderRequest {
+  name: string;
+  phone: string;
+  address_line: string;
+  city: string;
+  zone: string;
+  area: string;
+  payment_method: string;
+  shipping_fee: number;
+  notes?: string;
+  shipping_address: {
+    name: string;
+    phone: string;
+    address_line: string;
+    city: string;
+    zone: string;
+    area: string;
+    postal_code: string;
+  };
+  customer_name?: string;
+  customer_phone?: string;
+  address?: string;
+  address_type?: "home" | "office" | "others";
 }
 
 // ── Ecommerce product types ───────────────────────────────────────────────────

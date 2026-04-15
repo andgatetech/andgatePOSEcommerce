@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { AuthData, AuthState } from "@/types";
+import { AuthData, AuthState, User } from "@/types";
 
 const initialState: AuthState = {
   user: null,
@@ -25,11 +25,15 @@ const authSlice = createSlice({
       state.expiresAt = null;
       state.isAuthenticated = false;
     },
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
+      state.isAuthenticated = Boolean(action.payload && state.token);
+    },
     setHydrated: (state, action: PayloadAction<boolean>) => {
       state.isHydrated = action.payload;
     },
   },
 });
 
-export const { setCredentials, logout, setHydrated } = authSlice.actions;
+export const { setCredentials, logout, setUser, setHydrated } = authSlice.actions;
 export default authSlice.reducer;

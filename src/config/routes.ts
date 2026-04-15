@@ -19,6 +19,7 @@ export const ROUTES = {
   CART: "/cart",
   CHECKOUT: "/checkout",
   MY_ACCOUNT: "/my-account",
+  MY_ADDRESS: "/my-account/my-address",
   ORDERS: "/orders",
   STORE: "/store",
   WISHLIST: "/wishlist",
@@ -38,6 +39,8 @@ export const ROUTE_BUILDERS = {
   categoryDetail: (slug: string) => `${ROUTES.CATEGORY}/${slug}`,
   brandDetail: (slug: string) => `${ROUTES.BRAND}/${slug}`,
   productDetail: (slug: string) => `${ROUTES.PRODUCT}/${slug}`,
+  orderDetail: (orderNumber: string) => `${ROUTES.ORDERS}/${orderNumber}`,
+  orderSuccess: (orderNumber: string) => `${ROUTES.ORDERS}/${orderNumber}/order-success`,
 } as const;
 
 export const PUBLIC_ROUTES = [
@@ -63,6 +66,7 @@ export const PROTECTED_ROUTES = [
   ROUTES.CART,
   ROUTES.CHECKOUT,
   ROUTES.MY_ACCOUNT,
+  ROUTES.MY_ADDRESS,
   ROUTES.ORDERS,
   ROUTES.STORE,
   ROUTES.WISHLIST,

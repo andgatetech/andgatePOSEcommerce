@@ -1,6 +1,8 @@
-import type { WishlistItem } from "./wishlistMockData";
+type WishlistThumbnailItem = {
+  thumbnail: "coffee" | "monitor" | "vitamin";
+};
 
-export default function WishlistThumbnail({ item }: { item: WishlistItem }) {
+export default function WishlistThumbnail({ item }: { item: WishlistThumbnailItem }) {
   return (
     <div className="relative h-[112px] w-[112px] overflow-hidden rounded-[20px] bg-[#f5f7fa] max-sm:h-[88px] max-sm:w-[88px]">
       {item.thumbnail === "coffee" ? (

@@ -1,158 +1,127 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { FiArrowLeft, FiEdit2, FiMapPin, FiPlus } from "react-icons/fi";
-import AddressDetailsForm, {
-  getAddressLabelName,
-  type AddressFormValue,
-} from "@/components/shared/AddressDetailsForm";
+import { useEffect, useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import {
+  FiArrowLeft,
+  FiEdit2,
+  FiMapPin,
+  FiPlus,
+  FiRefreshCw,
+  FiSave,
+} from "react-icons/fi";
+import AddressDetailsForm from "@/components/shared/AddressDetailsForm";
+import { useGetMyAddressQuery, useUpdateMyAddressMutation } from "@/features/account/myAddressApi";
+import {
+  emptyAddressFormValue,
+  formValueToShippingAddress,
+  getAddressDisplayLines,
+  shippingAddressToFormValue,
+} from "@/lib/address";
 
-type SavedAddress = {
-  id: number;
-  title: string;
-  fullName: string;
-  phone: string;
-  districtId: string;
-  zoneId: string;
-  areaId: string;
-  addressLine: string;
-  note: string;
-  label: AddressFormValue["label"];
-};
+function getAddressErrorMessage(error: unknown) {
+  if (!error || typeof error !== "object" || !("data" in error)) {
+    return "Address could not be saved.";
+  }
 
-const emptyAddressForm: AddressFormValue = {
-  fullName: "",
-  phone: "",
-  districtId: "",
-  zoneId: "",
-  areaId: "",
-  addressLine: "",
-  note: "",
-  label: "home",
-};
+  const responseData = (error as { data?: unknown }).data;
 
-const mockAddresses: SavedAddress[] = [
-  {
-    id: 1,
-    title: "Home Address",
-    fullName: "Andgate User",
-    phone: "01700-000001",
-    districtId: "1",
-    zoneId: "52",
-    areaId: "12520",
-    addressLine: "House 12, Road 7, Adabor",
-    note: "Call before delivery",
-    label: "home",
-  },
-  {
-    id: 2,
-    title: "Office Address",
-    fullName: "Andgate Office",
-    phone: "01700-000002",
-    districtId: "1",
-    zoneId: "18",
-    areaId: "17825",
-    addressLine: "Level 5, Business Hub, Agargaon",
-    note: "Deliver during office hours",
-    label: "office",
-  },
-];
+  if (!responseData || typeof responseData !== "object") {
+    return "Address could not be saved.";
+  }
 
-function AddressCard({
-  address,
-  onChange,
-}: {
-  address: SavedAddress;
-  onChange: (address: SavedAddress) => void;
-}) {
-  return (
-    <article className="overflow-hidden rounded-[24px] border border-(--color-border) bg-(--color-bg) shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-      <div className="flex items-center justify-between gap-4 border-b border-(--color-border) px-5 py-4">
-        <div className="flex items-center gap-3">
-          <FiMapPin className="text-[24px] text-(--color-dark)" />
-          <h2 className="text-[18px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-            {address.title}
-          </h2>
-        </div>
+  if ("message" in responseData && typeof responseData.message === "string" && responseData.message.trim()) {
+    return responseData.message;
+  }
 
-        <button
-          type="button"
-          onClick={() => onChange(address)}
-          className="inline-flex items-center gap-2 rounded-full border border-(--color-border) bg-(--color-bg) px-4 py-2 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
-        >
-          <FiEdit2 />
-          <span>Change</span>
-        </button>
-      </div>
-
-      <div className="space-y-2 px-5 py-5 text-[15px] leading-8 text-(--color-dark)">
-        <p>{address.fullName}</p>
-        <p>{address.phone}</p>
-        <p>{address.addressLine}</p>
-        {address.note ? <p className="text-(--color-text-muted)">{address.note}</p> : null}
-      </div>
-    </article>
-  );
+  return "Address could not be saved.";
 }
 
 export default function MyAccountAddressPanel() {
-  const [addresses, setAddresses] = useState<SavedAddress[]>(mockAddresses);
+  const { data, isFetching, isError, refetch } = useGetMyAddressQuery();
+  const [updateMyAddress, { isLoading: isSaving }] = useUpdateMyAddressMutation();
   const [isEditing, setIsEditing] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [formValue, setFormValue] = useState<AddressFormValue>(emptyAddressForm);
+  const [formValue, setFormValue] = useState(emptyAddressFormValue);
 
-  const panelTitle = useMemo(() => {
-    if (!isEditing) return "Address";
-    return editingId ? "Change Address" : "Add New Address";
-  }, [editingId, isEditing]);
+  const savedAddress = data?.shipping_address ?? null;
+  const addressLines = useMemo(
+    () => (savedAddress ? getAddressDisplayLines(savedAddress) : null),
+    [savedAddress],
+  );
+
+  useEffect(() => {
+    if (!isEditing) {
+      setFormValue(shippingAddressToFormValue(savedAddress));
+    }
+  }, [isEditing, savedAddress]);
 
   function handleAddNew() {
-    setEditingId(null);
-    setFormValue(emptyAddressForm);
+    setFormValue(savedAddress ? shippingAddressToFormValue(savedAddress) : emptyAddressFormValue);
     setIsEditing(true);
-  }
-
-  function handleEdit(address: SavedAddress) {
-    setEditingId(address.id);
-    setFormValue({
-      fullName: address.fullName,
-      phone: address.phone,
-      districtId: address.districtId,
-      zoneId: address.zoneId,
-      areaId: address.areaId,
-      addressLine: address.addressLine,
-      note: address.note,
-      label: address.label,
-    });
-    setIsEditing(true);
-  }
-
-  function handleSave() {
-    const nextAddress: SavedAddress = {
-      id: editingId ?? Date.now(),
-      title: getAddressLabelName(formValue.label),
-      fullName: formValue.fullName || "New Address",
-      phone: formValue.phone || "Phone not added",
-      districtId: formValue.districtId,
-      zoneId: formValue.zoneId,
-      areaId: formValue.areaId,
-      addressLine: formValue.addressLine || "Address line not added",
-      note: formValue.note,
-      label: formValue.label,
-    };
-
-    setAddresses((current) =>
-      editingId ? current.map((item) => (item.id === editingId ? nextAddress : item)) : [...current, nextAddress]
-    );
-    setIsEditing(false);
-    setEditingId(null);
-    setFormValue(emptyAddressForm);
   }
 
   function handleCancel() {
     setIsEditing(false);
-    setEditingId(null);
-    setFormValue(emptyAddressForm);
+    setFormValue(shippingAddressToFormValue(savedAddress));
+  }
+
+  async function handleSave() {
+    if (!formValue.fullName.trim()) {
+      toast.error("Full name is required.");
+      return;
+    }
+
+    if (!formValue.phone.trim()) {
+      toast.error("Phone number is required.");
+      return;
+    }
+
+    if (!formValue.addressLine.trim()) {
+      toast.error("Address line is required.");
+      return;
+    }
+
+    if (!formValue.districtName.trim() || !formValue.zoneName.trim() || !formValue.areaName.trim()) {
+      toast.error("District, zone, and area are required.");
+      return;
+    }
+
+    try {
+      await updateMyAddress({
+        shipping_address: formValueToShippingAddress(formValue),
+      }).unwrap();
+      toast.success("Address saved successfully.");
+      setIsEditing(false);
+    } catch (error) {
+      toast.error(getAddressErrorMessage(error));
+    }
+  }
+
+  if (isFetching && !data) {
+    return (
+      <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
+        <div className="h-[320px] animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-8 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
+        <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">My Address</h1>
+        <p className="mt-4 max-w-2xl text-sm leading-7 text-(--color-text-muted)">
+          Your saved address could not be loaded right now.
+        </p>
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-6 inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
+        >
+          <FiRefreshCw className="mr-2" />
+          Retry
+        </button>
+      </div>
+    );
   }
 
   if (isEditing) {
@@ -167,17 +136,22 @@ export default function MyAccountAddressPanel() {
             >
               <FiArrowLeft className="text-[22px]" />
             </button>
-            <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
-              {panelTitle}
-            </h1>
+            <div>
+              <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
+                {savedAddress ? "Update Address" : "Add New Address"}
+              </h1>
+              <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
+                Save one default shipping address for faster checkout.
+              </p>
+            </div>
           </div>
         </div>
 
         <AddressDetailsForm
           value={formValue}
           onChange={setFormValue}
-          title="Shipping Address"
-          description="Use the same address structure as checkout. This is mock for now and ready for future dynamic save."
+          title="My Address"
+          description="This saved address will be available automatically on checkout."
           showNoteField={false}
         />
 
@@ -192,9 +166,11 @@ export default function MyAccountAddressPanel() {
           <button
             type="button"
             onClick={handleSave}
-            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-9 text-sm font-semibold text-(--color-bg) shadow-[0_10px_24px_rgba(44,95,138,0.18)] transition hover:bg-(--color-primary-dark)"
+            disabled={isSaving}
+            className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-9 text-sm font-semibold text-(--color-bg) shadow-[0_10px_24px_rgba(44,95,138,0.18)] transition hover:bg-(--color-primary-dark) disabled:cursor-not-allowed disabled:opacity-60"
           >
-            Save
+            <FiSave className="mr-2 text-[16px]" />
+            {isSaving ? "Saving..." : "Save Address"}
           </button>
         </div>
       </div>
@@ -204,22 +180,66 @@ export default function MyAccountAddressPanel() {
   return (
     <div>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">Address</h1>
+        <div>
+          <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">My Address</h1>
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-(--color-text-muted)">
+            Save one default shipping address for checkout. You can update it anytime.
+          </p>
+        </div>
+
         <button
           type="button"
           onClick={handleAddNew}
           className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-(--color-bg) shadow-[0_10px_24px_rgba(44,95,138,0.18)] transition hover:bg-(--color-primary-dark)"
         >
-          <FiPlus className="mr-2 text-[18px]" />
-          Add New Address
+          {savedAddress ? <FiEdit2 className="mr-2 text-[18px]" /> : <FiPlus className="mr-2 text-[18px]" />}
+          {savedAddress ? "Change Address" : "Add New Address"}
         </button>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-2">
-        {addresses.map((address) => (
-          <AddressCard key={address.id} address={address} onChange={handleEdit} />
-        ))}
-      </div>
+      {savedAddress && addressLines ? (
+        <article className="overflow-hidden rounded-[24px] border border-(--color-border) bg-(--color-bg) shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
+          <div className="flex items-center justify-between gap-4 border-b border-(--color-border) px-5 py-4">
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
+                <FiMapPin className="text-[20px]" />
+              </div>
+              <div>
+                <h2 className="text-[18px] font-semibold tracking-[-0.03em] text-(--color-dark)">
+                  Default Shipping Address
+                </h2>
+                <p className="text-sm text-(--color-text-muted)">
+                  Used automatically in checkout unless you choose another address there.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-6 px-5 py-5 md:grid-cols-2">
+            <div className="space-y-2 text-[15px] leading-8 text-(--color-dark)">
+              <p className="font-semibold">{addressLines.name}</p>
+              <p>{addressLines.phone}</p>
+              <p>{addressLines.addressLine}</p>
+              <p className="text-(--color-text-muted)">{addressLines.locationLine}</p>
+            </div>
+            <div className="rounded-[20px] border border-(--color-border) bg-[#fbfcfd] p-5 text-sm leading-7 text-(--color-text-muted)">
+              Keep this address up to date so checkout can load faster and skip the Pathao selectors unless you need to change the delivery location.
+            </div>
+          </div>
+        </article>
+      ) : (
+        <section className="flex min-h-[300px] flex-col items-center justify-center rounded-[28px] border border-dashed border-(--color-border) bg-[#fbfcfd] px-6 py-10 text-center">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
+            <FiMapPin className="text-[24px]" />
+          </div>
+          <h2 className="mt-5 text-[24px] font-semibold tracking-[-0.03em] text-(--color-dark)">
+            No saved address yet
+          </h2>
+          <p className="mt-3 max-w-[520px] text-sm leading-7 text-(--color-text-muted)">
+            Add one default shipping address now. Checkout will use it automatically later.
+          </p>
+        </section>
+      )}
     </div>
   );
 }

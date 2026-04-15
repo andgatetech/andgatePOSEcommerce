@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import {
   FiShoppingCart,
@@ -30,6 +30,7 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const shareMenuRef = useRef<HTMLDivElement | null>(null);
   const [activeImage, setActiveImage] = useState(0);
@@ -51,7 +52,9 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
   async function handleAddToCart() {
     if (!isAuthenticated) {
-      toast.error("Please login to add items to cart.");
+      const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      router.push(`${loginUrl.pathname}${loginUrl.search}`);
       return;
     }
     const result = await addToCart({ stock_id: product.id });
