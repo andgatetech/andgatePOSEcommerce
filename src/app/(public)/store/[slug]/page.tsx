@@ -2,12 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { FiChevronRight, FiHome, FiMapPin, FiPhone, FiShoppingBag } from "react-icons/fi";
+import { FiChevronRight, FiHome, FiShoppingBag } from "react-icons/fi";
 import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
 import { ROUTES } from "@/config/routes";
 import { resolveStoreLogoUrl } from "@/lib/storeLogo";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type { PaginatedResponse, Store } from "@/types";
+import type { PaginatedResponse, Store, Category, Brand } from "@/types";
 
 async function getStoreBySlug(slug: string): Promise<Store | null> {
   try {
@@ -56,8 +56,28 @@ export default async function StoreDetailPage({
   }
 
   const logoUrl = resolveStoreLogoUrl(store.logo_path);
-  const phone = store.store_contact || store.store_number || "Not available";
-  const location = store.store_location || "Location not provided";
+
+  let categories: Category[] = [];
+  try {
+    const categoriesResponse = await serverFetchJson<PaginatedResponse<Category>>("/categories", {
+      store: slug,
+      per_page: 100,
+      sort_field: "name",
+      sort_direction: "asc",
+    });
+    categories = categoriesResponse.data?.items ?? [];
+  } catch {}
+
+  let brands: Brand[] = [];
+  try {
+    const brandsResponse = await serverFetchJson<PaginatedResponse<Brand>>("/brands", {
+      store: slug,
+      per_page: 100,
+      sort_field: "name",
+      sort_direction: "asc",
+    });
+    brands = brandsResponse.data?.items ?? [];
+  } catch {}
 
   return (
     <section className="bg-(--color-bg)">
@@ -87,26 +107,8 @@ export default async function StoreDetailPage({
               <h1 className="mt-5 text-[30px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[40px]">
                 {store.store_name}
               </h1>
-              <p className="mt-4 max-w-[720px] text-sm leading-7 text-(--color-text-muted) md:text-[15px]">
-                Products below now read their category and brand values directly from the ecommerce API for this store.
-              </p>
 
-              <div className="mt-6 grid gap-4 text-sm text-(--color-dark) sm:grid-cols-2">
-                <div className="flex items-start gap-3 rounded-[18px] border border-(--color-border) bg-white/70 px-4 py-4">
-                  <FiPhone className="mt-0.5 shrink-0 text-[18px] text-(--color-primary)" />
-                  <div>
-                    <p className="font-semibold">Phone</p>
-                    <p className="mt-1 text-(--color-text-muted)">{phone}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3 rounded-[18px] border border-(--color-border) bg-white/70 px-4 py-4">
-                  <FiMapPin className="mt-0.5 shrink-0 text-[18px] text-(--color-primary)" />
-                  <div>
-                    <p className="font-semibold">Location</p>
-                    <p className="mt-1 text-(--color-text-muted)">{location}</p>
-                  </div>
-                </div>
-              </div>
+
 
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
@@ -154,7 +156,11 @@ export default async function StoreDetailPage({
           </div>
         </div>
 
-        <ProductPageDataProvider initialStore={store.slug} />
+        <ProductPageDataProvider
+          initialStore={store.slug}
+          categories={categories}
+          brands={brands}
+        />
       </div>
     </section>
   );

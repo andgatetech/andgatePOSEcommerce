@@ -4,17 +4,22 @@ import ProductPageContent from "./ProductPage";
 import { useProductData } from "@/lib/product-data-context";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
+import type { Category, Brand } from "@/types";
 
 interface ProductPageDataProviderProps {
   initialCategory?: string;
   initialBrand?: string;
   initialStore?: string;
+  categories?: Category[];
+  brands?: Brand[];
 }
 
 export default function ProductPageDataProvider({
   initialCategory,
   initialBrand,
   initialStore,
+  categories: initialCategoriesProp,
+  brands: initialBrandsProp,
 }: ProductPageDataProviderProps) {
   const globalData = useProductData();
 
@@ -28,8 +33,8 @@ export default function ProductPageDataProvider({
     { skip: !initialStore }
   );
 
-  const categories = initialStore ? (storeCategories?.items ?? []) : globalData.categories;
-  const brands = initialStore ? (storeBrands?.items ?? []) : globalData.brands;
+  const categories = initialCategoriesProp ?? (initialStore ? (storeCategories?.items ?? []) : globalData.categories);
+  const brands = initialBrandsProp ?? (initialStore ? (storeBrands?.items ?? []) : globalData.brands);
 
   return (
     <ProductPageContent
