@@ -22,6 +22,7 @@ export type PaginatedResponse<T> = ApiResponse<PaginatedPayload<T>>;
 
 export interface ListQueryParams {
   search?: string;
+  store?: string;
   sort_field?: string;
   sort_direction?: "asc" | "desc";
   page?: number;

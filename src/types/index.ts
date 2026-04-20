@@ -54,6 +54,10 @@ export interface Category {
   name: string;
   slug: string;
   image_url: string | null;
+  store?: {
+    store_name: string;
+    store_slug: string;
+  };
   created_at: string;
   updated_at: string;
 }
@@ -63,6 +67,10 @@ export interface Brand {
   name: string;
   slug: string;
   image_url: string | null;
+  store?: {
+    store_name: string;
+    store_slug: string;
+  };
   created_at: string;
   updated_at: string;
 }
