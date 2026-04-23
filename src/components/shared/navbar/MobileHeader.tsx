@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaShoppingCart, FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
+import { FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
 import Logo from "../Logo";
 import ProductSearchBox from "../ProductSearchBox";
 import { ROUTES } from "@/config/routes";
 import { useAppSelector } from "@/lib/hooks";
 import { useAuthSession } from "@/features/auth/useAuthSession";
+import CartIconAnimation from "@/app/(protected)/cart/_components/CartIconAnimation";
 
 const mobileNavLinks = [
   { label: "About us", href: ROUTES.ABOUT },
@@ -57,10 +58,7 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
             )}
           </button>
           <button type="button" onClick={onCartClick} className="relative">
-            <FaShoppingCart className="text-xl text-(--color-primary)" />
-            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-cta) px-1 text-[10px] font-bold text-white">
-              {cartCount}
-            </span>
+            <CartIconAnimation variant="mobile" count={cartCount} />
           </button>
         </div>
       </div>

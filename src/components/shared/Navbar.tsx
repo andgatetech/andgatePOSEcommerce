@@ -10,7 +10,7 @@ interface NavbarProps {
 
 export default function Navbar({ categories, brands }: NavbarProps) {
   return (
-    <header>
+    <header className="sticky top-0 z-30">
       <TopBar />
       <NavbarClient />
       <SecondaryNav categories={categories} brands={brands} />

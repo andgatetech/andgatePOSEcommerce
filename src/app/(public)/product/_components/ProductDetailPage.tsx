@@ -23,6 +23,7 @@ import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
 import { useAddToCartMutation, useUpdateCartItemMutation } from "@/features/cart/cartApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
+import AddToCartButton from "./AddToCartButton";
 import type { EcommerceProduct } from "@/types";
 
 interface ProductDetailPageProps {
@@ -43,31 +44,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  const [addToCart, { isLoading: isAddingToCart }] = useAddToCartMutation();
   const [updateCartItem] = useUpdateCartItemMutation();
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
   const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
 
   const isWishlisted = wishlistData?.items.some((item) => item.stock.id === product.id) ?? false;
-
-  async function handleAddToCart() {
-    if (!isAuthenticated) {
-      const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      router.push(`${loginUrl.pathname}${loginUrl.search}`);
-      return;
-    }
-    const result = await addToCart({ stock_id: product.id });
-    if ("error" in result) {
-      toast.error("Failed to add to cart.");
-      return;
-    }
-    // If user selected qty > 1, update to the desired quantity
-    if (quantity > 1 && "data" in result && result.data.data) {
-      await updateCartItem({ cart_id: result.data.data.id, quantity });
-    }
-    toast.success(result.data?.message ?? "Added to cart!");
-  }
 
   async function handleToggleWishlist() {
     if (!isAuthenticated) {
@@ -407,14 +388,11 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 </button>
               </div>
 
-              <button
-                onClick={handleAddToCart}
-                disabled={stockCount === 0 || isAddingToCart}
-                className="flex h-[46px] flex-1 items-center justify-center gap-2 rounded-[10px] bg-(--color-primary) px-6 text-[15px] font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <FiShoppingCart size={18} />
-                {isAddingToCart ? "Adding…" : "Add to cart"}
-              </button>
+              <AddToCartButton
+                stockId={product.id}
+                stockCount={stockCount}
+                quantity={quantity}
+              />
 
               <button
                 onClick={handleToggleWishlist}

@@ -7,13 +7,14 @@ import toast from "react-hot-toast";
 import {
   FiMinus,
   FiPlus,
+  FiRefreshCw,
   FiShoppingBag,
   FiTrash2,
   FiX,
 } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
-import { useUpdateCartItemMutation, useRemoveCartItemMutation } from "@/features/cart/cartApi";
+import { useClearCartMutation, useUpdateCartItemMutation, useRemoveCartItemMutation } from "@/features/cart/cartApi";
 import type { CartItemData } from "@/types";
 
 type CartDrawerProps = {
@@ -126,6 +127,8 @@ function DrawerItemRow({ item }: { item: CartItemData }) {
 }
 
 export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) {
+  const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
+
   useEffect(() => {
     if (!isOpen) return;
     const previousOverflow = document.body.style.overflow;
@@ -141,6 +144,18 @@ export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) 
   }, [isOpen, onClose]);
 
   const subtotal = items.reduce((sum, item) => sum + item.subtotal, 0);
+
+  async function handleClearCart() {
+    if (items.length === 0 || isClearing) return;
+
+    const result = await clearCart();
+    if ("error" in result) {
+      toast.error("Failed to clear cart.");
+      return;
+    }
+
+    toast.success(result.data.message || "Cart cleared.");
+  }
 
   return (
     <>
@@ -169,13 +184,27 @@ export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) 
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-[#f7f7f9] text-(--color-dark) transition hover:bg-white"
-          >
-            <FiX size={22} />
-          </button>
+          <div className="flex items-center gap-2">
+            {items.length > 0 ? (
+              <button
+                type="button"
+                onClick={handleClearCart}
+                disabled={isClearing}
+                className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-(--color-border) bg-[#f7f7f9] px-4 text-[13px] font-semibold text-(--color-dark) transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <FiRefreshCw className={isClearing ? "animate-spin" : ""} size={14} />
+                {isClearing ? "Clearing..." : "Clear all"}
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-[#f7f7f9] text-(--color-dark) transition hover:bg-white"
+            >
+              <FiX size={22} />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto bg-[#fcfcfd] px-6 py-3 [scrollbar-color:var(--color-text-muted)_transparent] [scrollbar-width:thin] max-sm:px-4">

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   FaChevronDown,
-  FaShoppingCart,
   FaUser,
 } from "react-icons/fa";
 import Logo from "../Logo";
@@ -12,6 +11,7 @@ import ProductSearchBox from "../ProductSearchBox";
 import { ROUTES } from "@/config/routes";
 import { useAppSelector } from "@/lib/hooks";
 import { useAuthSession } from "@/features/auth/useAuthSession";
+import CartIconAnimation from "@/app/(protected)/cart/_components/CartIconAnimation";
 
 type MainHeaderProps = {
   cartCount: number;
@@ -64,17 +64,7 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                   onClick={onCartClick}
                   className="flex items-center gap-x-4 cursor-pointer group text-left"
                 >
-                  <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
-                    <FaShoppingCart className="text-base text-white" />
-                  </span>
-                  <span className="flex flex-col items-start">
-                    <span className="text-[11px] uppercase tracking-wider text-(--color-text-muted) font-medium mb-0.5">
-                      Cart
-                    </span>
-                    <span className="text-[15px] leading-none text-(--color-dark) font-bold">
-                      {cartCount} Items
-                    </span>
-                  </span>
+                  <CartIconAnimation count={cartCount} />
                 </button>
               </li>
 

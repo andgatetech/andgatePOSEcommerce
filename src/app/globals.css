@@ -6,73 +6,211 @@
    ============================================================ */
 
 :root {
-  /* ── Core Brand Colors (from logo) ── */
-  --color-primary: #2C5F8A;           /* Primary Blue */
-  --color-primary-dark: #1E4060;      /* Darker blue (top bar, buttons hover) */
-  --color-primary-900: #132D45;       /* Darkest blue (footer bg) */
-  --color-primary-light: #3D7AAF;     /* Lighter blue (hover states) */
-  --color-primary-200: #B0CCDE;       /* Light blue (text on dark bg) */
-  --color-primary-100: #E1EBF3;       /* Very light blue (subtle bg) */
-
-  --color-cta: #D8891F;               /* Gold/Orange CTA */
-  --color-cta-hover: #E89D3A;         /* CTA hover (lighter) */
-  --color-cta-dark: #B87318;          /* CTA pressed (darker) */
-
-  --color-dark: #111111;              /* Neutral Dark */
-  --color-bg: #FFFFFF;                /* Background White */
-  --color-border: #E5E5E5;           /* Border Light Gray */
-
-  /* ── Semantic (derived from core) ── */
-  --color-text: #111111;              /* Body text = dark */
-  --color-text-muted: #6B7280;        /* Muted/secondary text */
+  --color-primary: #2C5F8A;
+  --color-primary-dark: #1E4060;
+  --color-primary-900: #132D45;
+  --color-primary-light: #3D7AAF;
+  --color-primary-200: #B0CCDE;
+  --color-primary-100: #E1EBF3;
+  --color-cta: #D8891F;
+  --color-cta-hover: #E89D3A;
+  --color-cta-dark: #B87318;
+  --color-dark: #111111;
+  --color-bg: #FFFFFF;
+  --color-border: #E5E5E5;
+  --color-text: #111111;
+  --color-text-muted: #6B7280;
   --color-success: #2D8F4E;
   --color-danger: #D93025;
   --color-warning: #E8A317;
 }
 
-/* ── Base Styles ── */
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
-html {
-  scroll-behavior: smooth;
-}
-
-*:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
-}
-
-::selection {
-  background-color: var(--color-primary-100);
-  color: var(--color-primary-900);
-}
+html { scroll-behavior: smooth; }
+*:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+::selection { background-color: var(--color-primary-100); color: var(--color-primary-900); }
 
 @keyframes nav-fire-flicker {
-  0%, 100% {
-    transform: translateY(0) scale(1);
-    filter: drop-shadow(0 0 0 rgba(216, 137, 31, 0.0));
-  }
-  25% {
-    transform: translateY(-1px) scale(1.1);
-    filter: drop-shadow(0 0 8px rgba(216, 137, 31, 0.28));
-  }
-  50% {
-    transform: translateY(-3px) scale(1.18);
-    filter: drop-shadow(0 0 14px rgba(216, 137, 31, 0.45));
-  }
-  75% {
-    transform: translateY(-1px) scale(1.08);
-    filter: drop-shadow(0 0 10px rgba(216, 137, 31, 0.24));
-  }
+  0%,100% { transform: translateY(0) scale(1);    filter: drop-shadow(0 0 0 rgba(216,137,31,0)); }
+  25%      { transform: translateY(-1px) scale(1.1);  filter: drop-shadow(0 0 8px rgba(216,137,31,.28)); }
+  50%      { transform: translateY(-3px) scale(1.18); filter: drop-shadow(0 0 14px rgba(216,137,31,.45)); }
+  75%      { transform: translateY(-1px) scale(1.08); filter: drop-shadow(0 0 10px rgba(216,137,31,.24)); }
+}
+.nav-fire-icon { animation: nav-fire-flicker 1.35s ease-in-out infinite; transform-origin: center bottom; will-change: transform, filter; }
+
+/* ============================================================
+   Add-to-Cart Button Animation
+   Duration: 1.8s, plays ONCE (forwards), no loops.
+   Promise.all in JS ensures "Added" only shows after BOTH
+   the 1.8s animation AND the API call have completed.
+
+   Timeline (all three elements share 1.8s):
+     0%  – 22%  : Cart enters from left               (0 – 0.40s)
+     22% – 44%  : Cart holds at center, box falls in  (0.40 – 0.79s)
+     44% – 66%  : Cart bounces, fill shows            (0.79 – 1.19s)
+     66% – 88%  : Cart exits to RIGHT — same speed    (1.19 – 1.58s)
+     88% – 100% : All hidden (JS shows "Added")       (1.58 – 1.80s)
+
+   Entry (0→22%) and Exit (66→88%) are each 22% = same speed.
+   ============================================================ */
+
+/* ── Base ── */
+.atc-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  flex: 1;
+  padding: 0 24px;
+  border-radius: 10px;
+  background-color: var(--color-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.atc-btn:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+.atc-btn--disabled { opacity: .5; cursor: not-allowed; }
+
+/* ── Layer 1: idle label ── */
+.atc-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.28s cubic-bezier(.4,0,.2,1), opacity 0.28s cubic-bezier(.4,0,.2,1);
+}
+.atc-btn--loading .atc-label,
+.atc-btn--success .atc-label {
+  transform: translateY(-130%);
+  opacity: 0;
+  pointer-events: none;
 }
 
-.nav-fire-icon {
-  animation: nav-fire-flicker 1.35s ease-in-out infinite;
+/* ── Layer 2: loading (cart + fill + box) ── */
+.atc-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease;
+}
+.atc-btn--loading .atc-loading { opacity: 1; }
+.atc-btn--success .atc-loading { opacity: 0; }
+
+/* Cart outline — travels full journey */
+.atc-slide-cart {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transform-origin: center bottom;
-  will-change: transform, filter;
+}
+.atc-btn--loading .atc-slide-cart {
+  animation: atc-cart-journey 1.8s cubic-bezier(.4,0,.2,1) forwards;
+}
+
+/* White fill overlay inside cart */
+.atc-cart-body-fill {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.atc-btn--loading .atc-cart-body-fill {
+  animation: atc-fill-journey 1.8s ease forwards;
+}
+
+/* Falling box */
+.atc-drop-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.atc-btn--loading .atc-drop-box {
+  animation: atc-box-journey 1.8s ease forwards;
+}
+
+/* ── Layer 3: success "Added" ── */
+.atc-success {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.atc-btn--success .atc-success {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Keyframes ── */
+
+/*
+  Cart: enters from left, holds, bounces on box impact, exits RIGHT at same speed.
+  Entry 0→22% = Exit 66→88% (both 22% of 1.8s = 0.396s each).
+*/
+@keyframes atc-cart-journey {
+  /* Enter from left */
+  0%   { transform: translate(-80px,0) scaleX(.85); opacity:0; }
+  5%   { opacity:1; }
+  22%  { transform: translate(0,0)    scaleX(1)    scaleY(1);    opacity:1; }
+  /* Hold while box falls */
+  38%  { transform: translate(0,0)    scaleX(1)    scaleY(1);    opacity:1; }
+  /* Squash on box impact */
+  46%  { transform: translate(0,4px)  scaleX(1.14) scaleY(.86);  opacity:1; }
+  /* Spring up */
+  55%  { transform: translate(0,-5px) scaleX(.92)  scaleY(1.12); opacity:1; }
+  /* Settle */
+  63%  { transform: translate(0,0)    scaleX(1)    scaleY(1);    opacity:1; }
+  /* Hold (loaded) */
+  66%  { transform: translate(0,0)    scaleX(1)    scaleY(1);    opacity:1; }
+  /* Exit RIGHT — same speed as entry (22% range) */
+  83%  { opacity:1; }
+  88%  { transform: translate(80px,0) scaleX(.85); opacity:0; }
+  100% { transform: translate(80px,0); opacity:0; }
+}
+
+/*
+  Fill: appears when box lands (38%), stays through exit,
+  fades with cart.
+*/
+@keyframes atc-fill-journey {
+  0%   { opacity:0; }
+  38%  { opacity:0; }  /* box not yet landed */
+  50%  { opacity:1; }  /* cart is full — stays filled through entire exit */
+  100% { opacity:1; }  /* cart's own opacity handles the final fade */
+}
+
+/*
+  Box: waits for cart to arrive (22%), appears above cart,
+  falls INTO cart opening (38%), gets swallowed (46%).
+*/
+@keyframes atc-box-journey {
+  0%   { transform: translate(-50%, calc(-50% - 22px)); opacity:0; }
+  22%  { transform: translate(-50%, calc(-50% - 22px)); opacity:0; }
+  30%  { transform: translate(-50%, calc(-50% - 22px)); opacity:1; }
+  38%  { transform: translate(-50%, calc(-50% + 3px));  opacity:1; }
+  46%  { transform: translate(-50%, calc(-50% + 3px));  opacity:0; }
+  100% { transform: translate(-50%, calc(-50% + 3px));  opacity:0; }
 }
