@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { serverFetchJson } from "@/lib/serverFetch";
 import type {
   Brand,
@@ -10,6 +11,11 @@ import BrandGallery from "./_components/BrandGallery";
 const DEFAULT_PER_PAGE = 20;
 const DEFAULT_SORT_FIELD = "name";
 const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "asc";
+
+export const metadata: Metadata = {
+  title: "Brand",
+  description: "Browse brands available on Hawkeri.",
+};
 
 interface BrandPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaStoreAlt, FaMoneyBillWave, FaShieldAlt } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Become a Vendor | Hawkeri',
+  title: 'Become a Vendor',
   description: 'Join our marketplace and start selling to thousands of customers.',
 };
 

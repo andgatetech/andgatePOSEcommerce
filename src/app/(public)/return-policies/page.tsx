@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaBoxOpen, FaUndoAlt, FaCreditCard } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Return & Refund Policies | Hawkeri',
+  title: 'Return & Refund Policies',
   description: 'Our return and refund policies for products purchased.',
 };
 

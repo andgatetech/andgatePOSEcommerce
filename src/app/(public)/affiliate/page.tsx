@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaLink, FaShareSquare, FaRegMoneyBillAlt } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Affiliate Program | Hawkeri',
+  title: 'Affiliate Program',
   description: 'Refer products and earn money.',
 };
 

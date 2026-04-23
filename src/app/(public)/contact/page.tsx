@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaBoxOpen, FaUndo, FaTag, FaRegEnvelope } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Contact Us | Hawkeri',
+  title: 'Contact Us',
   description: 'Reach out for help with your orders or account.',
 };
 

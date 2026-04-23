@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import RegisterForm from "./_components/RegisterForm";
+
+export const metadata: Metadata = {
+  title: "Register",
+  description: "Create a Hawkeri account for faster checkout and order tracking.",
+};
 
 export default function RegisterPage() {
   return (

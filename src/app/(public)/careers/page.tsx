@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaBriefcase, FaGraduationCap, FaLaptopCode } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'Careers | Hawkeri',
+  title: 'Careers',
   description: 'Join our team at Hawkeri.',
 };
 

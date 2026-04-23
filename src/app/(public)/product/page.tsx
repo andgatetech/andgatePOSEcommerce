@@ -20,22 +20,22 @@ function buildProductListingTitle({
   search?: string;
 }) {
   if (brandName && categoryName) {
-    return `${brandName} ${categoryName} Products | Hawkeri`;
+    return `${brandName} ${categoryName} Products`;
   }
 
   if (brandName) {
-    return `${brandName} Products | Hawkeri`;
+    return `${brandName} Products`;
   }
 
   if (categoryName) {
-    return `${categoryName} Products | Hawkeri`;
+    return `${categoryName} Products`;
   }
 
   if (search) {
-    return `Search results for "${search}" | Hawkeri`;
+    return `Search results for "${search}"`;
   }
 
-  return "Products | Hawkeri";
+  return "Products";
 }
 
 function buildProductListingDescription({

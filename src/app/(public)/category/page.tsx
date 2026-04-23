@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { serverFetchJson } from "@/lib/serverFetch";
 import type {
   Category,
@@ -10,6 +11,11 @@ import CategoryGallery from "./_components/CategoryGallery";
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_SORT_FIELD = "name";
 const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "asc";
+
+export const metadata: Metadata = {
+  title: "Category",
+  description: "Browse product categories available on Hawkeri.",
+};
 
 interface CategoryPageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

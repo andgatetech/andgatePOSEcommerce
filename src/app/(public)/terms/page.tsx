@@ -2,7 +2,7 @@ import React from 'react';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service | Hawkeri',
+  title: 'Terms of Service',
   description: 'Terms and conditions for purchasing physical goods.',
 };
 

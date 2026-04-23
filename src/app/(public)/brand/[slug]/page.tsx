@@ -28,11 +28,11 @@ export async function generateMetadata({
   const brand = await getBrandBySlug(slug);
 
   if (!brand) {
-    return { title: "Brand Not Found | Hawkeri" };
+    return { title: "Brand Not Found" };
   }
 
   return {
-    title: `${brand.name} Products | Hawkeri`,
+    title: `${brand.name} Products`,
     description: `Browse products for the ${brand.name} brand on Hawkeri.`,
   };
 }

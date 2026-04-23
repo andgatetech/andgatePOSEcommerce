@@ -30,11 +30,11 @@ export async function generateMetadata({
   const category = await getCategoryBySlug(slug);
 
   if (!category) {
-    return { title: "Category Not Found | Hawkeri" };
+    return { title: "Category Not Found" };
   }
 
   return {
-    title: `${category.name} Products | Hawkeri`,
+    title: `${category.name} Products`,
     description: `Browse products in the ${category.name} category on Hawkeri.`,
   };
 }

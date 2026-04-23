@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import MyAccountAddressPanel from "../_components/MyAccountAddressPanel";
+
+export const metadata: Metadata = {
+  title: "My Address",
+  description: "Manage your saved Hawkeri delivery addresses.",
+};
 
 export default function MyAddressPage() {
   return (

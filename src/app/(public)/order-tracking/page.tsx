@@ -1,4 +1,10 @@
+import type { Metadata } from "next";
 import OrderTrackingContent from "@/components/shared/order-tracking/OrderTrackingContent";
+
+export const metadata: Metadata = {
+  title: "Order Tracking",
+  description: "Track a Hawkeri order by order number and phone number.",
+};
 
 export default function OrderTrackingPage() {
   return (

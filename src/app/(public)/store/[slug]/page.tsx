@@ -33,12 +33,12 @@ export async function generateMetadata({
 
   if (!store) {
     return {
-      title: "Store Not Found | Hawkeri",
+      title: "Store Not Found",
     };
   }
 
   return {
-    title: `${store.store_name} | Hawkeri`,
+    title: store.store_name,
     description: `Browse ${store.store_name} on Hawkeri.`,
   };
 }

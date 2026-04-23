@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import StoreListPageContent from "./_components/StoreListPageContent";
 import {
   STORE_DEFAULT_PER_PAGE,
@@ -6,6 +7,11 @@ import {
 } from "./_components/shared/storeListShared";
 import { serverFetchJson } from "@/lib/serverFetch";
 import type { ListQueryParams, PaginatedPayload, PaginatedResponse, Store } from "@/types";
+
+export const metadata: Metadata = {
+  title: "Store",
+  description: "Browse stores selling on Hawkeri.",
+};
 
 interface StorePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;

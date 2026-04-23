@@ -36,7 +36,7 @@ export async function generateMetadata({
   const product = await getProduct(slug);
 
   if (!product) {
-    return { title: "Product Not Found | Hawkeri" };
+    return { title: "Product Not Found" };
   }
 
   const description = trimDescription(product.description);

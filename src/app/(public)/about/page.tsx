@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { FaShippingFast, FaCheckCircle, FaMoneyBillWave, FaHeadset } from 'react-icons/fa';
 
 export const metadata: Metadata = {
-  title: 'About Us | Hawkeri',
+  title: 'About Us',
   description: 'Learn about our mission to bring the best products to your doorstep.',
 };
 
