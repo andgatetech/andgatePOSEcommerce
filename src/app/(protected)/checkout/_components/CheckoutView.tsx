@@ -14,11 +14,11 @@ import {
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import AddressDetailsForm, { type AddressFormValue } from "@/components/shared/AddressDetailsForm";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
-import { useGetMyAddressQuery } from "@/features/account/myAddressApi";
+import { useGetMyAddressesQuery } from "@/features/account/myAddressApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import {
   emptyAddressFormValue,
-  formValueToShippingAddress,
+  formValueToAddressPayload,
   getAddressDisplayLines,
   shippingAddressToFormValue,
 } from "@/lib/address";
@@ -173,18 +173,23 @@ function CheckoutItemRow({ item }: { item: CartItemData }) {
 export default function CheckoutView() {
   const router = useRouter();
   const { data: cartData, isLoading } = useGetCartQuery();
-  const { data: myAddressData, isFetching: isLoadingMyAddress } = useGetMyAddressQuery();
+  const { data: myAddressData, isFetching: isLoadingMyAddress } = useGetMyAddressesQuery();
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
   const [clearCart] = useClearCartMutation();
 
   const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [paymentId, setPaymentId] = useState(paymentOptions[0].id);
 
   const items = cartData?.items ?? [];
   const cartTotal = cartData?.cart_total ?? 0;
   const itemCount = cartData?.item_count ?? 0;
-  const savedAddress = myAddressData?.shipping_address ?? null;
+  const savedAddresses = myAddressData?.addresses ?? [];
+  const defaultAddress = myAddressData?.default_address ?? null;
+  const selectedAddress =
+    savedAddresses.find((address) => address.id === selectedAddressId) ?? defaultAddress;
+  const savedAddress = selectedAddress ?? null;
   const activeShippingAddress = !showAddressForm && savedAddress ? savedAddress : null;
   const displayAddress = activeShippingAddress ? getAddressDisplayLines(activeShippingAddress) : null;
 
@@ -198,14 +203,15 @@ export default function CheckoutView() {
   const total = subtotal + shippingFee;
 
   useEffect(() => {
-    if (savedAddress) {
+    if (defaultAddress) {
       setShowAddressForm(false);
-      setAddressValue(shippingAddressToFormValue(savedAddress));
+      setSelectedAddressId(defaultAddress.id);
+      setAddressValue(shippingAddressToFormValue(defaultAddress));
     } else {
       setShowAddressForm(true);
       setAddressValue(emptyAddressFormValue);
     }
-  }, [savedAddress]);
+  }, [defaultAddress]);
 
   useEffect(() => {
     if (!isSubmitting) {
@@ -225,48 +231,55 @@ export default function CheckoutView() {
       return;
     }
 
-    const shippingAddress = activeShippingAddress ?? formValueToShippingAddress(addressValue);
+    const shippingAddress = activeShippingAddress ?? formValueToAddressPayload(addressValue);
 
-    if (!shippingAddress.name.trim()) {
+    const recipientName = shippingAddress.name?.trim() ?? "";
+    const recipientPhone = shippingAddress.phone?.trim() ?? "";
+    const addressLine = shippingAddress.address_line.trim();
+    const city = shippingAddress.city?.trim() ?? "";
+    const zone = shippingAddress.zone?.trim() ?? "";
+    const area = shippingAddress.area?.trim() ?? "";
+
+    if (!recipientName) {
       toast.error("Full name is required.");
       return;
     }
 
-    if (!shippingAddress.phone.trim()) {
+    if (!recipientPhone) {
       toast.error("Phone number is required.");
       return;
     }
 
-    if (!shippingAddress.address_line.trim()) {
+    if (!addressLine) {
       toast.error("Address line is required.");
       return;
     }
 
-    if (!shippingAddress.city.trim() || !shippingAddress.zone?.trim() || !shippingAddress.area?.trim()) {
+    if (!city || !zone || !area) {
       toast.error("District, zone, and area are required.");
       return;
     }
 
     const payload: CreateOrderRequest = {
-      name: shippingAddress.name,
-      phone: shippingAddress.phone,
-      address_line: shippingAddress.address_line,
-      city: shippingAddress.city,
-      zone: shippingAddress.zone ?? "",
-      area: shippingAddress.area ?? "",
       payment_method: paymentMethodMap[paymentId] ?? paymentId,
       shipping_fee: shippingFee,
       notes: addressValue.note.trim() || undefined,
-      shipping_address: {
-        ...shippingAddress,
-        zone: shippingAddress.zone ?? "",
-        area: shippingAddress.area ?? "",
-      },
-      customer_name: shippingAddress.name,
-      customer_phone: shippingAddress.phone,
-      address: shippingAddress.address_line,
-      address_type: addressValue.label,
     };
+
+    if (activeShippingAddress) {
+      payload.address_id = activeShippingAddress.id;
+    } else {
+      payload.shipping_address = {
+        ...shippingAddress,
+        name: recipientName,
+        phone: recipientPhone,
+        address_line: addressLine,
+        city,
+        zone,
+        area,
+        postal_code: shippingAddress.postal_code ?? "",
+      };
+    }
 
     try {
       const order = await createOrder(payload).unwrap();
@@ -340,9 +353,7 @@ export default function CheckoutView() {
                     <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
                       Delivery Address
                     </h2>
-                    <p className="text-sm text-(--color-text-muted)">
-                      Your saved address is ready for this checkout.
-                    </p>
+                    <p className="text-sm text-(--color-text-muted)">Choose a saved address for this order.</p>
                   </div>
                   <button
                     type="button"
@@ -353,16 +364,48 @@ export default function CheckoutView() {
                   </button>
                 </div>
 
-                <div className="grid gap-5 px-5 py-5 md:grid-cols-[minmax(0,1fr)_220px]">
-                  <div className="space-y-2 text-[15px] leading-8 text-(--color-dark)">
-                    <p className="font-semibold">{displayAddress.name}</p>
-                    <p>{displayAddress.phone}</p>
-                    <p>{displayAddress.addressLine}</p>
-                    <p className="text-(--color-text-muted)">{displayAddress.locationLine}</p>
-                  </div>
-                  <div className="rounded-[18px] border border-(--color-border) bg-[#fbfcfd] p-4 text-sm leading-7 text-(--color-text-muted)">
-                    Checkout will use this saved address. Choose add new address only if this order needs another location.
-                  </div>
+                <div className="grid gap-3 px-5 py-5">
+                  {savedAddresses.map((address) => {
+                    const addressLines = getAddressDisplayLines(address);
+                    const checked = activeShippingAddress?.id === address.id;
+
+                    return (
+                      <label
+                        key={address.id}
+                        className={`flex cursor-pointer gap-3 rounded-[18px] border p-4 transition ${
+                          checked
+                            ? "border-(--color-primary) bg-(--color-primary-100)"
+                            : "border-(--color-border) bg-(--color-bg) hover:border-(--color-primary)"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="savedAddress"
+                          checked={checked}
+                          onChange={() => {
+                            setSelectedAddressId(address.id);
+                            setAddressValue(shippingAddressToFormValue(address));
+                          }}
+                          className="mt-1 h-5 w-5 accent-(--color-primary)"
+                        />
+                        <span className="min-w-0 text-[15px] leading-7 text-(--color-dark)">
+                          <span className="flex flex-wrap items-center gap-2">
+                            <span className="font-semibold">{addressLines.name}</span>
+                            {address.is_default ? (
+                              <span className="rounded-full bg-[#eef6ef] px-2.5 py-0.5 text-xs font-semibold text-[#0d7a74]">
+                                Default
+                              </span>
+                            ) : null}
+                          </span>
+                          <span className="block">{addressLines.phone}</span>
+                          <span className="block">{addressLines.addressLine}</span>
+                          <span className="block text-(--color-text-muted)">{addressLines.locationLine}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+
+
                 </div>
               </section>
             ) : (
@@ -374,6 +417,7 @@ export default function CheckoutView() {
                       type="button"
                       onClick={() => {
                         setShowAddressForm(false);
+                        setSelectedAddressId(savedAddress.id);
                         setAddressValue(shippingAddressToFormValue(savedAddress));
                       }}
                       className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-5 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"

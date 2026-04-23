@@ -1,5 +1,5 @@
 import type { AddressFormValue } from "@/components/shared/AddressDetailsForm";
-import type { EcommerceOrderShippingAddress } from "@/types";
+import type { EcommerceAddressPayload, EcommerceOrderShippingAddress } from "@/types";
 
 export const emptyAddressFormValue: AddressFormValue = {
   fullName: "",
@@ -33,14 +33,16 @@ export function shippingAddressToFormValue(
     areaName: shippingAddress.area ?? "",
     addressLine: shippingAddress.address_line ?? "",
     note: "",
-    label: "home",
+    label: shippingAddress.type ?? "home",
   };
 }
 
-export function formValueToShippingAddress(
+export function formValueToAddressPayload(
   formValue: AddressFormValue,
-): EcommerceOrderShippingAddress {
+): EcommerceAddressPayload {
   return {
+    type: formValue.label,
+    label: null,
     name: formValue.fullName.trim(),
     phone: formValue.phone.trim(),
     address_line: formValue.addressLine.trim(),
@@ -50,6 +52,8 @@ export function formValueToShippingAddress(
     postal_code: "",
   };
 }
+
+export const formValueToShippingAddress = formValueToAddressPayload;
 
 export function getAddressDisplayLines(
   shippingAddress: EcommerceOrderShippingAddress,

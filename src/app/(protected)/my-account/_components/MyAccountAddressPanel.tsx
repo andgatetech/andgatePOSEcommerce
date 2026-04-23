@@ -4,20 +4,29 @@ import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FiArrowLeft,
+  FiCheckCircle,
   FiEdit2,
   FiMapPin,
   FiPlus,
   FiRefreshCw,
   FiSave,
+  FiTrash2,
 } from "react-icons/fi";
 import AddressDetailsForm from "@/components/shared/AddressDetailsForm";
-import { useGetMyAddressQuery, useUpdateMyAddressMutation } from "@/features/account/myAddressApi";
+import {
+  useCreateMyAddressMutation,
+  useDeleteMyAddressMutation,
+  useGetMyAddressesQuery,
+  useSetDefaultMyAddressMutation,
+  useUpdateMyAddressMutation,
+} from "@/features/account/myAddressApi";
 import {
   emptyAddressFormValue,
-  formValueToShippingAddress,
+  formValueToAddressPayload,
   getAddressDisplayLines,
   shippingAddressToFormValue,
 } from "@/lib/address";
+import type { EcommerceSavedAddress } from "@/types";
 
 function getAddressErrorMessage(error: unknown) {
   if (!error || typeof error !== "object" || !("data" in error)) {
@@ -37,32 +46,43 @@ function getAddressErrorMessage(error: unknown) {
   return "Address could not be saved.";
 }
 
+function getAddressTitle(address: EcommerceSavedAddress) {
+  return address.label?.trim() || `${address.type.charAt(0).toUpperCase()}${address.type.slice(1)} Address`;
+}
+
 export default function MyAccountAddressPanel() {
-  const { data, isFetching, isError, refetch } = useGetMyAddressQuery();
-  const [updateMyAddress, { isLoading: isSaving }] = useUpdateMyAddressMutation();
-  const [isEditing, setIsEditing] = useState(false);
+  const { data, isFetching, isError, refetch } = useGetMyAddressesQuery();
+  const [createMyAddress, { isLoading: isCreating }] = useCreateMyAddressMutation();
+  const [updateMyAddress, { isLoading: isUpdating }] = useUpdateMyAddressMutation();
+  const [setDefaultMyAddress, { isLoading: isSettingDefault }] = useSetDefaultMyAddressMutation();
+  const [deleteMyAddress, { isLoading: isDeleting }] = useDeleteMyAddressMutation();
+  const [editingAddressId, setEditingAddressId] = useState<number | null>(null);
   const [formValue, setFormValue] = useState(emptyAddressFormValue);
 
-  const savedAddress = data?.shipping_address ?? null;
-  const addressLines = useMemo(
-    () => (savedAddress ? getAddressDisplayLines(savedAddress) : null),
-    [savedAddress],
-  );
+  const addresses = useMemo(() => data?.addresses ?? [], [data?.addresses]);
+  const editingAddress = addresses.find((address) => address.id === editingAddressId) ?? null;
+  const isEditing = editingAddressId !== null;
+  const isSaving = isCreating || isUpdating;
 
   useEffect(() => {
-    if (!isEditing) {
-      setFormValue(shippingAddressToFormValue(savedAddress));
+    if (editingAddress) {
+      setFormValue(shippingAddressToFormValue(editingAddress));
     }
-  }, [isEditing, savedAddress]);
+  }, [editingAddress]);
 
   function handleAddNew() {
-    setFormValue(savedAddress ? shippingAddressToFormValue(savedAddress) : emptyAddressFormValue);
-    setIsEditing(true);
+    setEditingAddressId(0);
+    setFormValue(emptyAddressFormValue);
+  }
+
+  function handleEdit(address: EcommerceSavedAddress) {
+    setEditingAddressId(address.id);
+    setFormValue(shippingAddressToFormValue(address));
   }
 
   function handleCancel() {
-    setIsEditing(false);
-    setFormValue(shippingAddressToFormValue(savedAddress));
+    setEditingAddressId(null);
+    setFormValue(emptyAddressFormValue);
   }
 
   async function handleSave() {
@@ -86,12 +106,38 @@ export default function MyAccountAddressPanel() {
       return;
     }
 
+    const address = formValueToAddressPayload(formValue);
+
     try {
-      await updateMyAddress({
-        shipping_address: formValueToShippingAddress(formValue),
-      }).unwrap();
+      if (editingAddressId && editingAddressId > 0) {
+        await updateMyAddress({ id: editingAddressId, address }).unwrap();
+      } else {
+        await createMyAddress({
+          ...address,
+          is_default: addresses.length === 0,
+        }).unwrap();
+      }
+
       toast.success("Address saved successfully.");
-      setIsEditing(false);
+      handleCancel();
+    } catch (error) {
+      toast.error(getAddressErrorMessage(error));
+    }
+  }
+
+  async function handleSetDefault(id: number) {
+    try {
+      await setDefaultMyAddress(id).unwrap();
+      toast.success("Default address updated.");
+    } catch (error) {
+      toast.error(getAddressErrorMessage(error));
+    }
+  }
+
+  async function handleDelete(id: number) {
+    try {
+      await deleteMyAddress(id).unwrap();
+      toast.success("Address deleted successfully.");
     } catch (error) {
       toast.error(getAddressErrorMessage(error));
     }
@@ -110,7 +156,7 @@ export default function MyAccountAddressPanel() {
       <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-8 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
         <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">My Address</h1>
         <p className="mt-4 max-w-2xl text-sm leading-7 text-(--color-text-muted)">
-          Your saved address could not be loaded right now.
+          Your saved addresses could not be loaded right now.
         </p>
         <button
           type="button"
@@ -138,10 +184,10 @@ export default function MyAccountAddressPanel() {
             </button>
             <div>
               <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
-                {savedAddress ? "Update Address" : "Add New Address"}
+                {editingAddress ? "Update Address" : "Add New Address"}
               </h1>
               <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
-                Save one default shipping address for faster checkout.
+                Saved addresses can be selected during checkout.
               </p>
             </div>
           </div>
@@ -151,7 +197,7 @@ export default function MyAccountAddressPanel() {
           value={formValue}
           onChange={setFormValue}
           title="My Address"
-          description="This saved address will be available automatically on checkout."
+          description="Save this address to your address book."
           showNoteField={false}
         />
 
@@ -183,7 +229,7 @@ export default function MyAccountAddressPanel() {
         <div>
           <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">My Address</h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-(--color-text-muted)">
-            Save one default shipping address for checkout. You can update it anytime.
+            Manage saved delivery addresses and choose one default address for checkout.
           </p>
         </div>
 
@@ -192,41 +238,84 @@ export default function MyAccountAddressPanel() {
           onClick={handleAddNew}
           className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-(--color-bg) shadow-[0_10px_24px_rgba(44,95,138,0.18)] transition hover:bg-(--color-primary-dark)"
         >
-          {savedAddress ? <FiEdit2 className="mr-2 text-[18px]" /> : <FiPlus className="mr-2 text-[18px]" />}
-          {savedAddress ? "Change Address" : "Add New Address"}
+          <FiPlus className="mr-2 text-[18px]" />
+          Add New Address
         </button>
       </div>
 
-      {savedAddress && addressLines ? (
-        <article className="overflow-hidden rounded-[24px] border border-(--color-border) bg-(--color-bg) shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-          <div className="flex items-center justify-between gap-4 border-b border-(--color-border) px-5 py-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
-                <FiMapPin className="text-[20px]" />
-              </div>
-              <div>
-                <h2 className="text-[18px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-                  Default Shipping Address
-                </h2>
-                <p className="text-sm text-(--color-text-muted)">
-                  Used automatically in checkout unless you choose another address there.
-                </p>
-              </div>
-            </div>
-          </div>
+      {addresses.length > 0 ? (
+        <div className="grid gap-4 lg:grid-cols-2">
+          {addresses.map((address) => {
+            const addressLines = getAddressDisplayLines(address);
 
-          <div className="grid gap-6 px-5 py-5 md:grid-cols-2">
-            <div className="space-y-2 text-[15px] leading-8 text-(--color-dark)">
-              <p className="font-semibold">{addressLines.name}</p>
-              <p>{addressLines.phone}</p>
-              <p>{addressLines.addressLine}</p>
-              <p className="text-(--color-text-muted)">{addressLines.locationLine}</p>
-            </div>
-            <div className="rounded-[20px] border border-(--color-border) bg-[#fbfcfd] p-5 text-sm leading-7 text-(--color-text-muted)">
-              Keep this address up to date so checkout can load faster and skip the Pathao selectors unless you need to change the delivery location.
-            </div>
-          </div>
-        </article>
+            return (
+              <article
+                key={address.id}
+                className="overflow-hidden rounded-[24px] border border-(--color-border) bg-(--color-bg) shadow-[0_18px_40px_rgba(17,17,17,0.04)]"
+              >
+                <div className="flex items-center justify-between gap-4 border-b border-(--color-border) px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
+                      <FiMapPin className="text-[20px]" />
+                    </div>
+                    <div>
+                      <h2 className="text-[18px] font-semibold tracking-[-0.03em] text-(--color-dark)">
+                        {getAddressTitle(address)}
+                      </h2>
+                      <p className="text-sm text-(--color-text-muted)">
+                        {address.is_default ? "Default address" : "Saved address"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {address.is_default ? (
+                    <span className="inline-flex items-center rounded-full bg-[#eef6ef] px-3 py-1 text-xs font-semibold text-[#0d7a74]">
+                      <FiCheckCircle className="mr-1" />
+                      Default
+                    </span>
+                  ) : null}
+                </div>
+
+                <div className="space-y-2 px-5 py-5 text-[15px] leading-8 text-(--color-dark)">
+                  <p className="font-semibold">{addressLines.name}</p>
+                  <p>{addressLines.phone}</p>
+                  <p>{addressLines.addressLine}</p>
+                  <p className="text-(--color-text-muted)">{addressLines.locationLine}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-2 border-t border-(--color-border) px-5 py-4">
+                  <button
+                    type="button"
+                    onClick={() => handleEdit(address)}
+                    className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-border) px-4 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
+                  >
+                    <FiEdit2 className="mr-2" />
+                    Edit
+                  </button>
+                  {!address.is_default ? (
+                    <button
+                      type="button"
+                      onClick={() => handleSetDefault(address.id)}
+                      disabled={isSettingDefault}
+                      className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-border) px-4 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary) disabled:opacity-60"
+                    >
+                      Make Default
+                    </button>
+                  ) : null}
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(address.id)}
+                    disabled={isDeleting}
+                    className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-border) px-4 text-sm font-semibold text-(--color-danger) transition hover:border-(--color-danger) disabled:opacity-60"
+                  >
+                    <FiTrash2 className="mr-2" />
+                    Delete
+                  </button>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       ) : (
         <section className="flex min-h-[300px] flex-col items-center justify-center rounded-[28px] border border-dashed border-(--color-border) bg-[#fbfcfd] px-6 py-10 text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
@@ -236,7 +325,7 @@ export default function MyAccountAddressPanel() {
             No saved address yet
           </h2>
           <p className="mt-3 max-w-[520px] text-sm leading-7 text-(--color-text-muted)">
-            Add one default shipping address now. Checkout will use it automatically later.
+            Add a delivery address now. The first saved address becomes your default address automatically.
           </p>
         </section>
       )}

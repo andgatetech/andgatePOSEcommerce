@@ -3,7 +3,6 @@ export interface User {
   name: string;
   email: string | null;
   mobile_number: string | null;
-  shipping_address?: EcommerceOrderShippingAddress | null;
   status: "active" | "blocked" | "disabled";
   otp_verify: 0 | 1;
   created_at: string;
@@ -154,8 +153,11 @@ export type EcommerceOrderStatus =
   | "cancelled";
 
 export type EcommercePaymentStatus = "pending" | "paid" | "failed";
+export type EcommerceAddressType = "home" | "office" | "other";
 
 export interface EcommerceOrderShippingAddress {
+  type?: EcommerceAddressType;
+  label?: string | null;
   name: string;
   phone: string;
   address_line: string;
@@ -165,8 +167,31 @@ export interface EcommerceOrderShippingAddress {
   postal_code: string;
 }
 
+export interface EcommerceSavedAddress extends EcommerceOrderShippingAddress {
+  id: number;
+  type: EcommerceAddressType;
+  label: string | null;
+  is_default: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EcommerceAddressPayload {
+  type: EcommerceAddressType;
+  label?: string | null;
+  name?: string | null;
+  phone?: string | null;
+  address_line: string;
+  city?: string | null;
+  zone?: string | null;
+  area?: string | null;
+  postal_code?: string | null;
+  is_default?: boolean;
+}
+
 export interface MyAddressData {
-  shipping_address: EcommerceOrderShippingAddress | null;
+  addresses: EcommerceSavedAddress[];
+  default_address: EcommerceSavedAddress | null;
 }
 
 export interface MyAccountData {
@@ -240,28 +265,11 @@ export interface EcommerceOrderListData {
 }
 
 export interface CreateOrderRequest {
-  name: string;
-  phone: string;
-  address_line: string;
-  city: string;
-  zone: string;
-  area: string;
+  address_id?: number;
   payment_method: string;
   shipping_fee: number;
   notes?: string;
-  shipping_address: {
-    name: string;
-    phone: string;
-    address_line: string;
-    city: string;
-    zone: string;
-    area: string;
-    postal_code: string;
-  };
-  customer_name?: string;
-  customer_phone?: string;
-  address?: string;
-  address_type?: "home" | "office" | "others";
+  shipping_address?: EcommerceAddressPayload;
 }
 
 // ── Ecommerce product types ───────────────────────────────────────────────────

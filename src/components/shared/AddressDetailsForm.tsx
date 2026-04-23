@@ -14,7 +14,7 @@ export type AddressFormValue = {
   areaName: string;
   addressLine: string;
   note: string;
-  label: "home" | "office" | "others";
+  label: "home" | "office" | "other";
 };
 
 type City = {
@@ -48,12 +48,12 @@ type AddressDetailsFormProps = {
 const addressTypeOptions: Array<{ id: AddressFormValue["label"]; label: string }> = [
   { id: "home", label: "Home Address" },
   { id: "office", label: "Office Address" },
-  { id: "others", label: "Others" },
+  { id: "other", label: "Other" },
 ];
 
 export function getAddressLabelName(label: AddressFormValue["label"]) {
   if (label === "office") return "Office Address";
-  if (label === "others") return "Others";
+  if (label === "other") return "Other";
   return "Home Address";
 }
 
