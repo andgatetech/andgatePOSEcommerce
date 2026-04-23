@@ -36,6 +36,12 @@ type PaymentOption = {
 
 const paymentOptions: PaymentOption[] = [
   {
+    id: "cash-on-delivery",
+    label: "Cash on Delivery",
+    logo: "/images/payment/cod.png",
+    logoAlt: "Cash on delivery",
+  },
+  {
     id: "bkash",
     label: "bKash",
     logo: "/images/payment/BKash-bKash-Logo.png",
@@ -48,23 +54,23 @@ const paymentOptions: PaymentOption[] = [
     logoAlt: "Nagad",
   },
   {
+    id: "upay",
+    label: "Upay",
+    logo: "/images/payment/upay.png",
+    logoAlt: "Upay",
+  },
+  {
     id: "card",
     label: "Credit / Debit Card",
     logo: "/images/payment/card.png",
     logoAlt: "Credit and debit card",
-  },
-  {
-    id: "cash-on-delivery",
-    label: "Cash on Delivery",
-    logo: "/images/payment/cshonde.png",
-    logoAlt: "Cash on delivery",
-    logoClassName: "max-h-[7rem] scale-[1.55]",
   },
 ];
 
 const paymentMethodMap: Record<string, string> = {
   bkash: "bkash",
   nagad: "nagad",
+  upay: "upay",
   card: "card",
   "cash-on-delivery": "cash_on_delivery",
 };
@@ -180,7 +186,7 @@ export default function CheckoutView() {
   const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
-  const [paymentId, setPaymentId] = useState(paymentOptions[0].id);
+  const [paymentId, setPaymentId] = useState("cash-on-delivery");
 
   const items = cartData?.items ?? [];
   const cartTotal = cartData?.cart_total ?? 0;
@@ -465,54 +471,72 @@ export default function CheckoutView() {
 
             {/* Payment Method */}
             <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
-              <div className="flex items-center gap-3 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
-                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
-                  <FiCreditCard size={18} />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
-                    Payment Method
-                  </h2>
-                  <p className="text-sm text-(--color-text-muted)">
-                    Pick how you will complete the payment.
-                  </p>
-                </div>
+              <div className="border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
+                <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">Payment method</h2>
               </div>
 
-              <div className="grid gap-3 p-5">
-                <div className="flex flex-wrap gap-2">
-                  {paymentOptions.map((option) => {
-                    const checked = option.id === paymentId;
-                    return (
-                      <label
-                        key={option.id}
-                        className={`flex h-[108px] min-w-[200px] cursor-pointer flex-col items-center justify-center rounded-[10px] border px-2 py-2 transition ${
-                          checked
-                            ? "border-(--color-primary) bg-(--color-primary-100)"
-                            : "border-(--color-border) bg-(--color-bg) hover:border-(--color-primary)"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="payment"
-                          checked={checked}
-                          onChange={() => setPaymentId(option.id)}
-                          className="sr-only"
-                        />
+              <div className="divide-y divide-(--color-border) px-5 py-2">
+                {paymentOptions.map((option) => {
+                  const checked = option.id === paymentId;
+                  return (
+                    <label
+                      key={option.id}
+                      className={`flex cursor-pointer items-center gap-3 rounded-[14px] px-3 py-3.5 transition ${
+                        checked
+                          ? "bg-(--color-primary-100)"
+                          : "hover:bg-[#f8f9fb]"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="payment"
+                        checked={checked}
+                        onChange={() => setPaymentId(option.id)}
+                        className="sr-only"
+                      />
+
+                      {/* Custom radio circle — LEFT of logo */}
+                      <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                        checked
+                          ? "border-(--color-primary) bg-(--color-primary)"
+                          : "border-(--color-border) bg-white"
+                      }`}>
+                        {checked && (
+                          <div className="h-2 w-2 rounded-full bg-white" />
+                        )}
+                      </div>
+
+                      {/* Logo box */}
+                      <div className={`flex h-13 w-13 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border transition ${
+                        checked
+                          ? "border-(--color-primary) bg-(--color-primary-100)"
+                          : "border-(--color-border) bg-[#f8f9fb]"
+                      }`}>
                         <Image
                           src={option.logo}
                           alt={option.logoAlt}
-                          width={520}
-                          height={160}
-                          className={`h-auto w-auto object-contain ${option.logoClassName ?? "max-h-21"}`}
+                          width={40}
+                          height={40}
+                          className="h-9 w-9 object-contain"
+                          unoptimized
                         />
-                        <span className="mt-1.5 text-center text-xs font-medium text-(--color-dark)">
-                          {option.label}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
+                      </div>
+
+                      {/* Label */}
+                      <span className={`flex-1 text-[15px] font-medium tracking-[-0.01em] transition ${
+                        checked ? "text-(--color-primary)" : "text-(--color-dark)"
+                      }`}>
+                        {option.label}
+                      </span>
+
+                      {/* Chevron */}
+                      <FiChevronRight
+                        size={18}
+                        className={checked ? "text-(--color-primary)" : "text-(--color-text-muted)"}
+                      />
+                    </label>
+                  );
+                })}
               </div>
             </section>
           </div>
