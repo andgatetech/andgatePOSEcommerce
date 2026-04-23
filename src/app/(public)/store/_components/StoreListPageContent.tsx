@@ -51,7 +51,7 @@ export default function StoreListPageContent({
 
   return (
     <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto">
         <div className="mb-4 flex justify-center">
           <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
             Store
@@ -82,7 +82,7 @@ export default function StoreListPageContent({
           </p>
         ) : (
           <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-4 shadow-[0_24px_60px_rgba(17,17,17,0.06)] md:p-5 xl:p-6">
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-5">
               {items.map((store) => (
                 <StoreCard key={store.id} store={store} view="grid" />
               ))}

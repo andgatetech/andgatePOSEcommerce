@@ -39,7 +39,7 @@ const serviceHighlights = [
 export default function ServiceHighlights({ className }: { className?: string }) {
   return (
     <section className={["px-4 pb-14 md:px-8 md:pb-16 lg:px-12 lg:pb-20", className].filter(Boolean).join(" ")}>
-      <div className="mx-auto max-w-[1680px]">
+      <div className="mx-auto">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {serviceHighlights.map((item) => (
             <article

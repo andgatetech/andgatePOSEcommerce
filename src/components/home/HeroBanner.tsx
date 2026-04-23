@@ -85,7 +85,7 @@ export default function HeroBanner() {
                 className="relative w-full overflow-hidden"
                 style={{ backgroundColor: slide.bg }}
               >
-                <div className="max-w-[1400px] mx-auto px-8 md:px-12 lg:px-16 xl:px-20">
+                <div className="mx-auto px-8 md:px-12 lg:px-16 xl:px-20">
                   <div className="flex flex-col md:flex-row items-center min-h-[340px] md:min-h-[420px] lg:min-h-[480px]">
                   {/* Left Content */}
                   <div className="w-full md:w-[48%] z-10 pt-14 pb-6 md:py-16 lg:py-20">

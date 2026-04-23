@@ -81,26 +81,26 @@ export default function Footer() {
   return (
     <>
       {/* Newsletter Section */}
-      <section className="px-4 md:px-0 max-w-[932px] mx-auto text-center pb-6 rounded-[160px] -mb-[100px] relative z-10 bg-(--color-bg)">
-        <div className="pt-10 pb-8 px-6">
-          <h3 className="text-2xl md:text-3xl font-bold text-(--color-dark) mb-4">
+      <section className="mx-4 max-w-[932px] rounded-[28px] border border-(--color-border) bg-(--color-bg) pb-5 text-center shadow-[0_18px_50px_rgba(19,45,69,0.08)] sm:mx-6 md:mx-auto md:rounded-[80px] lg:rounded-[160px] -mb-12 sm:-mb-16 md:-mb-20 lg:-mb-[100px] relative z-10">
+        <div className="px-4 pb-6 pt-7 sm:px-6 sm:pb-8 sm:pt-9 md:px-8 md:pt-10">
+          <h3 className="text-[22px] font-bold leading-tight text-(--color-dark) sm:text-2xl md:text-3xl">
             Subscribe to our newsletter
           </h3>
-          <p className="text-(--color-text-muted) mb-6 text-base">
+          <p className="mx-auto mt-3 mb-5 max-w-[620px] text-sm leading-6 text-(--color-text-muted) sm:mb-6 sm:text-base">
             Stay updated! Subscribe to our mailing list for news, updates, and
             exclusive offers.
           </p>
           <div className="flex items-center justify-center">
-            <div className="flex items-center border border-(--color-border) rounded-full overflow-hidden w-full max-w-[420px] pl-4 py-1.5 pr-2.5 bg-(--color-bg) focus-within:border-(--color-primary) transition-all">
-              <div className="text-(--color-text-muted) mr-2">
+            <div className="flex w-full max-w-[460px] flex-col gap-3 rounded-[22px] border border-(--color-border) bg-(--color-bg) p-2 transition-all focus-within:border-(--color-primary) sm:flex-row sm:items-center sm:rounded-full sm:gap-0 sm:py-1.5 sm:pl-4 sm:pr-2.5">
+              <div className="hidden text-(--color-text-muted) sm:mr-2 sm:block">
                 <MdOutlineEmail size={22} />
               </div>
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-2 py-2 text-base outline-none bg-transparent text-(--color-dark)"
+                className="min-h-[44px] flex-1 rounded-full bg-transparent px-3 text-sm text-(--color-dark) outline-none sm:min-h-0 sm:px-2 sm:py-2 sm:text-base"
               />
-              <button className="bg-(--color-primary) hover:bg-(--color-primary-light) text-white text-sm font-medium px-6 py-2.5 rounded-full transition-colors cursor-pointer whitespace-nowrap">
+              <button className="min-h-[44px] cursor-pointer rounded-full bg-(--color-primary) px-6 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-light) sm:min-h-0 sm:py-2.5">
                 Subscribe
               </button>
             </div>
@@ -109,18 +109,18 @@ export default function Footer() {
       </section>
 
       {/* Footer */}
-      <footer className=" relative bg-(--color-primary-900) pt-40 pb-15 xl:rounded-tl-[30px] xl:rounded-tr-[30px]">
-        <div className="mx-auto px-4 ml-2">
+      <footer className="relative bg-(--color-primary-900) pt-24 pb-10 sm:pt-28 md:pt-32 lg:pt-40 lg:pb-15 xl:rounded-tl-[30px] xl:rounded-tr-[30px]">
+        <div className="mx-auto px-4 sm:px-6 lg:px-8">
           {/* Footer Top Section */}
-          <div className="pb-9 grid grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-8 pb-8 sm:gap-7 lg:pb-9">
             {/* Brand Column */}
-            <div className="col-span-12 md:col-span-12 xl:col-span-3 flex flex-col gap-y-6">
+            <div className="col-span-12 flex flex-col gap-y-5 sm:gap-y-6 md:col-span-12 xl:col-span-3">
               <Logo width={180} height={48} />
-              <p className="text-(--color-primary-200) text-base">
+              <p className="max-w-[520px] text-sm leading-7 text-(--color-primary-200) sm:text-base">
                 Hawkeri is your trusted destination for seamless online
                 shopping and modern ecommerce experiences across Bangladesh.
               </p>
-              <div className="flex flex-wrap gap-x-4 gap-y-4">
+              <div className="flex flex-wrap gap-3 sm:gap-4">
                 {socialLinks.map((social, index) => (
                   <Link
                     key={index}
@@ -134,10 +134,10 @@ export default function Footer() {
                 <p className="text-base font-semibold text-white">
                   Download Our App:
                 </p>
-                <div className="flex gap-x-2.5">
+                <div className="flex flex-col gap-2.5 min-[420px]:flex-row min-[420px]:flex-wrap">
                   <Link
                     href="#"
-                    className="bg-(--color-primary-dark) rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-(--color-primary) transition-colors border border-(--color-primary)">
+                    className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaGooglePlay size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
                       <span className="block text-[10px] text-(--color-primary-200) uppercase">
@@ -148,7 +148,7 @@ export default function Footer() {
                   </Link>
                   <Link
                     href="#"
-                    className="bg-(--color-primary-dark) rounded-lg px-3 py-2 flex items-center gap-2 hover:bg-(--color-primary) transition-colors border border-(--color-primary)">
+                    className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaAppStoreIos size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
                       <span className="block text-[10px] text-(--color-primary-200)">
@@ -162,8 +162,8 @@ export default function Footer() {
             </div>
 
             {/* About Column */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-white pb-6 border-b border-(--color-primary-dark) text-lg font-semibold">
+            <div className="col-span-12 sm:col-span-6 xl:col-span-2">
+              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 About
               </h5>
               <ul className="flex flex-col gap-y-1.5 pt-4">
@@ -188,8 +188,8 @@ export default function Footer() {
             </div>
 
             {/* My Account Column */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-white pb-6 border-b border-(--color-primary-dark) text-lg font-semibold">
+            <div className="col-span-12 sm:col-span-6 xl:col-span-2">
+              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 My Account
               </h5>
               <ul className="flex flex-col gap-y-1.5 pt-4">
@@ -214,8 +214,8 @@ export default function Footer() {
             </div>
 
             {/* Categories Column */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-2">
-              <h5 className="text-white pb-6 border-b border-(--color-primary-dark) text-lg font-semibold">
+            <div className="col-span-12 sm:col-span-6 xl:col-span-2">
+              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 Categories
               </h5>
               <ul className="flex flex-col gap-y-1.5 pt-4">
@@ -238,12 +238,12 @@ export default function Footer() {
             </div>
 
             {/* Contact Information Column */}
-            <div className="col-span-12 md:col-span-6 xl:col-span-3">
-              <h5 className="text-white pb-6 border-b border-(--color-primary-dark) text-lg font-semibold">
+            <div className="col-span-12 sm:col-span-6 xl:col-span-3">
+              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 Contact Information
               </h5>
-              <ul className="flex flex-col gap-y-1.5 py-4">
-                <li className="flex items-center gap-x-3">
+              <ul className="flex flex-col gap-y-2 py-4">
+                <li className="flex items-start gap-x-3">
                   <span className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-(--color-primary-dark) shrink-0">
                     <HiOutlineLocationMarker
                       size={20}
@@ -254,7 +254,7 @@ export default function Footer() {
                     Dhaka, Bangladesh
                   </p>
                 </li>
-                <li className="flex items-center gap-x-3">
+                <li className="flex items-start gap-x-3">
                   <span className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-(--color-primary-dark) shrink-0">
                     <HiOutlinePhone size={20} className="text-(--color-cta)" />
                   </span>
@@ -262,27 +262,27 @@ export default function Footer() {
                     Call Us: 01577-303608
                   </p>
                 </li>
-                <li className="flex items-center gap-x-3">
+                <li className="flex items-start gap-x-3">
                   <span className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-(--color-primary-dark) shrink-0">
                     <HiOutlineMail size={20} className="text-(--color-cta)" />
                   </span>
-                  <p className="text-(--color-primary-200) font-medium text-sm">
+                  <p className="break-all text-sm font-medium text-(--color-primary-200)">
                     andgatetech@gmail.com
                   </p>
                 </li>
-                <li className="flex items-center gap-x-3">
+                <li className="flex items-start gap-x-3">
                   <span className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-(--color-primary-dark) shrink-0">
                     <HiOutlinePrinter
                       size={20}
                       className="text-(--color-cta)"
                     />
                   </span>
-                  <p className="text-(--color-primary-200) font-medium text-sm">
+                  <p className="break-all text-sm font-medium text-(--color-primary-200)">
                     andgatetech@gmail.com
                   </p>
                 </li>
               </ul>
-              <div className="flex items-center gap-2 mt-2">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className="bg-white rounded-md px-2 py-1.5">
                   <FaCcVisa size={30} className="text-[#1A1F71]" />
                 </span>
@@ -303,7 +303,7 @@ export default function Footer() {
           </div>
 
           {/* Footer Bottom */}
-          <div className="text-center text-white pt-[22px] pb-px relative">
+          <div className="relative pt-[22px] pb-px text-center text-white">
             <svg
               className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl"
               viewBox="0 0 1000 22"
@@ -316,7 +316,7 @@ export default function Footer() {
                 fill="none"
               />
             </svg>
-            <p className="text-(--color-primary-200) text-sm pt-4">
+            <p className="px-4 pt-4 text-xs leading-6 text-(--color-primary-200) sm:text-sm">
               © {new Date().getFullYear()} Copyright By Hawkeri
             </p>
           </div>
@@ -327,7 +327,7 @@ export default function Footer() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-6 right-6 w-10 h-10 bg-(--color-primary) hover:bg-(--color-primary-light) text-white rounded-full flex items-center justify-center shadow-lg transition-all z-50 cursor-pointer">
+          className="fixed bottom-4 right-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition-all hover:bg-(--color-primary-light) sm:bottom-6 sm:right-6">
           <FaChevronUp size={14} />
         </button>
       )}

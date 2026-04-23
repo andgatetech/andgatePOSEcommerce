@@ -72,7 +72,7 @@ export default function BrandGallery({
 
   return (
     <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto">
         <div className="mb-4 flex justify-center">
           <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
             Brand

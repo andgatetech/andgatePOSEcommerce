@@ -26,7 +26,7 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
 
   return (
     <section className="px-4 pb-8 md:px-8 md:pb-10 lg:px-12 lg:pb-14">
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-4">
             <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">

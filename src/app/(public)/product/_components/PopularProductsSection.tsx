@@ -11,7 +11,7 @@ interface PopularProductsSectionProps {
 export default function PopularProductsSection({ products }: PopularProductsSectionProps) {
   return (
     <section id="trending" className="px-4 pb-8 md:px-8 md:pb-10 lg:px-10 lg:pb-14">
-      <div className="mx-auto max-w-[1720px]">
+      <div className="mx-auto">
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.24em] text-(--color-primary)">

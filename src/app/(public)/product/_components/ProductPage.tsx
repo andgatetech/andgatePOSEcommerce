@@ -93,7 +93,7 @@ export default function ProductPageContent({
 
   return (
     <section className="bg-(--color-bg) px-4 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8 lg:px-12 lg:pb-16 lg:pt-10">
-      <div className="mx-auto max-w-[1600px]">
+      <div className="mx-auto">
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <ProductFiltersSidebar
             categories={categories}
@@ -159,7 +159,7 @@ export default function ProductPageContent({
                 </button>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
                 {products.map((product) => (
                   <PopularProductCard key={product.id} product={product} />
                 ))}

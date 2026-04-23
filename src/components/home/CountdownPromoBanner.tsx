@@ -70,7 +70,7 @@ export default function CountdownPromoBanner() {
 
   return (
     <section className="px-4 pb-16 md:px-8 md:pb-18 lg:px-12 lg:pb-22">
-      <div className="mx-auto max-w-[1680px]">
+      <div className="mx-auto">
         <div className="relative overflow-hidden rounded-[34px]">
           <Image
             src="/images/banner/countdown-bg.png"

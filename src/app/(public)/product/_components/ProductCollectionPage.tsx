@@ -29,7 +29,7 @@ export default function ProductCollectionPage({
 
   return (
     <section className="bg-(--color-bg)">
-      <div className="mx-auto max-w-[1720px] px-4 py-8 md:px-8 lg:px-10 lg:py-10">
+      <div className="mx-auto px-4 py-8 md:px-8 lg:px-10 lg:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
@@ -90,7 +90,7 @@ export default function ProductCollectionPage({
 
           <div className="p-6 md:p-8 lg:p-10">
             {products.length > 0 ? (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
                 {products.map((product) => (
                   <PopularProductCard key={product.id} product={product} />
                 ))}

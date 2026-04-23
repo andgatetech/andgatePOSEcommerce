@@ -24,7 +24,7 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
 
   return (
     <section id="best-sellers" className="px-4 pb-12 md:px-8 lg:px-12">
-      <div className="mx-auto max-w-[1680px]">
+      <div className="mx-auto">
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-[640px]">
             <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.24em] text-(--color-primary)">

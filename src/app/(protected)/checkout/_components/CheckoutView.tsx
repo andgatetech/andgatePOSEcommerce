@@ -303,7 +303,7 @@ export default function CheckoutView() {
   return (
     <section className="relative bg-(--color-bg)">
       {isSubmitting ? (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
           <div className="flex min-w-[220px] flex-col items-center gap-4 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
             <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
             <div className="text-center">

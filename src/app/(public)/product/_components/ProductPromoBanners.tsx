@@ -49,7 +49,7 @@ const promoBanners: PromoBanner[] = [
 export default function ProductPromoBanners() {
   return (
     <section className="px-4 pb-10 md:px-8 md:pb-12 lg:px-10 lg:pb-14">
-      <div className="mx-auto max-w-[1720px]">
+      <div className="mx-auto">
         <div className="grid gap-5 xl:grid-cols-3">
           {promoBanners.map((banner) => (
             <article

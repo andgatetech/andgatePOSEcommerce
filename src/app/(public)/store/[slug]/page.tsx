@@ -81,7 +81,7 @@ export default async function StoreDetailPage({
 
   return (
     <section className="bg-(--color-bg)">
-      <div className="mx-auto max-w-[1600px] px-4 py-8 md:px-5 lg:px-7 xl:px-8 xl:py-10">
+      <div className="mx-auto px-4 py-8 md:px-5 lg:px-7 xl:px-8 xl:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}

@@ -174,7 +174,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     <div className="min-h-screen bg-(--color-bg)">
       {/* ── Breadcrumb ──────────────────────────────────────────────── */}
       <div className="border-b border-(--color-border) py-3">
-        <div className="mx-auto max-w-[1680px] px-4 md:px-8 lg:px-12">
+        <div className="mx-auto px-4 md:px-8 lg:px-12">
           <nav
             className="flex items-center gap-2 text-[13px]"
             style={{ color: "var(--color-text-muted)" }}
@@ -209,7 +209,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
       </div>
 
       {/* ── Main Product Section ─────────────────────────────────────── */}
-      <div className="mx-auto max-w-[1680px] px-4 py-10 md:px-8 lg:px-12">
+      <div className="mx-auto px-4 py-10 md:px-8 lg:px-12">
         <div className="grid gap-10 lg:grid-cols-2 xl:gap-16">
 
           {/* LEFT – Image Gallery */}
