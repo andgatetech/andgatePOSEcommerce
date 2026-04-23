@@ -43,6 +43,8 @@ export default function AddToCartButton({
     "idle",
   );
   const resetTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const normalizedStockId =
+    typeof stockId === "number" ? stockId : Number(stockId);
 
   useEffect(
     () => () => {
@@ -54,6 +56,11 @@ export default function AddToCartButton({
   const handleClick = useCallback(async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     if (animState !== "idle") return;
+
+    if (!Number.isFinite(normalizedStockId)) {
+      toast.error("Invalid product selection.");
+      return;
+    }
 
     if (!isAuthenticated) {
       const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
@@ -69,7 +76,7 @@ export default function AddToCartButton({
     // before "Added" is shown — regardless of API speed.
     const animTimer = new Promise<void>((r) => setTimeout(r, ANIM_MS));
     const [result] = await Promise.all([
-      addToCart({ stock_id: stockId }),
+      addToCart({ stock_id: normalizedStockId }),
       animTimer,
     ]);
 
@@ -92,7 +99,7 @@ export default function AddToCartButton({
     pathname,
     router,
     addToCart,
-    stockId,
+    normalizedStockId,
     quantity,
     updateCartItem,
   ]);
