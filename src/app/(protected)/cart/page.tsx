@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { skipToken } from "@reduxjs/toolkit/query";
 import toast from "react-hot-toast";
 import {
@@ -71,20 +71,31 @@ function CartItemRow({
   const isOutOfStock = effectiveAvailableQty <= 0;
   const hasInsufficientStock = checkedStockQuantity !== undefined && item.quantity > checkedStockQuantity;
 
+  const [quantityInput, setQuantityInput] = useState(String(item.quantity));
+
+  useEffect(() => {
+    setQuantityInput(String(item.quantity));
+  }, [item.quantity]);
+
   const variantLabel = item.stock.variant_data
     ? Object.entries(item.stock.variant_data)
         .map(([k, v]) => `${k}: ${v}`)
         .join(", ")
     : item.stock.sku;
 
-  async function handleDecrement() {
-    if (item.quantity <= 1) return;
+  async function applyQuantity(next: number) {
+    if (next === item.quantity) return;
     if (!isAuthenticated) {
-      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity - 1 }));
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: next }));
       return;
     }
-    const result = await updateItem({ cart_id: item.id, quantity: item.quantity - 1 });
+    const result = await updateItem({ cart_id: item.id, quantity: next });
     if ("error" in result) toast.error("Failed to update quantity.");
+  }
+
+  async function handleDecrement() {
+    if (item.quantity <= 1) return;
+    await applyQuantity(item.quantity - 1);
   }
 
   async function handleIncrement() {
@@ -92,12 +103,36 @@ function CartItemRow({
       toast.error("Cannot add more than available stock.");
       return;
     }
-    if (!isAuthenticated) {
-      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity + 1 }));
-      return;
+    await applyQuantity(item.quantity + 1);
+  }
+
+  function handleQuantityInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setQuantityInput(event.target.value.replace(/[^0-9]/g, ""));
+  }
+
+  async function commitQuantityInput() {
+    const parsed = parseInt(quantityInput, 10);
+    const maxAllowed = Math.max(1, effectiveAvailableQty);
+    let next: number;
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      next = 1;
+    } else if (parsed > effectiveAvailableQty) {
+      next = maxAllowed;
+      if (effectiveAvailableQty > 0) {
+        toast.error(`Only ${effectiveAvailableQty} available.`);
+      }
+    } else {
+      next = parsed;
     }
-    const result = await updateItem({ cart_id: item.id, quantity: item.quantity + 1 });
-    if ("error" in result) toast.error("Failed to update quantity.");
+    setQuantityInput(String(next));
+    if (isOutOfStock) return;
+    await applyQuantity(next);
+  }
+
+  function handleQuantityKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.currentTarget.blur();
+    }
   }
 
   async function handleRemove() {
@@ -188,9 +223,18 @@ function CartItemRow({
           >
             <FiMinus size={15} />
           </button>
-          <span className="min-w-10 text-center text-base font-semibold text-(--color-dark)">
-            {item.quantity}
-          </span>
+          <input
+            type="text"
+            inputMode="numeric"
+            value={quantityInput}
+            onChange={handleQuantityInputChange}
+            onBlur={commitQuantityInput}
+            onKeyDown={handleQuantityKeyDown}
+            disabled={isBusy || isOutOfStock}
+            aria-label="Quantity"
+            style={{ width: `${Math.max(quantityInput.length + 1, 3)}ch` }}
+            className="mx-1 bg-transparent text-center text-base font-semibold text-(--color-dark) outline-none focus:ring-1 focus:ring-(--color-primary) rounded disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+          />
           <button
             type="button"
             disabled={isBusy || item.quantity >= effectiveAvailableQty}

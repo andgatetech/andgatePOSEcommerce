@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FiMinus,
@@ -36,24 +36,65 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
   const imageSrc = resolveImageUrl(item.stock.images[0]?.url);
+  const availableQty = Number(item.stock.available_qty);
+  const isOutOfStock = availableQty <= 0;
 
-  async function handleDecrement() {
-    if (item.quantity <= 1) return;
+  const [quantityInput, setQuantityInput] = useState(String(item.quantity));
+
+  useEffect(() => {
+    setQuantityInput(String(item.quantity));
+  }, [item.quantity]);
+
+  async function applyQuantity(next: number) {
+    if (next === item.quantity) return;
     if (!isAuthenticated) {
-      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity - 1 }));
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: next }));
       return;
     }
-    const result = await updateItem({ cart_id: item.id, quantity: item.quantity - 1 });
+    const result = await updateItem({ cart_id: item.id, quantity: next });
     if ("error" in result) toast.error("Failed to update quantity.");
   }
 
+  async function handleDecrement() {
+    if (item.quantity <= 1) return;
+    await applyQuantity(item.quantity - 1);
+  }
+
   async function handleIncrement() {
-    if (!isAuthenticated) {
-      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity + 1 }));
+    if (item.quantity >= availableQty) {
+      toast.error("Cannot add more than available stock.");
       return;
     }
-    const result = await updateItem({ cart_id: item.id, quantity: item.quantity + 1 });
-    if ("error" in result) toast.error("Failed to update quantity.");
+    await applyQuantity(item.quantity + 1);
+  }
+
+  function handleQuantityInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    setQuantityInput(event.target.value.replace(/[^0-9]/g, ""));
+  }
+
+  async function commitQuantityInput() {
+    const parsed = parseInt(quantityInput, 10);
+    const maxAllowed = Math.max(1, availableQty);
+    let next: number;
+    if (!Number.isFinite(parsed) || parsed < 1) {
+      next = 1;
+    } else if (parsed > availableQty) {
+      next = maxAllowed;
+      if (availableQty > 0) {
+        toast.error(`Only ${availableQty} available.`);
+      }
+    } else {
+      next = parsed;
+    }
+    setQuantityInput(String(next));
+    if (isOutOfStock) return;
+    await applyQuantity(next);
+  }
+
+  function handleQuantityKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      event.currentTarget.blur();
+    }
   }
 
   async function handleRemove() {
@@ -124,12 +165,21 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
               >
                 <FiMinus size={13} />
               </button>
-              <span className="min-w-6 text-center text-[15px] font-semibold text-(--color-dark)">
-                {item.quantity}
-              </span>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={quantityInput}
+                onChange={handleQuantityInputChange}
+                onBlur={commitQuantityInput}
+                onKeyDown={handleQuantityKeyDown}
+                disabled={isBusy || isOutOfStock}
+                aria-label="Quantity"
+                style={{ width: `${Math.max(quantityInput.length + 1, 3)}ch` }}
+                className="mx-0.5 bg-transparent text-center text-[15px] font-semibold text-(--color-dark) outline-none focus:ring-1 focus:ring-(--color-primary) rounded disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
               <button
                 type="button"
-                disabled={isBusy}
+                disabled={isBusy || item.quantity >= availableQty}
                 onClick={handleIncrement}
                 className="flex h-6.5 w-6.5 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
               >
