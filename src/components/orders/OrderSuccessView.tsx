@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import Lottie from "lottie-react";
 import {
-  FiCheckCircle,
   FiDownload,
   FiFileText,
   FiHome,
@@ -15,9 +15,11 @@ import {
   FiTruck,
   FiArrowRight,
 } from "react-icons/fi";
+import orderCompletedAnimation from "../../../public/images/svg/Order completed.json";
+import orderFailAnimation from "../../../public/images/svg/order fail.json";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetOrderQuery } from "@/features/orders/ordersApi";
-import type { EcommerceOrder } from "@/types";
+import { generateInvoicePdf } from "@/lib/invoice/generateInvoicePdf";
 import {
   formatOrderCurrency,
   formatPaymentMethodLabel,
@@ -26,74 +28,6 @@ import {
 
 interface OrderSuccessViewProps {
   orderNumber: string;
-}
-
-function buildInvoiceMarkup(order: EcommerceOrder) {
-  const rows = order.items
-    .map(
-      (item: EcommerceOrder["items"][number]) => `
-        <tr>
-          <td style="padding:12px;border-bottom:1px solid #d7dee6;">${item.product_name}</td>
-          <td style="padding:12px;border-bottom:1px solid #d7dee6;">${item.quantity}</td>
-          <td style="padding:12px;border-bottom:1px solid #d7dee6;">${formatOrderCurrency(item.unit_price)}</td>
-          <td style="padding:12px;border-bottom:1px solid #d7dee6;text-align:right;">${formatOrderCurrency(item.subtotal)}</td>
-        </tr>`,
-    )
-    .join("");
-
-  return `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <title>Invoice ${order.order_number}</title>
-  </head>
-  <body style="margin:0;background:#f3f7fa;color:#14212b;font-family:Segoe UI, Arial, sans-serif;">
-    <div style="max-width:860px;margin:0 auto;padding:40px 24px;">
-      <div style="background:#ffffff;border:1px solid #d7dee6;border-radius:24px;padding:32px;">
-        <div style="display:flex;justify-content:space-between;gap:24px;align-items:flex-start;">
-          <div>
-            <div style="display:inline-block;padding:8px 14px;border-radius:999px;background:#e8f3ef;color:#14695c;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;">Invoice</div>
-            <h1 style="margin:18px 0 0;font-size:32px;line-height:1.15;">${order.order_number}</h1>
-            <p style="margin:10px 0 0;color:#5c6c79;">Created ${order.created_at}</p>
-          </div>
-          <div style="text-align:right;">
-            <p style="margin:0;font-size:12px;color:#5c6c79;text-transform:uppercase;letter-spacing:.08em;">Grand total</p>
-            <p style="margin:10px 0 0;font-size:28px;font-weight:700;">${formatOrderCurrency(order.total)}</p>
-          </div>
-        </div>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px;">
-          <div style="border:1px solid #d7dee6;border-radius:18px;padding:18px;">
-            <p style="margin:0 0 10px;font-size:12px;color:#5c6c79;text-transform:uppercase;letter-spacing:.08em;">Shipping</p>
-            <p style="margin:0;font-weight:700;">${order.shipping_address.name}</p>
-            <p style="margin:6px 0 0;">${order.shipping_address.phone}</p>
-            <p style="margin:6px 0 0;">${order.shipping_address.address_line}</p>
-            <p style="margin:6px 0 0;">${order.shipping_address.city}, ${order.shipping_address.postal_code}</p>
-          </div>
-          <div style="border:1px solid #d7dee6;border-radius:18px;padding:18px;">
-            <p style="margin:0 0 10px;font-size:12px;color:#5c6c79;text-transform:uppercase;letter-spacing:.08em;">Payment</p>
-            <p style="margin:0;font-weight:700;">${formatPaymentMethodLabel(order.payment_method)}</p>
-            <p style="margin:6px 0 0;">Status: ${order.payment_status}</p>
-            <p style="margin:6px 0 0;">Subtotal: ${formatOrderCurrency(order.subtotal)}</p>
-            <p style="margin:6px 0 0;">Shipping: ${formatOrderCurrency(order.shipping_fee)}</p>
-          </div>
-        </div>
-
-        <table style="width:100%;border-collapse:collapse;margin-top:28px;">
-          <thead>
-            <tr style="background:#f6f9fb;text-align:left;">
-              <th style="padding:12px;">Item</th>
-              <th style="padding:12px;">Qty</th>
-              <th style="padding:12px;">Unit price</th>
-              <th style="padding:12px;text-align:right;">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      </div>
-    </div>
-  </body>
-</html>`;
 }
 
 export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps) {
@@ -111,16 +45,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
     setIsDownloading(true);
 
     try {
-      const markup = buildInvoiceMarkup(order);
-      const blob = new Blob([markup], { type: "text/html;charset=utf-8" });
-      const url = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = url;
-      anchor.download = `${order.order_number}-invoice.html`;
-      document.body.appendChild(anchor);
-      anchor.click();
-      document.body.removeChild(anchor);
-      URL.revokeObjectURL(url);
+      generateInvoicePdf(order);
     } finally {
       setIsDownloading(false);
     }
@@ -128,9 +53,25 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
 
   if (isFetching && !order) {
     return (
-      <section className="bg-(--color-bg) px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
-        <div className="mx-auto max-w-[1180px]">
-          <div className="h-[620px] animate-pulse rounded-[34px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+      <section className="bg-[#f6f8fb] px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
+        <div className="mx-auto rounded-[32px] border border-[rgba(20,33,43,0.08)] bg-white shadow-[0_24px_70px_rgba(20,33,43,0.08)]">
+          <div className="border-b border-[rgba(20,33,43,0.08)] px-6 py-5 md:px-8">
+            <div className="h-16 animate-pulse rounded-[18px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+          </div>
+          <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_380px]">
+            <div className="space-y-6 px-6 py-7 md:px-8 md:py-8">
+              <div className="grid gap-4 md:grid-cols-3">
+                <div className="h-28 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+                <div className="h-28 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+                <div className="h-28 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+              </div>
+              <div className="h-64 animate-pulse rounded-[28px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+              <div className="h-56 animate-pulse rounded-[28px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+            </div>
+            <div className="border-t border-[rgba(20,33,43,0.08)] px-6 py-7 md:px-8 xl:border-l xl:border-t-0 xl:py-8">
+              <div className="h-96 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+            </div>
+          </div>
         </div>
       </section>
     );
@@ -138,11 +79,15 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
 
   if (isError || !order) {
     return (
-      <section className="bg-(--color-bg) px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
+      <section className="bg-[#f6f8fb] px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
         <div className="mx-auto max-w-[900px] rounded-[32px] border border-(--color-border) bg-(--color-bg) p-8 text-center shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#fff3f0] text-[#d65e42]">
-            <FiPackage className="text-[28px]" />
-          </div>
+          <Lottie
+            animationData={orderFailAnimation}
+            autoplay
+            loop={false}
+            className="mx-auto h-40 w-40"
+            rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
+          />
           <h1 className="mt-6 text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
             Order created, but confirmation screen could not load
           </h1>
@@ -177,9 +122,13 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
           <div className="border-b border-[rgba(20,33,43,0.08)] px-6 py-5 md:px-8">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e8f4ef] text-[#146c5a]">
-                  <FiCheckCircle className="text-[22px]" />
-                </div>
+                <Lottie
+                  animationData={orderCompletedAnimation}
+                  autoplay
+                  loop={false}
+                  className="h-20 w-20 shrink-0 md:h-24 md:w-24"
+                  rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
+                />
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#146c5a]">
                     Order Confirmed

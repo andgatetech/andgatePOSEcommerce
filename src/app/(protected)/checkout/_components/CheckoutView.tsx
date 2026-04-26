@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import Lottie from "lottie-react";
+import orderCompletedAnimation from "../../../../../public/images/svg/Order completed.json";
+import orderFailAnimation from "../../../../../public/images/svg/order fail.json";
+import orderLoadingAnimation from "../../../../../public/images/svg/order loading.json";
 import {
   FiChevronRight,
-  FiCreditCard,
   FiHome,
   FiShoppingBag,
 } from "react-icons/fi";
@@ -38,6 +41,8 @@ type PaymentOption = {
   logoAlt: string;
   logoClassName?: string;
 };
+
+type OrderSubmitStatus = "idle" | "loading" | "success" | "failure";
 
 const paymentOptions: PaymentOption[] = [
   {
@@ -102,14 +107,66 @@ function getOrderErrorMessage(error: unknown) {
   return "Order could not be placed.";
 }
 
+function OrderSubmitOverlay({
+  status,
+  message,
+  onClose,
+}: {
+  status: Exclude<OrderSubmitStatus, "idle">;
+  message?: string;
+  onClose?: () => void;
+}) {
+  const isLoading = status === "loading";
+  const isSuccess = status === "success";
+  const animationData = isLoading
+    ? orderLoadingAnimation
+    : isSuccess
+      ? orderCompletedAnimation
+      : orderFailAnimation;
+
+  return (
+    <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
+      <div className="flex min-w-[260px] max-w-[360px] flex-col items-center gap-3 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 text-center shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
+        <Lottie
+          animationData={animationData}
+          autoplay
+          loop={isLoading}
+          className="h-40 w-40"
+          rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
+        />
+        <div>
+          <p className="text-base font-semibold text-(--color-dark)">
+            {isLoading ? "Creating your order" : isSuccess ? "Order placed successfully" : "Order failed"}
+          </p>
+          <p className="mt-1 text-sm text-(--color-text-muted)">
+            {message ??
+              (isLoading
+                ? "Please wait and do not click anywhere."
+                : isSuccess
+                  ? "Opening your order confirmation."
+                  : "Please try again.")}
+          </p>
+        </div>
+        {!isLoading && !isSuccess && onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="mt-2 inline-flex min-h-[42px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
+          >
+            Try again
+          </button>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function CheckoutItemRow({
   item,
   checkedStockQuantity,
-  isStockChecking,
 }: {
   item: CartItemData;
   checkedStockQuantity?: number;
-  isStockChecking: boolean;
 }) {
   const imageSrc = resolveImageUrl(item.stock.images[0]?.url);
   const variantLabel = item.stock.variant_data
@@ -120,13 +177,11 @@ function CheckoutItemRow({
   const displayStockQuantity = checkedStockQuantity ?? Number(item.stock.available_qty);
   const isOutOfStock = displayStockQuantity <= 0;
   const hasInsufficientStock = checkedStockQuantity !== undefined && item.quantity > checkedStockQuantity;
-  const stockText = isStockChecking
-    ? "Checking stock..."
-    : isOutOfStock
-      ? "Out of stock"
-      : hasInsufficientStock
-        ? `${displayStockQuantity} available - reduce quantity`
-        : `${displayStockQuantity} available`;
+  const stockText = isOutOfStock
+    ? "Out of stock"
+    : hasInsufficientStock
+      ? `${displayStockQuantity} available - reduce quantity`
+      : `${displayStockQuantity} available`;
 
   return (
     <article className="grid gap-4 px-4 py-4 md:grid-cols-[minmax(0,2fr)_0.6fr_0.5fr_0.6fr] md:items-center md:px-5">
@@ -219,6 +274,8 @@ export default function CheckoutView() {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [paymentId, setPaymentId] = useState("cash-on-delivery");
+  const [orderSubmitStatus, setOrderSubmitStatus] = useState<OrderSubmitStatus>("idle");
+  const [orderSubmitMessage, setOrderSubmitMessage] = useState<string | undefined>();
 
   const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
   const items = hasActiveSession ? (cartData?.items ?? []) : guestCart.items;
@@ -228,7 +285,6 @@ export default function CheckoutView() {
   );
   const {
     data: stockCheckData,
-    isFetching: isCheckingStock,
     isError: isStockCheckError,
   } = useCheckStockQuery(stockIds.length > 0 ? { stock_ids: stockIds } : skipToken, {
     refetchOnMountOrArgChange: true,
@@ -277,7 +333,7 @@ export default function CheckoutView() {
   }, [defaultAddress]);
 
   useEffect(() => {
-    if (!isSubmitting && !isCheckingStockBeforeSubmit) {
+    if (orderSubmitStatus === "idle") {
       return;
     }
 
@@ -287,12 +343,15 @@ export default function CheckoutView() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isCheckingStockBeforeSubmit, isSubmitting]);
+  }, [orderSubmitStatus]);
 
   async function handlePlaceOrder() {
     if (items.length === 0 || isSubmitting || isCheckingStockBeforeSubmit) {
       return;
     }
+
+    setOrderSubmitStatus("idle");
+    setOrderSubmitMessage(undefined);
 
     const shippingAddress = activeShippingAddress ?? formValueToAddressPayload(addressValue);
 
@@ -326,9 +385,13 @@ export default function CheckoutView() {
     let latestStockData: { stocks: { stock_id: number; quantity: number }[] };
 
     try {
+      setOrderSubmitStatus("loading");
       latestStockData = await triggerStockCheck({ stock_ids: stockIds }).unwrap();
     } catch {
-      toast.error("Could not verify stock. Please try again.");
+      const message = "Could not verify stock. Please try again.";
+      setOrderSubmitStatus("failure");
+      setOrderSubmitMessage(message);
+      toast.error(message);
       return;
     }
 
@@ -336,11 +399,12 @@ export default function CheckoutView() {
 
     if (latestStockIssues.length > 0) {
       const outOfStockIssue = latestStockIssues.find((issue) => issue.availableQuantity <= 0);
-      toast.error(
-        outOfStockIssue
-          ? `${outOfStockIssue.item.stock.product_name} is out of stock.`
-          : "Some items do not have enough stock. Please update your cart."
-      );
+      const message = outOfStockIssue
+        ? `${outOfStockIssue.item.stock.product_name} is out of stock.`
+        : "Some items do not have enough stock. Please update your cart.";
+      setOrderSubmitStatus("failure");
+      setOrderSubmitMessage(message);
+      toast.error(message);
       return;
     }
 
@@ -383,35 +447,30 @@ export default function CheckoutView() {
       } else {
         dispatch(clearGuestCart());
       }
-      router.push(ROUTE_BUILDERS.orderSuccess(encodeURIComponent(order.order_number)));
+      setOrderSubmitStatus("success");
+      setOrderSubmitMessage("Opening your order confirmation.");
+      window.setTimeout(() => {
+        router.push(ROUTE_BUILDERS.orderSuccess(encodeURIComponent(order.order_number)));
+      }, 900);
     } catch (error) {
-      toast.error(getOrderErrorMessage(error));
+      const message = getOrderErrorMessage(error);
+      setOrderSubmitStatus("failure");
+      setOrderSubmitMessage(message);
+      toast.error(message);
     }
   }
 
   return (
     <section className="relative bg-(--color-bg)">
-      {isSubmitting ? (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
-          <div className="flex min-w-[220px] flex-col items-center gap-4 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-            <div className="text-center">
-              <p className="text-base font-semibold text-(--color-dark)">Creating your order</p>
-              <p className="mt-1 text-sm text-(--color-text-muted)">Please wait and do not click anywhere.</p>
-            </div>
-          </div>
-        </div>
-      ) : null}
-      {isCheckingStockBeforeSubmit ? (
-        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
-          <div className="flex min-w-[220px] flex-col items-center gap-4 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
-            <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-            <div className="text-center">
-              <p className="text-base font-semibold text-(--color-dark)">Checking stock</p>
-              <p className="mt-1 text-sm text-(--color-text-muted)">Please wait while we confirm availability.</p>
-            </div>
-          </div>
-        </div>
+      {orderSubmitStatus !== "idle" ? (
+        <OrderSubmitOverlay
+          status={orderSubmitStatus}
+          message={orderSubmitMessage}
+          onClose={() => {
+            setOrderSubmitStatus("idle");
+            setOrderSubmitMessage(undefined);
+          }}
+        />
       ) : null}
 
       <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
@@ -577,7 +636,6 @@ export default function CheckoutView() {
                       key={item.id}
                       item={item}
                       checkedStockQuantity={checkedStockQuantityById.get(item.stock.id)}
-                      isStockChecking={isCheckingStock}
                     />
                   ))}
                 </div>
@@ -700,7 +758,7 @@ export default function CheckoutView() {
                 className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FiShoppingBag className="mr-2" />
-                {isCheckingStockBeforeSubmit ? "Checking stock..." : isSubmitting ? "Placing order..." : "Place order"}
+                {isSubmitting || isCheckingStockBeforeSubmit ? "Placing order..." : "Place order"}
               </button>
 
               <Link

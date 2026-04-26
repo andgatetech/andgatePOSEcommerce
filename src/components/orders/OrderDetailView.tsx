@@ -11,6 +11,7 @@ import {
   FiCheckCircle,
   FiClock,
   FiCreditCard,
+  FiDownload,
   FiHome,
   FiMapPin,
   FiPackage,
@@ -21,6 +22,7 @@ import {
 import { ROUTES } from "@/config/routes";
 import { useCancelOrderMutation, useGetOrderQuery } from "@/features/orders/ordersApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { generateInvoicePdf } from "@/lib/invoice/generateInvoicePdf";
 import {
   ORDER_STATUS_LABELS,
   PAYMENT_STATUS_LABELS,
@@ -60,6 +62,14 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
     } catch {
       toast.error("Order could not be cancelled.");
     }
+  }
+
+  function handleInvoiceDownload() {
+    if (!order) {
+      return;
+    }
+
+    generateInvoicePdf(order);
   }
 
   if (isError) {
@@ -248,6 +258,15 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
                   This order can no longer be cancelled from the frontend because it is already {ORDER_STATUS_LABELS[order.status].toLowerCase()}.
                 </div>
               )}
+
+              <button
+                type="button"
+                onClick={handleInvoiceDownload}
+                className="mt-3 flex min-h-[52px] w-full items-center justify-center rounded-full bg-(--color-primary) px-5 text-sm font-semibold text-white transition hover:bg-(--color-primary-900)"
+              >
+                <FiDownload className="mr-2 text-[16px]" />
+                Download invoice
+              </button>
 
               <div className="mt-5 rounded-[20px] border border-(--color-border) bg-[#fbfcfd] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
