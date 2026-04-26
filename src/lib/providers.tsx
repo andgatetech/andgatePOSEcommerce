@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { store } from "./store";
 import AuthHydrator from "@/features/auth/AuthHydrator";
+import GuestCartHydrator from "@/features/cart/GuestCartHydrator";
+import GuestCartMerger from "@/features/cart/GuestCartMerger";
 
 export default function ReduxProvider({
   children,
@@ -13,6 +15,8 @@ export default function ReduxProvider({
   return (
     <Provider store={store}>
       <AuthHydrator />
+      <GuestCartHydrator />
+      <GuestCartMerger />
       {children}
       <Toaster
         position="top-right"

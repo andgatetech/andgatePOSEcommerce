@@ -17,6 +17,10 @@ export default function ProtectedLayoutClient({
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const { isAuthenticated, isHydrated, expiresAt } = useAppSelector((state) => state.auth);
+  const allowsGuestAccess =
+    pathname === ROUTES.CART ||
+    pathname === ROUTES.CHECKOUT ||
+    (pathname.startsWith(`${ROUTES.ORDERS}/`) && pathname.endsWith("/order-success"));
 
   useEffect(() => {
     setMounted(true);
@@ -27,16 +31,24 @@ export default function ProtectedLayoutClient({
       return;
     }
 
-    if (!isAuthenticated || isTokenExpired(expiresAt)) {
+    const sessionExpired = isTokenExpired(expiresAt);
+
+    if (isAuthenticated && sessionExpired) {
       clearStoredAuth();
       dispatch(logout());
+    }
+
+    if ((!isAuthenticated || sessionExpired) && !allowsGuestAccess) {
       const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
       loginUrl.searchParams.set("callbackUrl", pathname);
       router.replace(`${loginUrl.pathname}${loginUrl.search}`);
     }
-  }, [mounted, dispatch, expiresAt, isAuthenticated, isHydrated, pathname, router]);
+  }, [allowsGuestAccess, mounted, dispatch, expiresAt, isAuthenticated, isHydrated, pathname, router]);
 
-  const isReady = mounted && isHydrated && isAuthenticated && !isTokenExpired(expiresAt);
+  const isReady =
+    mounted &&
+    isHydrated &&
+    (allowsGuestAccess || (isAuthenticated && !isTokenExpired(expiresAt)));
 
   if (!isReady) {
     return (

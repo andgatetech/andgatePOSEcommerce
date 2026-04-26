@@ -138,6 +138,22 @@ export default function PopularProductCard({
         <AddToCartButton
           stockId={product.id}
           stockCount={stockCount}
+          product={{
+            id: product.id,
+            slug: product.slug,
+            sku: product.sku,
+            price: product.price,
+            available_qty: stockCount,
+            variant_data: product.variant_data,
+            product_name: product.product_name,
+            description: product.description,
+            images: product.images,
+            store: {
+              id: 0,
+              store_name: product.sold_by.store_name,
+              slug: product.sold_by.store_slug,
+            },
+          }}
           className="mt-3 w-full"
         />
       </div>

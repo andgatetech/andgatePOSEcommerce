@@ -1,12 +1,12 @@
 "use client";
 
-import { ROUTES } from "@/config/routes";
 import {
   useAddToCartMutation,
   useUpdateCartItemMutation,
 } from "@/features/cart/cartApi";
-import { useAppSelector } from "@/lib/hooks";
-import { usePathname, useRouter } from "next/navigation";
+import { addGuestCartItem, type GuestCartProduct } from "@/features/cart/guestCartSlice";
+import { isTokenExpired } from "@/features/auth/authStorage";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart } from "react-icons/fi";
@@ -16,6 +16,8 @@ interface AddToCartButtonProps {
   stockId: number | string;
   /** Current stock quantity — disables button when 0 */
   stockCount: number;
+  /** Product snapshot used for guest cart rendering */
+  product: GuestCartProduct;
   /** Quantity to add (default 1) */
   quantity?: number;
   /** Extra Tailwind/CSS classes on the outer button wrapper */
@@ -28,13 +30,13 @@ const ANIM_MS = 1800;
 export default function AddToCartButton({
   stockId,
   stockCount,
+  product,
   quantity = 1,
   className = "",
 }: AddToCartButtonProps) {
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, expiresAt } = useAppSelector((state) => state.auth);
+  const hasActiveSession = isAuthenticated && !isTokenExpired(expiresAt);
 
   const [addToCart] = useAddToCartMutation();
   const [updateCartItem] = useUpdateCartItemMutation();
@@ -62,19 +64,21 @@ export default function AddToCartButton({
       return;
     }
 
-    if (!isAuthenticated) {
-      const loginUrl = new URL(ROUTES.LOGIN, window.location.origin);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      router.push(`${loginUrl.pathname}${loginUrl.search}`);
+    setAnimState("loading");
+
+    const animTimer = new Promise<void>((r) => setTimeout(r, ANIM_MS));
+
+    if (!hasActiveSession) {
+      await animTimer;
+      dispatch(addGuestCartItem({ product, quantity }));
+      toast.success("Added to cart!");
+      setAnimState("success");
+      resetTimer.current = setTimeout(() => setAnimState("idle"), 2000);
       return;
     }
 
-    setAnimState("loading");
-
     // Animation timer and API call run in parallel.
-    // We wait for BOTH so the full animation always completes
-    // before "Added" is shown — regardless of API speed.
-    const animTimer = new Promise<void>((r) => setTimeout(r, ANIM_MS));
+    // We wait for both so the full animation always completes before success is shown.
     const [result] = await Promise.all([
       addToCart({ stock_id: normalizedStockId }),
       animTimer,
@@ -95,11 +99,11 @@ export default function AddToCartButton({
     resetTimer.current = setTimeout(() => setAnimState("idle"), 2000);
   }, [
     animState,
-    isAuthenticated,
-    pathname,
-    router,
+    dispatch,
+    hasActiveSession,
     addToCart,
     normalizedStockId,
+    product,
     quantity,
     updateCartItem,
   ]);

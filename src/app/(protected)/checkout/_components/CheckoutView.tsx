@@ -23,7 +23,10 @@ import {
   shippingAddressToFormValue,
 } from "@/lib/address";
 import { useClearCartMutation, useGetCartQuery } from "@/features/cart/cartApi";
+import { clearGuestCart } from "@/features/cart/guestCartSlice";
+import { isTokenExpired } from "@/features/auth/authStorage";
 import { useCreateOrderMutation } from "@/features/orders/ordersApi";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import type { CartItemData, CreateOrderRequest } from "@/types";
 
 type PaymentOption = {
@@ -178,8 +181,16 @@ function CheckoutItemRow({ item }: { item: CartItemData }) {
 
 export default function CheckoutView() {
   const router = useRouter();
-  const { data: cartData, isLoading } = useGetCartQuery();
-  const { data: myAddressData, isFetching: isLoadingMyAddress } = useGetMyAddressesQuery();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, expiresAt } = useAppSelector((state) => state.auth);
+  const hasActiveSession = isAuthenticated && !isTokenExpired(expiresAt);
+  const guestCart = useAppSelector((state) => state.guestCart);
+  const { data: cartData, isLoading: isServerCartLoading } = useGetCartQuery(undefined, {
+    skip: !hasActiveSession,
+  });
+  const { data: myAddressData, isFetching: isLoadingMyAddress } = useGetMyAddressesQuery(undefined, {
+    skip: !hasActiveSession,
+  });
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
   const [clearCart] = useClearCartMutation();
 
@@ -188,11 +199,16 @@ export default function CheckoutView() {
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [paymentId, setPaymentId] = useState("cash-on-delivery");
 
-  const items = cartData?.items ?? [];
-  const cartTotal = cartData?.cart_total ?? 0;
-  const itemCount = cartData?.item_count ?? 0;
-  const savedAddresses = myAddressData?.addresses ?? [];
-  const defaultAddress = myAddressData?.default_address ?? null;
+  const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
+  const items = hasActiveSession ? (cartData?.items ?? []) : guestCart.items;
+  const cartTotal = hasActiveSession
+    ? (cartData?.cart_total ?? 0)
+    : guestCart.items.reduce((sum, item) => sum + item.subtotal, 0);
+  const itemCount = hasActiveSession
+    ? (cartData?.item_count ?? 0)
+    : guestCart.items.reduce((count, item) => count + item.quantity, 0);
+  const savedAddresses = hasActiveSession ? (myAddressData?.addresses ?? []) : [];
+  const defaultAddress = hasActiveSession ? (myAddressData?.default_address ?? null) : null;
   const selectedAddress =
     savedAddresses.find((address) => address.id === selectedAddressId) ?? defaultAddress;
   const savedAddress = selectedAddress ?? null;
@@ -287,12 +303,23 @@ export default function CheckoutView() {
       };
     }
 
+    if (!hasActiveSession) {
+      payload.cart_items = items.map((item) => ({
+        stock_id: item.stock.id,
+        quantity: item.quantity,
+      }));
+    }
+
     try {
       const order = await createOrder(payload).unwrap();
-      try {
-        await clearCart().unwrap();
-      } catch {
-        toast.error("Order placed, but cart could not be cleared automatically.");
+      if (hasActiveSession) {
+        try {
+          await clearCart().unwrap();
+        } catch {
+          toast.error("Order placed, but cart could not be cleared automatically.");
+        }
+      } else {
+        dispatch(clearGuestCart());
       }
       router.push(ROUTE_BUILDERS.orderSuccess(encodeURIComponent(order.order_number)));
     } catch (error) {

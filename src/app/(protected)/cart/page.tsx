@@ -21,8 +21,10 @@ import {
   useRemoveCartItemMutation,
   useClearCartMutation,
 } from "@/features/cart/cartApi";
-import { useAddToCartMutation } from "@/features/cart/cartApi";
+import { clearGuestCart, removeGuestCartItem, updateGuestCartItem } from "@/features/cart/guestCartSlice";
+import { isTokenExpired } from "@/features/auth/authStorage";
 import { useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import type { CartItemData } from "@/types";
 
 function formatPrice(value: number | string) {
@@ -44,7 +46,8 @@ function ProductImage({ images, name }: { images: { id: number; url: string }[];
   );
 }
 
-function CartItemRow({ item }: { item: CartItemData }) {
+function CartItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenticated: boolean }) {
+  const dispatch = useAppDispatch();
   const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
@@ -57,16 +60,29 @@ function CartItemRow({ item }: { item: CartItemData }) {
 
   async function handleDecrement() {
     if (item.quantity <= 1) return;
+    if (!isAuthenticated) {
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity - 1 }));
+      return;
+    }
     const result = await updateItem({ cart_id: item.id, quantity: item.quantity - 1 });
     if ("error" in result) toast.error("Failed to update quantity.");
   }
 
   async function handleIncrement() {
+    if (!isAuthenticated) {
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity + 1 }));
+      return;
+    }
     const result = await updateItem({ cart_id: item.id, quantity: item.quantity + 1 });
     if ("error" in result) toast.error("Failed to update quantity.");
   }
 
   async function handleRemove() {
+    if (!isAuthenticated) {
+      dispatch(removeGuestCartItem(item.id));
+      toast.success("Item removed from cart.");
+      return;
+    }
     const result = await removeItem(item.id);
     if ("error" in result) {
       toast.error("Failed to remove item.");
@@ -76,6 +92,10 @@ function CartItemRow({ item }: { item: CartItemData }) {
   }
 
   async function handleMoveToWishlist() {
+    if (!isAuthenticated) {
+      toast.error("Please login to save items.");
+      return;
+    }
     const result = await toggleWishlist({ stock_id: item.stock.id });
     if ("error" in result) {
       toast.error("Failed to save to wishlist.");
@@ -178,16 +198,32 @@ function CartItemRow({ item }: { item: CartItemData }) {
 }
 
 export default function CartPage() {
-  const { data, isLoading } = useGetCartQuery();
+  const dispatch = useAppDispatch();
+  const { isAuthenticated, expiresAt } = useAppSelector((state) => state.auth);
+  const hasActiveSession = isAuthenticated && !isTokenExpired(expiresAt);
+  const guestCart = useAppSelector((state) => state.guestCart);
+  const { data, isLoading: isServerCartLoading } = useGetCartQuery(undefined, {
+    skip: !hasActiveSession,
+  });
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
 
-  const items = data?.items ?? [];
-  const cartTotal = data?.cart_total ?? 0;
-  const itemCount = data?.item_count ?? 0;
+  const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
+  const items = hasActiveSession ? (data?.items ?? []) : guestCart.items;
+  const cartTotal = hasActiveSession
+    ? (data?.cart_total ?? 0)
+    : guestCart.items.reduce((sum, item) => sum + item.subtotal, 0);
+  const itemCount = hasActiveSession
+    ? (data?.item_count ?? 0)
+    : guestCart.items.reduce((count, item) => count + item.quantity, 0);
   const total = cartTotal;
 
   async function handleClearCart() {
     if (items.length === 0) return;
+    if (!hasActiveSession) {
+      dispatch(clearGuestCart());
+      toast.success("Cart cleared.");
+      return;
+    }
     const result = await clearCart();
     if ("error" in result) {
       toast.error("Failed to clear cart.");
@@ -263,7 +299,7 @@ export default function CartPage() {
 
                 <div className="divide-y divide-(--color-border)">
                   {items.map((item) => (
-                    <CartItemRow key={item.id} item={item} />
+                    <CartItemRow key={item.id} item={item} isAuthenticated={hasActiveSession} />
                   ))}
                 </div>
 

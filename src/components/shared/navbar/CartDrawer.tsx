@@ -15,11 +15,14 @@ import {
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useClearCartMutation, useUpdateCartItemMutation, useRemoveCartItemMutation } from "@/features/cart/cartApi";
+import { clearGuestCart, removeGuestCartItem, updateGuestCartItem } from "@/features/cart/guestCartSlice";
+import { useAppDispatch } from "@/lib/hooks";
 import type { CartItemData } from "@/types";
 
 type CartDrawerProps = {
   isOpen: boolean;
   items: CartItemData[];
+  isAuthenticated: boolean;
   onClose: () => void;
 };
 
@@ -27,7 +30,8 @@ function formatPrice(value: number | string) {
   return `৳${Number(value).toFixed(2)}`;
 }
 
-function DrawerItemRow({ item }: { item: CartItemData }) {
+function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenticated: boolean }) {
+  const dispatch = useAppDispatch();
   const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
 
@@ -35,16 +39,29 @@ function DrawerItemRow({ item }: { item: CartItemData }) {
 
   async function handleDecrement() {
     if (item.quantity <= 1) return;
+    if (!isAuthenticated) {
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity - 1 }));
+      return;
+    }
     const result = await updateItem({ cart_id: item.id, quantity: item.quantity - 1 });
     if ("error" in result) toast.error("Failed to update quantity.");
   }
 
   async function handleIncrement() {
+    if (!isAuthenticated) {
+      dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity + 1 }));
+      return;
+    }
     const result = await updateItem({ cart_id: item.id, quantity: item.quantity + 1 });
     if ("error" in result) toast.error("Failed to update quantity.");
   }
 
   async function handleRemove() {
+    if (!isAuthenticated) {
+      dispatch(removeGuestCartItem(item.id));
+      toast.success("Item removed from cart.");
+      return;
+    }
     const result = await removeItem(item.id);
     if ("error" in result) {
       toast.error("Failed to remove item.");
@@ -126,7 +143,8 @@ function DrawerItemRow({ item }: { item: CartItemData }) {
   );
 }
 
-export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) {
+export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: CartDrawerProps) {
+  const dispatch = useAppDispatch();
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
 
   useEffect(() => {
@@ -147,6 +165,12 @@ export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) 
 
   async function handleClearCart() {
     if (items.length === 0 || isClearing) return;
+
+    if (!isAuthenticated) {
+      dispatch(clearGuestCart());
+      toast.success("Cart cleared.");
+      return;
+    }
 
     const result = await clearCart();
     if ("error" in result) {
@@ -216,7 +240,7 @@ export default function CartDrawer({ isOpen, items, onClose }: CartDrawerProps) 
           ) : (
             <div className="space-y-2.5">
               {items.map((item) => (
-                <DrawerItemRow key={item.id} item={item} />
+                <DrawerItemRow key={item.id} item={item} isAuthenticated={isAuthenticated} />
               ))}
             </div>
           )}

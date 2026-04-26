@@ -270,6 +270,10 @@ export interface CreateOrderRequest {
   shipping_fee: number;
   notes?: string;
   shipping_address?: EcommerceAddressPayload;
+  cart_items?: {
+    stock_id: number;
+    quantity: number;
+  }[];
 }
 
 // ── Ecommerce product types ───────────────────────────────────────────────────

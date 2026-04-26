@@ -3,10 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import toast from "react-hot-toast";
 import {
-  FiShoppingCart,
   FiHeart,
   FiShare2,
   FiChevronRight,
@@ -21,7 +20,6 @@ import { FaXTwitter } from "react-icons/fa6";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
-import { useAddToCartMutation, useUpdateCartItemMutation } from "@/features/cart/cartApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
 import type { EcommerceProduct } from "@/types";
@@ -31,7 +29,6 @@ interface ProductDetailPageProps {
 }
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
-  const router = useRouter();
   const pathname = usePathname();
   const shareMenuRef = useRef<HTMLDivElement | null>(null);
   const [activeImage, setActiveImage] = useState(0);
@@ -44,7 +41,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
 
-  const [updateCartItem] = useUpdateCartItemMutation();
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
   const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
 
@@ -391,6 +387,22 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               <AddToCartButton
                 stockId={product.id}
                 stockCount={stockCount}
+                product={{
+                  id: product.id,
+                  slug: product.slug,
+                  sku: product.sku,
+                  price: product.price,
+                  available_qty: stockCount,
+                  variant_data: product.variant_data,
+                  product_name: product.product_name,
+                  description: product.description,
+                  images: product.images,
+                  store: {
+                    id: 0,
+                    store_name: product.sold_by.store_name,
+                    slug: product.sold_by.store_slug,
+                  },
+                }}
                 quantity={quantity}
               />
 
