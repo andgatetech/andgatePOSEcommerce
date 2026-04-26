@@ -20,6 +20,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
+import { useCheckStockQuery } from "@/features/cart/cartApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
 import type { EcommerceProduct } from "@/types";
@@ -66,6 +67,16 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const displayPrice = parseFloat(product.price).toLocaleString("en-BD");
   const stockCount = parseFloat(product.quantity);
 
+  const {
+    data: stockCheckData,
+    isFetching: isCheckingStock,
+  } = useCheckStockQuery(
+    { stock_id: product.id },
+    { refetchOnMountOrArgChange: true },
+  );
+  const realTimeStock = stockCheckData?.stocks?.[0]?.quantity;
+  const effectiveStockCount = realTimeStock ?? stockCount;
+
   const variantEntries = product.variant_data
     ? Object.entries(product.variant_data)
     : [];
@@ -97,6 +108,12 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     window.addEventListener("mousedown", handlePointerDown);
     return () => window.removeEventListener("mousedown", handlePointerDown);
   }, []);
+
+  useEffect(() => {
+    if (realTimeStock !== undefined && quantity > realTimeStock) {
+      setQuantity(Math.max(1, realTimeStock));
+    }
+  }, [realTimeStock]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const shareTitle = product.product_name;
   const shareText = `${product.product_name} from ${product.sold_by.store_name}`;
@@ -276,14 +293,18 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </span>
               <span
                 className={`rounded-[6px] px-3 py-1 text-[13px] font-semibold ${
-                  stockCount > 0
-                    ? "bg-green-50 text-green-700"
-                    : "bg-red-50 text-red-600"
+                  isCheckingStock
+                    ? "bg-gray-50 text-gray-500"
+                    : effectiveStockCount > 0
+                      ? "bg-green-50 text-green-700"
+                      : "bg-red-50 text-red-600"
                 }`}
               >
-                {stockCount > 0
-                  ? `${stockCount} in stock`
-                  : "Out of stock"}
+                {isCheckingStock
+                  ? "Checking stock..."
+                  : effectiveStockCount > 0
+                    ? `${effectiveStockCount} in stock`
+                    : "Out of stock"}
               </span>
             </div>
 
@@ -374,7 +395,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                 <button
                   onClick={() =>
                     setQuantity((q) =>
-                      stockCount > 0 ? Math.min(stockCount, q + 1) : q,
+                      effectiveStockCount > 0 ? Math.min(effectiveStockCount, q + 1) : q,
                     )
                   }
                   className="flex h-[46px] w-[46px] items-center justify-center hover:bg-() transition"
@@ -386,13 +407,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
               <AddToCartButton
                 stockId={product.id}
-                stockCount={stockCount}
+                stockCount={effectiveStockCount}
                 product={{
                   id: product.id,
                   slug: product.slug,
                   sku: product.sku,
                   price: product.price,
-                  available_qty: stockCount,
+                  available_qty: effectiveStockCount,
                   variant_data: product.variant_data,
                   product_name: product.product_name,
                   description: product.description,
@@ -549,7 +570,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                     product.category && ["Category", product.category.name],
                     product.brand && ["Brand", product.brand.name],
                     ["SKU", product.sku],
-                    ["Stock", `${stockCount} units`],
+                    ["Stock", `${effectiveStockCount} units`],
                     ...(product.variant_data
                       ? Object.entries(product.variant_data)
                       : []),

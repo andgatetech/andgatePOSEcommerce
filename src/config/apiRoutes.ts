@@ -13,6 +13,7 @@ export const API_ROUTES = {
     CART: "/cart",
     CART_CLEAR: "/cart/clear",
     CART_ITEM: (id: number) => `/cart/${id}` as const,
+    STOCK_CHECK: "/stock-check",
   },
   ECOMMERCE_ORDERS: {
     ORDERS: "/orders",

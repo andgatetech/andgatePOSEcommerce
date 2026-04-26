@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useMemo } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
 import toast from "react-hot-toast";
 import {
+  FiAlertTriangle,
   FiChevronRight,
   FiHeart,
   FiHome,
@@ -14,14 +17,16 @@ import {
 } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { getStockQuantityMap, getStockIssues } from "@/lib/stockCheck";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import {
+  useCheckStockQuery,
   useGetCartQuery,
   useUpdateCartItemMutation,
   useRemoveCartItemMutation,
   useClearCartMutation,
 } from "@/features/cart/cartApi";
-import { clearGuestCart, removeGuestCartItem, updateGuestCartItem } from "@/features/cart/guestCartSlice";
+import { clearGuestCart, removeGuestCartItem, syncGuestCartStock, updateGuestCartItem } from "@/features/cart/guestCartSlice";
 import { isTokenExpired } from "@/features/auth/authStorage";
 import { useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -46,11 +51,25 @@ function ProductImage({ images, name }: { images: { id: number; url: string }[];
   );
 }
 
-function CartItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenticated: boolean }) {
+function CartItemRow({
+  item,
+  isAuthenticated,
+  checkedStockQuantity,
+  isStockChecking,
+}: {
+  item: CartItemData;
+  isAuthenticated: boolean;
+  checkedStockQuantity?: number;
+  isStockChecking: boolean;
+}) {
   const dispatch = useAppDispatch();
   const [updateItem, { isLoading: isUpdating }] = useUpdateCartItemMutation();
   const [removeItem, { isLoading: isRemoving }] = useRemoveCartItemMutation();
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
+
+  const effectiveAvailableQty = checkedStockQuantity ?? Number(item.stock.available_qty);
+  const isOutOfStock = effectiveAvailableQty <= 0;
+  const hasInsufficientStock = checkedStockQuantity !== undefined && item.quantity > checkedStockQuantity;
 
   const variantLabel = item.stock.variant_data
     ? Object.entries(item.stock.variant_data)
@@ -69,6 +88,10 @@ function CartItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenti
   }
 
   async function handleIncrement() {
+    if (item.quantity >= effectiveAvailableQty) {
+      toast.error("Cannot add more than available stock.");
+      return;
+    }
     if (!isAuthenticated) {
       dispatch(updateGuestCartItem({ cart_id: item.id, quantity: item.quantity + 1 }));
       return;
@@ -121,8 +144,22 @@ function CartItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenti
           </div>
 
           <p className="mt-2 text-sm text-(--color-dark)">
-            Available:{" "}
-            <span className="text-(--color-text-muted)">{item.stock.available_qty}</span>
+            Stock:{" "}
+            <span className={
+              isStockChecking
+                ? "text-(--color-text-muted)"
+                : isOutOfStock || hasInsufficientStock
+                  ? "font-medium text-(--color-danger)"
+                  : "font-medium text-green-600"
+            }>
+              {isStockChecking
+                ? "Checking..."
+                : isOutOfStock
+                  ? "Out of stock"
+                  : hasInsufficientStock
+                    ? `Only ${effectiveAvailableQty} available`
+                    : `${effectiveAvailableQty} available`}
+            </span>
           </p>
 
           <p className="mt-1 text-xs text-(--color-text-muted)">{item.store.store_name}</p>
@@ -156,7 +193,7 @@ function CartItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthenti
           </span>
           <button
             type="button"
-            disabled={isBusy}
+            disabled={isBusy || item.quantity >= effectiveAvailableQty}
             onClick={handleIncrement}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
           >
@@ -209,6 +246,38 @@ export default function CartPage() {
 
   const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
   const items = hasActiveSession ? (data?.items ?? []) : guestCart.items;
+
+  const stockIds = useMemo(
+    () => Array.from(new Set(items.map((item) => item.stock.id))).sort((a, b) => a - b),
+    [items],
+  );
+  const {
+    data: stockCheckData,
+    isFetching: isCheckingStock,
+    isError: isStockCheckError,
+  } = useCheckStockQuery(
+    stockIds.length > 0 ? { stock_ids: stockIds } : skipToken,
+    { refetchOnMountOrArgChange: true },
+  );
+  const checkedStockQuantityById = useMemo(
+    () => getStockQuantityMap(stockCheckData?.stocks),
+    [stockCheckData?.stocks],
+  );
+  const stockIssues = useMemo(
+    () => getStockIssues(items, stockCheckData?.stocks),
+    [items, stockCheckData?.stocks],
+  );
+  const hasStockIssues = stockIssues.length > 0;
+
+  useEffect(() => {
+    if (hasActiveSession || !stockCheckData?.stocks) return;
+    dispatch(
+      syncGuestCartStock(
+        stockCheckData.stocks.map((s) => ({ stockId: s.stock_id, availableQty: s.quantity })),
+      ),
+    );
+  }, [dispatch, hasActiveSession, stockCheckData]);
+
   const cartTotal = hasActiveSession
     ? (data?.cart_total ?? 0)
     : guestCart.items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -297,9 +366,29 @@ export default function CartPage() {
                   <span>Action</span>
                 </div>
 
-                <div className="divide-y divide-(--color-border)">
+                {hasStockIssues ? (
+                <div className="flex items-center gap-2 border-b border-[#f6ccd4] bg-[#fff7f8] px-4 py-3 text-sm text-(--color-danger)">
+                  <FiAlertTriangle className="shrink-0" />
+                  {stockIssues.some((issue) => issue.availableQuantity <= 0)
+                    ? "One or more items are out of stock."
+                    : "Some items exceed available stock. Please adjust quantities."}
+                </div>
+              ) : isStockCheckError ? (
+                <div className="flex items-center gap-2 border-b border-[#f7e2a7] bg-[#fff9e8] px-4 py-3 text-sm text-[#8a5c00]">
+                  <FiAlertTriangle className="shrink-0" />
+                  Stock could not be verified. It will be checked again at checkout.
+                </div>
+              ) : null}
+
+              <div className="divide-y divide-(--color-border)">
                   {items.map((item) => (
-                    <CartItemRow key={item.id} item={item} isAuthenticated={hasActiveSession} />
+                    <CartItemRow
+                      key={item.id}
+                      item={item}
+                      isAuthenticated={hasActiveSession}
+                      checkedStockQuantity={checkedStockQuantityById.get(item.stock.id)}
+                      isStockChecking={isCheckingStock}
+                    />
                   ))}
                 </div>
 
@@ -332,13 +421,25 @@ export default function CartPage() {
               </div>
 
               <div className="mt-7 space-y-3">
-                <Link
-                  href={ROUTES.CHECKOUT}
-                  className="flex min-h-[54px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-                >
-                  <FiShoppingBag className="mr-2" />
-                  Proceed to checkout
-                </Link>
+                {hasStockIssues ? (
+                  <button
+                    type="button"
+                    disabled
+                    onClick={() => toast.error("Please fix stock issues before checkout.")}
+                    className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white opacity-50 cursor-not-allowed"
+                  >
+                    <FiShoppingBag className="mr-2" />
+                    Proceed to checkout
+                  </button>
+                ) : (
+                  <Link
+                    href={ROUTES.CHECKOUT}
+                    className="flex min-h-[54px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
+                  >
+                    <FiShoppingBag className="mr-2" />
+                    Proceed to checkout
+                  </Link>
+                )}
 
                 <Link
                   href={ROUTES.SHOP}

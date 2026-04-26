@@ -11,8 +11,12 @@ import type { RootState } from "@/lib/store";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: process.env.NEXT_PUBLIC_API_URL,
-  prepareHeaders: (headers, { getState }) => {
+  prepareHeaders: (headers, { endpoint, getState }) => {
     headers.set("Accept", "application/json");
+
+    if (endpoint === "checkStock") {
+      return headers;
+    }
 
     const state = getState() as RootState;
     const token = state.auth.token ?? loadStoredAuth()?.token;

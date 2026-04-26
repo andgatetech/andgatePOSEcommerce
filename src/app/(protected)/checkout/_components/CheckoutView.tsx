@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { skipToken } from "@reduxjs/toolkit/query";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FiChevronRight,
@@ -22,8 +23,9 @@ import {
   getAddressDisplayLines,
   shippingAddressToFormValue,
 } from "@/lib/address";
-import { useClearCartMutation, useGetCartQuery } from "@/features/cart/cartApi";
+import { useCheckStockQuery, useClearCartMutation, useGetCartQuery, useLazyCheckStockQuery } from "@/features/cart/cartApi";
 import { clearGuestCart } from "@/features/cart/guestCartSlice";
+import { getStockQuantityMap, getStockIssues } from "@/lib/stockCheck";
 import { isTokenExpired } from "@/features/auth/authStorage";
 import { useCreateOrderMutation } from "@/features/orders/ordersApi";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
@@ -100,13 +102,31 @@ function getOrderErrorMessage(error: unknown) {
   return "Order could not be placed.";
 }
 
-function CheckoutItemRow({ item }: { item: CartItemData }) {
+function CheckoutItemRow({
+  item,
+  checkedStockQuantity,
+  isStockChecking,
+}: {
+  item: CartItemData;
+  checkedStockQuantity?: number;
+  isStockChecking: boolean;
+}) {
   const imageSrc = resolveImageUrl(item.stock.images[0]?.url);
   const variantLabel = item.stock.variant_data
     ? Object.entries(item.stock.variant_data)
         .map(([k, v]) => `${k}: ${v}`)
         .join(" · ")
     : item.stock.sku;
+  const displayStockQuantity = checkedStockQuantity ?? Number(item.stock.available_qty);
+  const isOutOfStock = displayStockQuantity <= 0;
+  const hasInsufficientStock = checkedStockQuantity !== undefined && item.quantity > checkedStockQuantity;
+  const stockText = isStockChecking
+    ? "Checking stock..."
+    : isOutOfStock
+      ? "Out of stock"
+      : hasInsufficientStock
+        ? `${displayStockQuantity} available - reduce quantity`
+        : `${displayStockQuantity} available`;
 
   return (
     <article className="grid gap-4 px-4 py-4 md:grid-cols-[minmax(0,2fr)_0.6fr_0.5fr_0.6fr] md:items-center md:px-5">
@@ -139,8 +159,8 @@ function CheckoutItemRow({ item }: { item: CartItemData }) {
           <p className="mt-1 text-xs text-(--color-text-muted)">{item.store.store_name}</p>
           <p className="mt-1.5 text-xs text-(--color-text-muted)">
             Stock:{" "}
-            <span className={Number(item.stock.available_qty) > 0 ? "text-green-600 font-medium" : "text-(--color-danger) font-medium"}>
-              {Number(item.stock.available_qty) > 0 ? `${item.stock.available_qty} available` : "Out of stock"}
+            <span className={isOutOfStock || hasInsufficientStock ? "font-medium text-(--color-danger)" : "font-medium text-green-600"}>
+              {stockText}
             </span>
           </p>
         </div>
@@ -193,6 +213,7 @@ export default function CheckoutView() {
   });
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
   const [clearCart] = useClearCartMutation();
+  const [triggerStockCheck, { isFetching: isCheckingStockBeforeSubmit }] = useLazyCheckStockQuery();
 
   const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -201,6 +222,26 @@ export default function CheckoutView() {
 
   const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
   const items = hasActiveSession ? (cartData?.items ?? []) : guestCart.items;
+  const stockIds = useMemo(
+    () => Array.from(new Set(items.map((item) => item.stock.id))).sort((a, b) => a - b),
+    [items]
+  );
+  const {
+    data: stockCheckData,
+    isFetching: isCheckingStock,
+    isError: isStockCheckError,
+  } = useCheckStockQuery(stockIds.length > 0 ? { stock_ids: stockIds } : skipToken, {
+    refetchOnMountOrArgChange: true,
+  });
+  const checkedStockQuantityById = useMemo(
+    () => getStockQuantityMap(stockCheckData?.stocks),
+    [stockCheckData?.stocks]
+  );
+  const stockIssues = useMemo(
+    () => getStockIssues(items, stockCheckData?.stocks),
+    [items, stockCheckData?.stocks]
+  );
+  const hasKnownStockIssues = stockIssues.length > 0;
   const cartTotal = hasActiveSession
     ? (cartData?.cart_total ?? 0)
     : guestCart.items.reduce((sum, item) => sum + item.subtotal, 0);
@@ -236,7 +277,7 @@ export default function CheckoutView() {
   }, [defaultAddress]);
 
   useEffect(() => {
-    if (!isSubmitting) {
+    if (!isSubmitting && !isCheckingStockBeforeSubmit) {
       return;
     }
 
@@ -246,10 +287,10 @@ export default function CheckoutView() {
     return () => {
       document.body.style.overflow = previousOverflow;
     };
-  }, [isSubmitting]);
+  }, [isCheckingStockBeforeSubmit, isSubmitting]);
 
   async function handlePlaceOrder() {
-    if (items.length === 0 || isSubmitting) {
+    if (items.length === 0 || isSubmitting || isCheckingStockBeforeSubmit) {
       return;
     }
 
@@ -279,6 +320,27 @@ export default function CheckoutView() {
 
     if (!city || !zone || !area) {
       toast.error("District, zone, and area are required.");
+      return;
+    }
+
+    let latestStockData: { stocks: { stock_id: number; quantity: number }[] };
+
+    try {
+      latestStockData = await triggerStockCheck({ stock_ids: stockIds }).unwrap();
+    } catch {
+      toast.error("Could not verify stock. Please try again.");
+      return;
+    }
+
+    const latestStockIssues = getStockIssues(items, latestStockData.stocks);
+
+    if (latestStockIssues.length > 0) {
+      const outOfStockIssue = latestStockIssues.find((issue) => issue.availableQuantity <= 0);
+      toast.error(
+        outOfStockIssue
+          ? `${outOfStockIssue.item.stock.product_name} is out of stock.`
+          : "Some items do not have enough stock. Please update your cart."
+      );
       return;
     }
 
@@ -336,6 +398,17 @@ export default function CheckoutView() {
             <div className="text-center">
               <p className="text-base font-semibold text-(--color-dark)">Creating your order</p>
               <p className="mt-1 text-sm text-(--color-text-muted)">Please wait and do not click anywhere.</p>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {isCheckingStockBeforeSubmit ? (
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
+          <div className="flex min-w-[220px] flex-col items-center gap-4 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
+            <div className="h-12 w-12 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
+            <div className="text-center">
+              <p className="text-base font-semibold text-(--color-dark)">Checking stock</p>
+              <p className="mt-1 text-sm text-(--color-text-muted)">Please wait while we confirm availability.</p>
             </div>
           </div>
         </div>
@@ -471,6 +544,18 @@ export default function CheckoutView() {
                 <span>Total</span>
               </div>
 
+              {hasKnownStockIssues ? (
+                <div className="border-b border-[#f6ccd4] bg-[#fff7f8] px-5 py-4 text-sm text-(--color-danger)">
+                  {stockIssues.some((issue) => issue.availableQuantity <= 0)
+                    ? "One or more checkout items are out of stock."
+                    : "One or more checkout quantities are higher than current stock."}
+                </div>
+              ) : isStockCheckError ? (
+                <div className="border-b border-[#f7e2a7] bg-[#fff9e8] px-5 py-4 text-sm text-[#8a5c00]">
+                  Stock could not be refreshed automatically. It will be checked again before placing the order.
+                </div>
+              ) : null}
+
               {isLoading ? (
                 <div className="flex min-h-[160px] items-center justify-center text-sm text-(--color-text-muted)">
                   Loading cart…
@@ -488,7 +573,12 @@ export default function CheckoutView() {
               ) : (
                 <div className="divide-y divide-(--color-border)">
                   {items.map((item) => (
-                    <CheckoutItemRow key={item.id} item={item} />
+                    <CheckoutItemRow
+                      key={item.id}
+                      item={item}
+                      checkedStockQuantity={checkedStockQuantityById.get(item.stock.id)}
+                      isStockChecking={isCheckingStock}
+                    />
                   ))}
                 </div>
               )}
@@ -606,11 +696,11 @@ export default function CheckoutView() {
               <button
                 type="button"
                 onClick={handlePlaceOrder}
-                disabled={items.length === 0 || isLoading || isSubmitting}
+                disabled={items.length === 0 || isLoading || isSubmitting || isCheckingStockBeforeSubmit || hasKnownStockIssues}
                 className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <FiShoppingBag className="mr-2" />
-                {isSubmitting ? "Placing order..." : "Place order"}
+                {isCheckingStockBeforeSubmit ? "Checking stock..." : isSubmitting ? "Placing order..." : "Place order"}
               </button>
 
               <Link

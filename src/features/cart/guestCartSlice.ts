@@ -136,6 +136,18 @@ const guestCartSlice = createSlice({
     removeGuestCartItem(state, action: PayloadAction<number>) {
       state.items = state.items.filter((item) => item.id !== action.payload);
     },
+    syncGuestCartStock(
+      state,
+      action: PayloadAction<{ stockId: number; availableQty: number }[]>,
+    ) {
+      for (const { stockId, availableQty } of action.payload) {
+        const item = state.items.find((i) => i.stock.id === stockId);
+        if (!item) continue;
+        item.stock.available_qty = availableQty;
+        item.quantity = normalizeQuantity(item.quantity, availableQty);
+        refreshSubtotal(item);
+      }
+    },
     clearGuestCart(state) {
       state.items = [];
     },
@@ -147,6 +159,7 @@ export const {
   addGuestCartItem,
   updateGuestCartItem,
   removeGuestCartItem,
+  syncGuestCartStock,
   clearGuestCart,
 } = guestCartSlice.actions;
 

@@ -14,12 +14,34 @@ interface CartItemResponse {
   data: CartItemData | null;
 }
 
+export interface StockCheckItem {
+  stock_id: number;
+  quantity: number;
+}
+
+export interface StockCheckResponse {
+  stocks: StockCheckItem[];
+}
+
+export type StockCheckRequest =
+  | { stock_id: number; stock_ids?: never }
+  | { stock_ids: number[]; stock_id?: never };
+
 export const cartApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getCart: builder.query<CartData, void>({
       query: () => API_ROUTES.ECOMMERCE_CART.CART,
       transformResponse: (response: CartResponse) => response.data,
       providesTags: [{ type: "Cart", id: "LIST" }],
+    }),
+
+    checkStock: builder.query<StockCheckResponse, StockCheckRequest>({
+      query: (body) => ({
+        url: API_ROUTES.ECOMMERCE_CART.STOCK_CHECK,
+        method: "POST",
+        body,
+      }),
+      keepUnusedDataFor: 0,
     }),
 
     addToCart: builder.mutation<CartItemResponse, { stock_id: number }>({
@@ -59,6 +81,8 @@ export const cartApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useCheckStockQuery,
+  useLazyCheckStockQuery,
   useGetCartQuery,
   useAddToCartMutation,
   useUpdateCartItemMutation,
