@@ -38,7 +38,7 @@ export default async function CategoryPage({ searchParams }: CategoryPageProps) 
 
   const initialParams: ListQueryParams = {
     search: readString(sp.search) || undefined,
-    page: readNumber(sp.page, 1),
+    page: 1,
     per_page: readNumber(sp.per_page, DEFAULT_PER_PAGE),
     sort_field: readString(sp.sort_field) ?? DEFAULT_SORT_FIELD,
     sort_direction:

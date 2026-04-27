@@ -7,6 +7,7 @@ import {
 } from "@/features/wishlist/wishlistApi";
 import { useAppSelector } from "@/lib/hooks";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { EcommerceProduct } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
@@ -88,9 +89,14 @@ export default function PopularProductCard({
                 />
               </>
             ) : (
-              <span className="text-sm font-medium text-(--color-text-muted) px-6 text-center">
-                {product.product_name}
-              </span>
+              <GeneratedImageFallback
+                name={product.product_name}
+                kind="product"
+                showLabel
+                className="h-full w-full border-0"
+                iconClassName="text-[24px]"
+                textClassName="text-[30px]"
+              />
             )}
           </div>
         </div>

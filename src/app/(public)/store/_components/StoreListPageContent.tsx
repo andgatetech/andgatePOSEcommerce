@@ -4,8 +4,12 @@ import { useMemo } from "react";
 import StoreCard from "./StoreCard";
 import StoreListToolbar from "./shared/StoreListToolbar";
 import { sameStoreParams } from "./shared/storeListShared";
-import Pagination from "@/components/shared/Pagination";
 import { useGetStoresQuery } from "@/features/catalog/storeApi";
+import {
+  buildInfiniteQueryKey,
+  useInfinitePage,
+  useInfinitePaginatedItems,
+} from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import type { ListQueryParams, PaginatedPayload, Store } from "@/types";
 
@@ -24,26 +28,61 @@ export default function StoreListPageContent({
   defaultSortField,
   defaultSortDirection,
 }: StoreListPageContentProps) {
-  const { params, search, setSearch, setSort, setPage } = useListQuery({
+  const { params, search, setSearch, setSort } = useListQuery({
     defaultPerPage,
     defaultSortField,
     defaultSortDirection,
   });
 
-  const isInitial = useMemo(
-    () => sameStoreParams(params, initialParams),
-    [params, initialParams],
+  const baseQueryParams = useMemo<ListQueryParams>(
+    () => ({
+      search: params.search,
+      per_page: params.per_page,
+      sort_field: params.sort_field,
+      sort_direction: params.sort_direction,
+    }),
+    [
+      params.search,
+      params.per_page,
+      params.sort_field,
+      params.sort_direction,
+    ],
+  );
+  const queryKey = useMemo(
+    () => buildInfiniteQueryKey(baseQueryParams),
+    [baseQueryParams],
+  );
+  const [page, setInfinitePage] = useInfinitePage(queryKey);
+  const queryParams = useMemo<ListQueryParams>(
+    () => ({
+      ...baseQueryParams,
+      page,
+    }),
+    [baseQueryParams, page],
   );
 
-  const { data, isFetching, isError } = useGetStoresQuery(params, {
+  const isInitial = useMemo(
+    () => sameStoreParams(queryParams, initialParams),
+    [queryParams, initialParams],
+  );
+
+  const { currentData, isFetching, isError } = useGetStoresQuery(queryParams, {
     skip: isInitial && initialData !== null,
   });
 
   const payload: PaginatedPayload<Store> | null =
-    isInitial && initialData ? initialData : (data ?? null);
+    isInitial && initialData ? initialData : (currentData ?? null);
 
-  const items = payload?.items ?? [];
-  const pagination = payload?.pagination;
+  const {
+    items,
+    sentinelRef,
+    isLoadingMore,
+  } = useInfinitePaginatedItems({
+    payload,
+    queryKey,
+    isFetching,
+    setPage: setInfinitePage,
+  });
   const sortValue = {
     field: params.sort_field ?? defaultSortField,
     direction: params.sort_direction ?? defaultSortDirection,
@@ -65,7 +104,7 @@ export default function StoreListPageContent({
           onSortChange={setSort}
         />
 
-        {isError && !payload ? (
+        {isError && items.length === 0 ? (
           <p className="py-16 text-center text-sm text-(--color-text-muted)">
             Failed to load stores. Please try again.
           </p>
@@ -90,11 +129,15 @@ export default function StoreListPageContent({
           </div>
         )}
 
-        {pagination && (
-          <div className="mt-8">
-            <Pagination pagination={pagination} onPageChange={setPage} />
+        {items.length > 0 ? (
+          <div ref={sentinelRef} className="h-8" aria-hidden />
+        ) : null}
+
+        {isLoadingMore ? (
+          <div className="mt-6 flex justify-center">
+            <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
           </div>
-        )}
+        ) : null}
       </div>
     </section>
   );

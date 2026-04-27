@@ -34,7 +34,7 @@ export default async function StorePage({ searchParams }: StorePageProps) {
 
   const initialParams: ListQueryParams = {
     search: readString(sp.search) || undefined,
-    page: readNumber(sp.page, 1),
+    page: 1,
     per_page: readNumber(sp.per_page, STORE_DEFAULT_PER_PAGE),
     sort_field: readString(sp.sort_field) ?? STORE_DEFAULT_SORT_FIELD,
     sort_direction:

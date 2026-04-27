@@ -5,11 +5,15 @@ import { FiSliders } from "react-icons/fi";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
 import { useGetProductsQuery } from "@/features/catalog/productApi";
+import {
+  buildInfiniteQueryKey,
+  useInfinitePage,
+  useInfinitePaginatedItems,
+} from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
 import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
-import Pagination from "@/components/shared/Pagination";
 import PopularProductCard from "./PopularProductCard";
 import ProductPageSkeleton from "./ProductPageSkeleton";
 import type { ProductListParams } from "@/types";
@@ -40,7 +44,6 @@ export default function ProductPageContent() {
     search,
     setSearch,
     setSort,
-    setPage,
     setPerPage,
     extraParams,
     setExtraParams,
@@ -57,10 +60,9 @@ export default function ProductPageContent() {
     ],
   });
 
-  const queryParams = useMemo<ProductListParams>(
+  const baseQueryParams = useMemo<ProductListParams>(
     () => ({
       search: params.search,
-      page: params.page,
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,
@@ -69,10 +71,33 @@ export default function ProductPageContent() {
       min_price: extraParams.min_price,
       max_price: extraParams.max_price,
     }),
-    [params, extraParams],
+    [
+      params.search,
+      params.per_page,
+      params.sort_field,
+      params.sort_direction,
+      extraParams.category,
+      extraParams.brand,
+      extraParams.min_price,
+      extraParams.max_price,
+    ],
   );
 
-  const { data, isFetching, isError } = useGetProductsQuery(queryParams);
+  const queryKey = useMemo(
+    () => buildInfiniteQueryKey(baseQueryParams),
+    [baseQueryParams],
+  );
+  const [page, setInfinitePage] = useInfinitePage(queryKey);
+  const queryParams = useMemo<ProductListParams>(
+    () => ({
+      ...baseQueryParams,
+      page,
+    }),
+    [baseQueryParams, page],
+  );
+
+  const { currentData, isFetching, isError } =
+    useGetProductsQuery(queryParams);
   const { data: categoriesData } = useGetCategoriesQuery({
     per_page: 100,
     sort_field: "name",
@@ -84,8 +109,17 @@ export default function ProductPageContent() {
     sort_direction: "asc",
   });
 
-  const products = data?.items ?? [];
-  const pagination = data?.pagination;
+  const {
+    items: products,
+    pagination,
+    sentinelRef,
+    isLoadingMore,
+  } = useInfinitePaginatedItems({
+    payload: currentData ?? null,
+    queryKey,
+    isFetching,
+    setPage: setInfinitePage,
+  });
   const total = pagination?.total ?? 0;
   const activeFilterCount = [
     extraParams.category,
@@ -168,12 +202,14 @@ export default function ProductPageContent() {
               </div>
             </div>
 
-            {isError && !data ? (
+            {isError && products.length === 0 ? (
               <div className="rounded-[24px] border border-(--color-border) bg-white px-6 py-16 text-center shadow-[0_18px_50px_rgba(19,45,69,0.05)]">
                 <p className="text-sm text-(--color-text-muted)">
                   Failed to load products. Please try again.
                 </p>
               </div>
+            ) : isFetching && products.length === 0 ? (
+              <ProductPageSkeleton />
             ) : products.length === 0 && !isFetching ? (
               <div className="rounded-[24px] border border-(--color-border) bg-white px-6 py-16 text-center shadow-[0_18px_50px_rgba(19,45,69,0.05)]">
                 <h2 className="text-[22px] font-semibold text-(--color-primary-900)">No products found</h2>
@@ -196,15 +232,13 @@ export default function ProductPageContent() {
               </div>
             )}
 
-            {isFetching && products.length > 0 ? (
-              <div className="mt-6">
-                <ProductPageSkeleton />
-              </div>
+            {products.length > 0 ? (
+              <div ref={sentinelRef} className="h-8" aria-hidden />
             ) : null}
 
-            {pagination ? (
-              <div className="mt-8">
-                <Pagination pagination={pagination} onPageChange={setPage} />
+            {isLoadingMore ? (
+              <div className="mt-6 flex justify-center">
+                <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
               </div>
             ) : null}
           </div>

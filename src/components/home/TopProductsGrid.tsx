@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FiShoppingCart, FiArrowUpRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { EcommerceProduct } from "@/types";
 
 const columnLabels = ["Top Selling", "Trending Products", "Recently Added", "Top Rated"];
@@ -88,9 +89,13 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
                               className="object-cover transition duration-300 group-hover:scale-[1.05]"
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center text-[10px] text-(--color-text-muted) px-1 text-center">
-                              {product.product_name}
-                            </div>
+                            <GeneratedImageFallback
+                              name={product.product_name}
+                              kind="product"
+                              className="h-full w-full border-0"
+                              iconClassName="text-[15px]"
+                              textClassName="text-[18px]"
+                            />
                           )}
                         </div>
 

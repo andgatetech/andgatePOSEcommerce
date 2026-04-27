@@ -4,10 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useMemo } from "react";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
+import {
+  buildInfiniteQueryKey,
+  useInfinitePage,
+  useInfinitePaginatedItems,
+} from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import SearchInput from "@/components/shared/SearchInput";
-import Pagination from "@/components/shared/Pagination";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import { ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import type { Brand, ListQueryParams, PaginatedPayload } from "@/types";
@@ -44,26 +49,60 @@ export default function BrandGallery({
   defaultSortField,
   defaultSortDirection,
 }: BrandGalleryProps) {
-  const { params, search, setSearch, setSort, setPage } = useListQuery({
+  const { params, search, setSearch, setSort } = useListQuery({
     defaultPerPage,
     defaultSortField,
     defaultSortDirection,
   });
 
-  const isInitial = useMemo(
-    () => sameParams(params, initialParams),
-    [params, initialParams],
+  const baseQueryParams = useMemo<ListQueryParams>(
+    () => ({
+      search: params.search,
+      per_page: params.per_page,
+      sort_field: params.sort_field,
+      sort_direction: params.sort_direction,
+    }),
+    [
+      params.search,
+      params.per_page,
+      params.sort_field,
+      params.sort_direction,
+    ],
+  );
+  const queryKey = useMemo(
+    () => buildInfiniteQueryKey(baseQueryParams),
+    [baseQueryParams],
+  );
+  const [page, setInfinitePage] = useInfinitePage(queryKey);
+  const queryParams = useMemo<ListQueryParams>(
+    () => ({
+      ...baseQueryParams,
+      page,
+    }),
+    [baseQueryParams, page],
   );
 
-  const { data, isFetching, isError } = useGetBrandsQuery(params, {
+  const isInitial = useMemo(
+    () => sameParams(queryParams, initialParams),
+    [queryParams, initialParams],
+  );
+
+  const { currentData, isFetching, isError } = useGetBrandsQuery(queryParams, {
     skip: isInitial && initialData !== null,
   });
 
   const payload: PaginatedPayload<Brand> | null =
-    isInitial && initialData ? initialData : (data ?? null);
-
-  const items = payload?.items ?? [];
-  const pagination = payload?.pagination;
+    isInitial && initialData ? initialData : (currentData ?? null);
+  const {
+    items,
+    sentinelRef,
+    isLoadingMore,
+  } = useInfinitePaginatedItems({
+    payload,
+    queryKey,
+    isFetching,
+    setPage: setInfinitePage,
+  });
 
   const sortValue = {
     field: params.sort_field ?? defaultSortField,
@@ -94,10 +133,17 @@ export default function BrandGallery({
         </div>
 
         <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-4 shadow-[0_24px_60px_rgba(17,17,17,0.06)] md:p-5 xl:p-6">
-          {isError && !payload ? (
+          {isError && items.length === 0 ? (
             <p className="py-16 text-center text-sm text-(--color-text-muted)">
               Failed to load brands. Please try again.
             </p>
+          ) : isFetching && items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
+              <p className="mt-4 text-sm font-medium uppercase tracking-[0.12em] text-(--color-text-muted)">
+                Loading brands...
+              </p>
+            </div>
           ) : items.length === 0 && !isFetching ? (
             <p className="py-16 text-center text-sm text-(--color-text-muted)">
               No brands found.
@@ -121,9 +167,12 @@ export default function BrandGallery({
                         className="h-auto w-auto max-h-[68px] max-w-[68px] object-contain sm:max-h-[76px] sm:max-w-[76px] md:max-h-[84px] md:max-w-[84px]"
                       />
                     ) : (
-                      <div
-                        className="h-[68px] w-[68px] rounded-full bg-[#ECECEE] sm:h-[76px] sm:w-[76px] md:h-[84px] md:w-[84px]"
-                        aria-hidden
+                      <GeneratedImageFallback
+                        name={brand.name}
+                        kind="brand"
+                        className="h-[68px] w-[68px] rounded-full border sm:h-[76px] sm:w-[76px] md:h-[84px] md:w-[84px]"
+                        iconClassName="text-[16px] sm:text-[18px]"
+                        textClassName="text-[18px] sm:text-[20px]"
                       />
                     )}
                   </div>
@@ -136,11 +185,15 @@ export default function BrandGallery({
           )}
         </div>
 
-        {pagination && (
-          <div className="mt-8">
-            <Pagination pagination={pagination} onPageChange={setPage} />
+        {items.length > 0 ? (
+          <div ref={sentinelRef} className="h-8" aria-hidden />
+        ) : null}
+
+        {isLoadingMore ? (
+          <div className="mt-6 flex justify-center">
+            <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
           </div>
-        )}
+        ) : null}
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { FiArrowUpRight, FiShoppingCart } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { EcommerceProduct } from "@/types";
 
 const labels = ["Days", "Hours", "Mins", "Sec"];
@@ -153,9 +154,14 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
                       className="object-cover transition duration-500 group-hover:scale-[1.04]"
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-(--color-primary-100) text-sm text-(--color-text-muted)">
-                      {product.product_name}
-                    </div>
+                    <GeneratedImageFallback
+                      name={product.product_name}
+                      kind="product"
+                      showLabel
+                      className="h-full w-full border-0"
+                      iconClassName="text-[24px]"
+                      textClassName="text-[30px]"
+                    />
                   )}
                 </div>
 

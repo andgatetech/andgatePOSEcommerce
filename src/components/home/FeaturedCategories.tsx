@@ -6,6 +6,7 @@ import { useRef } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { Category } from "@/types";
 
 const scrollAmount = 320;
@@ -84,7 +85,13 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
                       className="h-auto w-auto max-h-[88px] max-w-[88px] object-contain"
                     />
                   ) : (
-                    <div className="h-16 w-16 rounded-full bg-(--color-primary-100)" aria-hidden />
+                    <GeneratedImageFallback
+                      name={category.name}
+                      kind="category"
+                      className="h-20 w-20 rounded-full border"
+                      iconClassName="text-[18px]"
+                      textClassName="text-[22px]"
+                    />
                   )}
                 </div>
 

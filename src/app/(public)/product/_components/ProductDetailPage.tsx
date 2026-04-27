@@ -24,6 +24,7 @@ import { FaXTwitter } from "react-icons/fa6";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import { useCheckStockQuery } from "@/features/cart/cartApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
@@ -307,12 +308,14 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         className="object-contain p-6 transition duration-500 group-hover:scale-105"
                       />
                     ) : (
-                      <div
-                        className="flex h-full w-full items-center justify-center text-sm"
-                        style={{ color: "var(--color-text-muted)" }}
-                      >
-                        No image available
-                      </div>
+                      <GeneratedImageFallback
+                        name={product.product_name}
+                        kind="product"
+                        showLabel
+                        className="h-full w-full border-0"
+                        iconClassName="text-[34px]"
+                        textClassName="text-[44px]"
+                      />
                     )}
                   </div>
 

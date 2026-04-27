@@ -4,6 +4,7 @@ import { FiChevronRight, FiHome } from "react-icons/fi";
 import PopularProductCard from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { EcommerceProduct } from "@/types";
 
 type CollectionEntity = {
@@ -80,9 +81,14 @@ export default function ProductCollectionPage({
                     />
                   </div>
                 ) : (
-                  <div className="flex h-[180px] w-full items-center justify-center rounded-[18px] border border-dashed border-(--color-primary-200) bg-(--color-primary-100) px-6 text-center text-sm font-medium text-(--color-primary)">
-                    {entity.name}
-                  </div>
+                  <GeneratedImageFallback
+                    name={entity.name}
+                    kind={kind}
+                    showLabel
+                    className="h-[180px] w-full rounded-[18px] border"
+                    iconClassName="text-[28px]"
+                    textClassName="text-[42px]"
+                  />
                 )}
               </div>
             </div>

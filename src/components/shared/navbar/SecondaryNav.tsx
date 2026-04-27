@@ -17,6 +17,7 @@ import {
 } from "react-icons/fa";
 import { FiArrowRight, FiGrid } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { Brand, Category } from "@/types";
 
 const navLinks = [
@@ -218,9 +219,13 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                               className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain"
                             />
                           ) : (
-                            <span className="text-xl text-(--color-primary-200)">
-                              <FiGrid />
-                            </span>
+                            <GeneratedImageFallback
+                              name={category.name}
+                              kind="category"
+                              className="h-12 w-12 rounded-full border"
+                              iconClassName="text-[12px]"
+                              textClassName="text-[15px]"
+                            />
                           )}
                         </div>
                         <span className="line-clamp-2 text-[12px] font-semibold leading-[1.3] tracking-[-0.02em] text-(--color-dark)">

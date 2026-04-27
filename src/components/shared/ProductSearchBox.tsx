@@ -3,6 +3,7 @@
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetProductsQuery } from "@/features/catalog/productApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -146,9 +147,13 @@ export default function ProductSearchBox({
                             className="object-contain p-2.5"
                           />
                         ) : (
-                          <span className="px-2 text-center text-[11px] font-medium text-(--color-text-muted)">
-                            {product.product_name}
-                          </span>
+                          <GeneratedImageFallback
+                            name={product.product_name}
+                            kind="product"
+                            className="h-full w-full border-0"
+                            iconClassName="text-[12px]"
+                            textClassName="text-[16px]"
+                          />
                         )}
                       </div>
                       <div className="min-w-0 flex-1">
