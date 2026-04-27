@@ -160,6 +160,7 @@ export interface EcommerceOrderShippingAddress {
   label?: string | null;
   name: string;
   phone: string;
+  email?: string | null;
   address_line: string;
   city: string;
   zone?: string;
@@ -181,6 +182,7 @@ export interface EcommerceAddressPayload {
   label?: string | null;
   name?: string | null;
   phone?: string | null;
+  email?: string | null;
   address_line: string;
   city?: string | null;
   zone?: string | null;
@@ -265,15 +267,21 @@ export interface EcommerceOrderListData {
 }
 
 export interface CreateOrderRequest {
+  items: {
+    stock_id: number;
+    quantity: number;
+  }[];
   address_id?: number;
   payment_method: string;
   shipping_fee: number;
   notes?: string;
   shipping_address?: EcommerceAddressPayload;
-  cart_items?: {
-    stock_id: number;
-    quantity: number;
-  }[];
+}
+
+export interface OrderMutationResult {
+  success: boolean;
+  message: string;
+  data: EcommerceOrder | null;
 }
 
 // ── Ecommerce product types ───────────────────────────────────────────────────

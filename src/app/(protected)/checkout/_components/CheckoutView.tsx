@@ -26,11 +26,13 @@ import {
   getAddressDisplayLines,
   shippingAddressToFormValue,
 } from "@/lib/address";
-import { useCheckStockQuery, useClearCartMutation, useGetCartQuery, useLazyCheckStockQuery } from "@/features/cart/cartApi";
+import { useCheckStockQuery, useGetCartQuery, useLazyCheckStockQuery } from "@/features/cart/cartApi";
 import { clearGuestCart } from "@/features/cart/guestCartSlice";
 import { getStockQuantityMap, getStockIssues } from "@/lib/stockCheck";
 import { isTokenExpired } from "@/features/auth/authStorage";
 import { useCreateOrderMutation } from "@/features/orders/ordersApi";
+import { getBackendMessage } from "@/lib/apiMessage";
+import { saveCheckoutSuccess } from "@/lib/checkoutSuccessStorage";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import type { CartItemData, CreateOrderRequest } from "@/types";
 
@@ -90,21 +92,7 @@ function formatPrice(value: number | string) {
 }
 
 function getOrderErrorMessage(error: unknown) {
-  if (!error || typeof error !== "object" || !("data" in error)) {
-    return "Order could not be placed.";
-  }
-
-  const responseData = (error as { data?: unknown }).data;
-
-  if (!responseData || typeof responseData !== "object") {
-    return "Order could not be placed.";
-  }
-
-  if ("message" in responseData && typeof responseData.message === "string" && responseData.message.trim()) {
-    return responseData.message;
-  }
-
-  return "Order could not be placed.";
+  return getBackendMessage(error, "Order could not be placed.");
 }
 
 function OrderSubmitOverlay({
@@ -267,7 +255,6 @@ export default function CheckoutView() {
     skip: !hasActiveSession,
   });
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
-  const [clearCart] = useClearCartMutation();
   const [triggerStockCheck, { isFetching: isCheckingStockBeforeSubmit }] = useLazyCheckStockQuery();
 
   const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
@@ -409,6 +396,10 @@ export default function CheckoutView() {
     }
 
     const payload: CreateOrderRequest = {
+      items: items.map((item) => ({
+        stock_id: item.stock.id,
+        quantity: item.quantity,
+      })),
       payment_method: paymentMethodMap[paymentId] ?? paymentId,
       shipping_fee: shippingFee,
       notes: addressValue.note.trim() || undefined,
@@ -429,26 +420,22 @@ export default function CheckoutView() {
       };
     }
 
-    if (!hasActiveSession) {
-      payload.cart_items = items.map((item) => ({
-        stock_id: item.stock.id,
-        quantity: item.quantity,
-      }));
-    }
-
     try {
-      const order = await createOrder(payload).unwrap();
-      if (hasActiveSession) {
-        try {
-          await clearCart().unwrap();
-        } catch {
-          toast.error("Order placed, but cart could not be cleared automatically.");
-        }
-      } else {
+      const result = await createOrder(payload).unwrap();
+      if (!result.success || !result.data) {
+        setOrderSubmitStatus("failure");
+        setOrderSubmitMessage(result.message);
+        toast.error(result.message);
+        return;
+      }
+
+      const order = result.data;
+      saveCheckoutSuccess(result);
+      if (!hasActiveSession) {
         dispatch(clearGuestCart());
       }
       setOrderSubmitStatus("success");
-      setOrderSubmitMessage("Opening your order confirmation.");
+      setOrderSubmitMessage(result.message);
       window.setTimeout(() => {
         router.push(ROUTE_BUILDERS.orderSuccess(encodeURIComponent(order.order_number)));
       }, 900);

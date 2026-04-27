@@ -5,6 +5,7 @@ import type {
   CreateOrderRequest,
   EcommerceOrder,
   EcommerceOrderListData,
+  OrderMutationResult,
 } from "@/types";
 
 export interface GetOrdersParams {
@@ -13,6 +14,7 @@ export interface GetOrdersParams {
 
 type OrdersListResponse = ApiResponse<EcommerceOrderListData>;
 type OrderDetailResponse = ApiResponse<EcommerceOrder>;
+type OrderMutationResponse = ApiResponse<EcommerceOrder | null>;
 
 export const ordersApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -37,30 +39,44 @@ export const ordersApi = baseApi.injectEndpoints({
       providesTags: (_result, _error, orderNumber) => [{ type: "Order", id: orderNumber }],
     }),
 
-    createOrder: builder.mutation<EcommerceOrder, CreateOrderRequest>({
+    createOrder: builder.mutation<OrderMutationResult, CreateOrderRequest>({
       query: (body) => ({
         url: API_ROUTES.ECOMMERCE_ORDERS.ORDERS,
         method: "POST",
         body,
       }),
-      transformResponse: (response: OrderDetailResponse) => response.data,
-      invalidatesTags: (result) => [
-        { type: "Order", id: "LIST" },
-        { type: "Cart", id: "LIST" },
-        ...(result ? [{ type: "Order" as const, id: result.order_number }] : []),
-      ],
+      transformResponse: (response: OrderMutationResponse) => ({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      }),
+      invalidatesTags: (result) =>
+        result?.success
+          ? [
+              { type: "Order", id: "LIST" },
+              { type: "Cart", id: "LIST" },
+              ...(result.data ? [{ type: "Order" as const, id: result.data.order_number }] : []),
+            ]
+          : [],
     }),
 
-    cancelOrder: builder.mutation<EcommerceOrder, string>({
+    cancelOrder: builder.mutation<OrderMutationResult, string>({
       query: (orderNumber) => ({
         url: API_ROUTES.ECOMMERCE_ORDERS.ORDER_CANCEL(orderNumber),
         method: "POST",
       }),
-      transformResponse: (response: OrderDetailResponse) => response.data,
-      invalidatesTags: (_result, _error, orderNumber) => [
-        { type: "Order", id: orderNumber },
-        { type: "Order", id: "LIST" },
-      ],
+      transformResponse: (response: OrderMutationResponse) => ({
+        success: response.success,
+        message: response.message,
+        data: response.data,
+      }),
+      invalidatesTags: (result, _error, orderNumber) =>
+        result?.success
+          ? [
+              { type: "Order", id: orderNumber },
+              { type: "Order", id: "LIST" },
+            ]
+          : [],
     }),
   }),
 });

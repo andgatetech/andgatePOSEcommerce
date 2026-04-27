@@ -21,6 +21,7 @@ import {
 } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
 import { useCancelOrderMutation, useGetOrderQuery } from "@/features/orders/ordersApi";
+import { getBackendMessage } from "@/lib/apiMessage";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { generateInvoicePdf } from "@/lib/invoice/generateInvoicePdf";
 import {
@@ -57,10 +58,14 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
     }
 
     try {
-      await cancelOrder(order.order_number).unwrap();
-      toast.success("Order cancelled successfully.");
-    } catch {
-      toast.error("Order could not be cancelled.");
+      const result = await cancelOrder(order.order_number).unwrap();
+      if (result.success) {
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error) {
+      toast.error(getBackendMessage(error, "Order could not be cancelled."));
     }
   }
 

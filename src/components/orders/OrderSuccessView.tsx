@@ -1,25 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Lottie from "lottie-react";
 import {
-  FiDownload,
+  FiArrowRight,
   FiFileText,
   FiHome,
   FiMapPin,
   FiPackage,
   FiPhone,
-  FiRefreshCw,
   FiShoppingBag,
   FiTruck,
-  FiArrowRight,
 } from "react-icons/fi";
 import orderCompletedAnimation from "../../../public/images/svg/Order completed.json";
 import orderFailAnimation from "../../../public/images/svg/order fail.json";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
-import { useGetOrderQuery } from "@/features/orders/ordersApi";
-import { generateInvoicePdf } from "@/lib/invoice/generateInvoicePdf";
+import { loadCheckoutSuccess } from "@/lib/checkoutSuccessStorage";
+import type { OrderMutationResult } from "@/types";
 import {
   formatOrderCurrency,
   formatPaymentMethodLabel,
@@ -31,27 +29,19 @@ interface OrderSuccessViewProps {
 }
 
 export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps) {
-  const { data: order, isFetching, isError, refetch } = useGetOrderQuery(orderNumber);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [checkoutResult, setCheckoutResult] = useState<OrderMutationResult | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  useEffect(() => {
+    setCheckoutResult(loadCheckoutSuccess(orderNumber));
+    setIsHydrated(true);
+  }, [orderNumber]);
+
+  const order = checkoutResult?.data ?? null;
   const units = useMemo(() => (order ? getOrderUnitCount(order) : 0), [order]);
   const firstItems = useMemo(() => order?.items.slice(0, 3) ?? [], [order]);
 
-  function handleInvoiceDownload() {
-    if (!order || isDownloading) {
-      return;
-    }
-
-    setIsDownloading(true);
-
-    try {
-      generateInvoicePdf(order);
-    } finally {
-      setIsDownloading(false);
-    }
-  }
-
-  if (isFetching && !order) {
+  if (!isHydrated) {
     return (
       <section className="bg-[#f6f8fb] px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
         <div className="mx-auto rounded-[32px] border border-[rgba(20,33,43,0.08)] bg-white shadow-[0_24px_70px_rgba(20,33,43,0.08)]">
@@ -66,7 +56,6 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                 <div className="h-28 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
               </div>
               <div className="h-64 animate-pulse rounded-[28px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
-              <div className="h-56 animate-pulse rounded-[28px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
             </div>
             <div className="border-t border-[rgba(20,33,43,0.08)] px-6 py-7 md:px-8 xl:border-l xl:border-t-0 xl:py-8">
               <div className="h-96 animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
@@ -77,7 +66,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
     );
   }
 
-  if (isError || !order) {
+  if (!order) {
     return (
       <section className="bg-[#f6f8fb] px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
         <div className="mx-auto max-w-[900px] rounded-[32px] border border-(--color-border) bg-(--color-bg) p-8 text-center shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
@@ -89,25 +78,29 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
             rendererSettings={{ preserveAspectRatio: "xMidYMid meet" }}
           />
           <h1 className="mt-6 text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
-            Order created, but confirmation screen could not load
+            Order confirmation snapshot is unavailable
           </h1>
           <p className="mx-auto mt-4 max-w-[560px] text-sm leading-7 text-(--color-text-muted)">
-            The order may still exist. Reload this page or open the order details directly.
+            The order may still exist. Use the order number below from your current browser session, or open your protected order details after logging in.
           </p>
+          <div className="mx-auto mt-5 max-w-max rounded-[20px] border border-[rgba(20,33,43,0.08)] bg-[#fbfcfd] px-5 py-4">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
+              Order Number
+            </p>
+            <p className="mt-2 text-[18px] font-semibold text-(--color-dark)">{orderNumber}</p>
+          </div>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => refetch()}
-              className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-            >
-              <FiRefreshCw className="mr-2" />
-              Reload
-            </button>
             <Link
               href={ROUTE_BUILDERS.orderDetail(orderNumber)}
-              className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-7 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
+              className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
             >
               Open order details
+            </Link>
+            <Link
+              href={ROUTES.HOME}
+              className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-7 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
+            >
+              Back to home
             </Link>
           </div>
         </div>
@@ -134,7 +127,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     Order Confirmed
                   </p>
                   <h1 className="mt-1 text-[28px] font-semibold tracking-[-0.04em] text-[#15202b] md:text-[34px]">
-                    Thank you. Your order has been placed successfully.
+                    {checkoutResult?.message || "Order placed successfully."}
                   </h1>
                 </div>
               </div>
@@ -155,7 +148,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
               <div className="grid gap-4 md:grid-cols-3">
                 <article className="rounded-[24px] border border-[rgba(20,33,43,0.08)] bg-[#fbfcfd] p-5">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                    Total Paid
+                    Total
                   </p>
                   <p className="mt-3 text-[24px] font-semibold text-(--color-dark)">
                     {formatOrderCurrency(order.total)}
@@ -184,7 +177,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                   What happens next
                 </h2>
                 <p className="mt-3 max-w-[760px] text-sm leading-7 text-(--color-text-muted)">
-                  We have received your order and started the processing workflow. You can keep the invoice for your records, review the live order details, or return to shopping.
+                  We have received your order and started the processing workflow. You can review protected order details from your account or return to shopping.
                 </p>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -192,9 +185,9 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eef5ff] text-[#2563eb]">
                       <FiFileText className="text-[18px]" />
                     </div>
-                    <h3 className="mt-4 text-[18px] font-semibold text-(--color-dark)">Invoice ready</h3>
+                    <h3 className="mt-4 text-[18px] font-semibold text-(--color-dark)">Confirmation saved</h3>
                     <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
-                      Download a clean invoice snapshot for accounting and confirmation.
+                      Keep the order number for support and account lookup.
                     </p>
                   </article>
                   <article className="rounded-[22px] border border-[rgba(20,33,43,0.08)] bg-white p-5">
@@ -212,7 +205,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     </div>
                     <h3 className="mt-4 text-[18px] font-semibold text-(--color-dark)">Tracking updates</h3>
                     <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
-                      Shipping and delivery updates will appear in the order detail page.
+                      Shipping and delivery updates will appear in the protected order detail page.
                     </p>
                   </article>
                 </div>
@@ -232,7 +225,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     href={ROUTE_BUILDERS.orderDetail(order.order_number)}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-(--color-primary) transition hover:text-(--color-primary-dark)"
                   >
-                    Open full order
+                    Open protected order details
                     <FiArrowRight className="text-[15px]" />
                   </Link>
                 </div>
@@ -267,17 +260,9 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
               <div className="space-y-4">
                 <div className="rounded-[24px] border border-[rgba(20,33,43,0.08)] bg-white p-5">
                   <h2 className="text-[21px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-                    Actions
+                    Next steps
                   </h2>
                   <div className="mt-5 flex flex-col gap-3">
-                    <button
-                      type="button"
-                      onClick={handleInvoiceDownload}
-                      className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-                    >
-                      <FiDownload className="mr-2 text-[16px]" />
-                      {isDownloading ? "Preparing invoice..." : "Download invoice"}
-                    </button>
                     <Link
                       href={ROUTE_BUILDERS.orderDetail(order.order_number)}
                       className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
@@ -310,7 +295,9 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                         {order.shipping_address.address_line}
                       </p>
                       <p className="text-sm leading-7 text-(--color-text-muted)">
-                        {order.shipping_address.city}
+                        {[order.shipping_address.area, order.shipping_address.zone, order.shipping_address.city]
+                          .filter(Boolean)
+                          .join(", ")}
                       </p>
                       <p className="mt-2 inline-flex items-center gap-2 text-sm text-(--color-text-muted)">
                         <FiPhone className="text-[14px]" />
