@@ -4,6 +4,7 @@ import ProductPageContent from "./ProductPage";
 import { useProductData } from "@/lib/product-data-context";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
+import type { ProductCollection } from "@/features/catalog/productApi";
 import type { Category, Brand } from "@/types";
 
 interface ProductPageDataProviderProps {
@@ -12,6 +13,7 @@ interface ProductPageDataProviderProps {
   initialStore?: string;
   categories?: Category[];
   brands?: Brand[];
+  collection?: ProductCollection;
 }
 
 export default function ProductPageDataProvider({
@@ -20,6 +22,7 @@ export default function ProductPageDataProvider({
   initialStore,
   categories: initialCategoriesProp,
   brands: initialBrandsProp,
+  collection,
 }: ProductPageDataProviderProps) {
   const globalData = useProductData();
 
@@ -43,6 +46,7 @@ export default function ProductPageDataProvider({
       initialCategory={initialCategory}
       initialBrand={initialBrand}
       initialStore={initialStore}
+      collection={collection}
     />
   );
 }

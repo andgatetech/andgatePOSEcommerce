@@ -3,10 +3,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FiArrowUpRight, FiShoppingCart } from "react-icons/fi";
+import { FiArrowUpRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
+import AddToCartButton from "@/app/(public)/product/_components/AddToCartButton";
 import type { EcommerceProduct } from "@/types";
 
 const labels = ["Days", "Hours", "Mins", "Sec"];
@@ -62,6 +63,15 @@ function getDealEndTime(dealId: number): number {
   return remaining;
 }
 
+function getPromotionRemainingSeconds(endsAt?: string | null): number | null {
+  if (!endsAt) return null;
+
+  const endTime = new Date(endsAt).getTime();
+  if (Number.isNaN(endTime)) return null;
+
+  return Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+}
+
 function formatCountdown(totalSeconds: number) {
   const days = Math.floor(totalSeconds / 86400);
   const hours = Math.floor((totalSeconds % 86400) / 3600);
@@ -88,7 +98,8 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
     setCountdowns(() => {
       const initial: Record<number, number> = {};
       products.forEach((p) => {
-        initial[p.id] = getDealEndTime(p.id);
+        initial[p.id] =
+          getPromotionRemainingSeconds(p.promotion?.ends_at) ?? getDealEndTime(p.id);
       });
       return initial;
     });
@@ -118,7 +129,7 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
           </div>
 
           <Link
-            href={ROUTES.SHOP}
+            href={ROUTES.DEAL_OF_DAY}
             className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             All Deals
@@ -136,34 +147,39 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
               ? [time.days, time.hours, time.mins, time.secs]
               : ["00", "00", "00", "00"];
             const image = resolveImageUrl(product.images[0]?.url ?? null);
-            const price = parseFloat(product.price);
+            const displayPrice = product.promotion?.deal_price ?? product.price;
+            const originalPrice = product.promotion?.original_price;
+            const price = parseFloat(displayPrice);
+            const originalPriceValue = originalPrice ? parseFloat(originalPrice) : null;
+            const stockCount = parseFloat(product.quantity);
 
             return (
-              <Link
+              <div
                 key={product.id}
-                href={ROUTE_BUILDERS.productDetail(product.slug)}
                 className="group relative block"
               >
-                <div className="relative h-[200px] overflow-hidden rounded-[18px]">
-                  {image ? (
-                    <Image
-                      src={image}
-                      alt={product.product_name}
-                      fill
-                      unoptimized
-                      className="object-cover transition duration-500 group-hover:scale-[1.04]"
-                    />
-                  ) : (
-                    <GeneratedImageFallback
-                      name={product.product_name}
-                      kind="product"
-                      showLabel
-                      className="h-full w-full border-0"
-                      iconClassName="text-[24px]"
-                      textClassName="text-[30px]"
-                    />
-                  )}
-                </div>
+                <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
+                  <div className="relative h-[200px] overflow-hidden rounded-[18px]">
+                    {image ? (
+                      <Image
+                        src={image}
+                        alt={product.product_name}
+                        fill
+                        unoptimized
+                        className="object-cover transition duration-500 group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <GeneratedImageFallback
+                        name={product.product_name}
+                        kind="product"
+                        showLabel
+                        className="h-full w-full border-0"
+                        iconClassName="text-[24px]"
+                        textClassName="text-[30px]"
+                      />
+                    )}
+                  </div>
+                </Link>
 
                 <div className="absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-[6px]" style={{ top: "calc(200px - 70px)" }}>
                   {timeValues.map((value, index) => (
@@ -182,26 +198,52 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
                 </div>
 
                 <div className="relative z-10 mx-3 -mt-10 rounded-[12px] bg-white px-5 pb-5 pt-[44px] shadow-[0_8px_28px_rgba(15,23,42,0.09)]">
-                  <h3 className="min-h-[48px] text-[16px] font-semibold leading-[1.3] text-(--color-primary-900) line-clamp-2">
-                    {product.product_name}
-                  </h3>
+                  <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
+                    <h3 className="min-h-[48px] text-[16px] font-semibold leading-[1.3] text-(--color-primary-900) line-clamp-2">
+                      {product.product_name}
+                    </h3>
+                  </Link>
 
                   <p className="mt-2 text-[14px] text-(--color-text-muted)">
                     By <span className="text-(--color-primary)">{product.sold_by.store_name}</span>
                   </p>
 
                   <div className="mt-4 flex items-center justify-between gap-3">
-                    <span className="text-[18px] font-semibold text-(--color-primary)">
-                      ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
-                    </span>
+                    <div className="min-w-0">
+                      <span className="block text-[18px] font-semibold text-(--color-primary)">
+                        ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
+                      </span>
+                      {originalPriceValue && originalPrice !== displayPrice ? (
+                        <span className="block text-[13px] text-(--color-text-muted) line-through">
+                          ৳{originalPriceValue.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
+                        </span>
+                      ) : null}
+                    </div>
 
-                    <span className="inline-flex items-center gap-[6px] rounded-[6px] bg-(--color-primary) px-4 py-[9px] text-[14px] font-semibold text-white">
-                      <FiShoppingCart className="text-sm" />
-                      Add
-                    </span>
+                    <AddToCartButton
+                      stockId={product.id}
+                      stockCount={stockCount}
+                      product={{
+                        id: product.id,
+                        slug: product.slug,
+                        sku: product.sku,
+                        price: displayPrice,
+                        available_qty: stockCount,
+                        variant_data: product.variant_data,
+                        product_name: product.product_name,
+                        description: product.description,
+                        images: product.images,
+                        store: {
+                          id: 0,
+                          store_name: product.sold_by.store_name,
+                          slug: product.sold_by.store_slug,
+                        },
+                      }}
+                      className="max-w-[132px]"
+                    />
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

@@ -23,7 +23,7 @@ export default function PopularProductsSection({ products }: PopularProductsSect
           </div>
 
           <Link
-            href={ROUTES.PRODUCT}
+            href={ROUTES.POPULAR_PRODUCT}
             className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             Explore Collection

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiMail, FiMapPin, FiMessageCircle, FiPhone, FiShoppingBag } from "react-icons/fi";
+import { FiMail, FiMapPin, FiMessageCircle, FiShoppingBag } from "react-icons/fi";
 import { ROUTE_BUILDERS } from "@/config/routes";
 import { resolveStoreLogoUrl } from "@/lib/storeLogo";
 import type { Store } from "@/types";
@@ -66,7 +66,6 @@ export default function StoreCard({
   store,
   view = "grid",
 }: StoreCardProps) {
-  const phone = store.store_contact || store.store_number || "Not available";
   const location = store.store_location || "Location not provided";
 
   if (view === "list") {
@@ -96,10 +95,6 @@ export default function StoreCard({
                     </div>
 
                     <div className="mt-5 space-y-3 text-sm text-(--color-dark)">
-                      <div className="flex items-start gap-2.5">
-                        <FiPhone className="mt-0.5 shrink-0 text-[16px] text-(--color-primary)" />
-                        <span>{phone}</span>
-                      </div>
                       <div className="flex items-start gap-2.5">
                         <FiMapPin className="mt-0.5 shrink-0 text-[16px] text-(--color-primary)" />
                         <span className="line-clamp-2">{location}</span>
@@ -160,10 +155,6 @@ export default function StoreCard({
         </div>
 
         <div className="mt-5 space-y-3 text-sm text-(--color-dark)">
-          <div className="flex items-start gap-2.5">
-            <FiPhone className="mt-0.5 shrink-0 text-[16px] text-(--color-primary)" />
-            <span>{phone}</span>
-          </div>
           <div className="flex items-start gap-2.5">
             <FiMapPin className="mt-0.5 shrink-0 text-[16px] text-(--color-primary)" />
             <span className="line-clamp-2">{location}</span>

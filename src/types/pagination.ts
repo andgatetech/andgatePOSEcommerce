@@ -7,8 +7,8 @@ export interface Pagination {
   last_page: number;
   from: number | null;
   to: number | null;
-  sort_field: string;
-  sort_direction: "asc" | "desc";
+  sort_field?: string;
+  sort_direction?: "asc" | "desc";
   has_more_pages: boolean;
 }
 

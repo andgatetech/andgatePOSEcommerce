@@ -70,7 +70,15 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     .map((img) => resolveImageUrl(img.url))
     .filter(Boolean) as string[];
 
-  const displayPrice = parseFloat(product.price).toLocaleString("en-BD");
+  const displayPriceRaw = product.promotion?.deal_price ?? product.price;
+  const originalPriceRaw = product.promotion?.original_price;
+  const displayPrice = parseFloat(displayPriceRaw).toLocaleString("en-BD");
+  const originalPrice = originalPriceRaw
+    ? parseFloat(originalPriceRaw).toLocaleString("en-BD")
+    : null;
+  const dealEndsAt = product.promotion?.ends_at
+    ? new Date(product.promotion.ends_at)
+    : null;
   const stockCount = parseFloat(product.quantity);
 
   const {
@@ -387,6 +395,19 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                   >
                     ৳{displayPrice}
                   </span>
+                  {originalPrice && originalPriceRaw !== displayPriceRaw ? (
+                    <span
+                      className="text-[20px] font-semibold line-through md:text-[22px]"
+                      style={{ color: "var(--color-text-muted)" }}
+                    >
+                      ৳{originalPrice}
+                    </span>
+                  ) : null}
+                  {product.promotion?.discount_percent ? (
+                    <span className="rounded-full bg-red-50 px-3 py-1 text-[13px] font-bold text-(--color-danger)">
+                      {product.promotion.discount_percent}% OFF
+                    </span>
+                  ) : null}
                   <span
                     className="text-[13px] font-medium"
                     style={{ color: "var(--color-text-muted)" }}
@@ -394,6 +415,16 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                     incl. of all taxes
                   </span>
                 </div>
+                {dealEndsAt && !Number.isNaN(dealEndsAt.getTime()) ? (
+                  <p className="mt-2 text-[13px] font-semibold text-(--color-primary)">
+                    Deal ends {dealEndsAt.toLocaleString("en-BD", {
+                      day: "numeric",
+                      month: "short",
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}
+                  </p>
+                ) : null}
                 <div className="mt-3 flex items-center gap-2 text-[13px]">
                   {isCheckingStock ? (
                     <span className="inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2.5 py-1 font-semibold text-gray-600">
@@ -546,7 +577,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                     id: product.id,
                     slug: product.slug,
                     sku: product.sku,
-                    price: product.price,
+                    price: displayPriceRaw,
                     available_qty: effectiveStockCount,
                     variant_data: product.variant_data,
                     product_name: product.product_name,

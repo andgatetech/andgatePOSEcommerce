@@ -317,6 +317,17 @@ export interface EcommerceProductVariant {
   images: EcommerceProductImage[];
 }
 
+export interface EcommerceProductPromotion {
+  id: number;
+  section: "popular_product" | "deal_of_day";
+  display_order: number;
+  original_price: string | null;
+  deal_price: string | null;
+  discount_percent: number | null;
+  starts_at: string | null;
+  ends_at: string | null;
+}
+
 export interface EcommerceProduct {
   id: number;
   product_name: string;
@@ -330,6 +341,7 @@ export interface EcommerceProduct {
   sold_by: EcommerceProductSoldBy;
   category: EcommerceProductCategory | null;
   brand: EcommerceProductBrand | null;
+  promotion?: EcommerceProductPromotion | null;
   other_variants?: EcommerceProductVariant[];
 }
 
@@ -344,4 +356,5 @@ export interface ProductListParams {
   sort_direction?: "asc" | "desc";
   page?: number;
   per_page?: number;
+  limit?: number;
 }

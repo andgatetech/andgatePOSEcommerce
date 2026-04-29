@@ -23,7 +23,15 @@ export default function PopularProductCard({
   product,
 }: PopularProductCardProps) {
   const primaryImage = resolveImageUrl(product.images[0]?.url ?? null);
-  const price = parseFloat(product.price).toLocaleString("en-BD");
+  const displayPrice = product.promotion?.deal_price ?? product.price;
+  const originalPrice = product.promotion?.original_price;
+  const price = parseFloat(displayPrice).toLocaleString("en-BD");
+  const originalPriceText = originalPrice
+    ? parseFloat(originalPrice).toLocaleString("en-BD")
+    : null;
+  const dealEndsAt = product.promotion?.ends_at
+    ? new Date(product.promotion.ends_at)
+    : null;
   const stockCount = parseFloat(product.quantity);
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
@@ -135,7 +143,22 @@ export default function PopularProductCard({
             <span className="text-[18px] font-semibold text-(--color-primary)">
               ৳{price}
             </span>
+            {originalPriceText && originalPrice !== displayPrice ? (
+              <span className="pb-[2px] text-[13px] text-(--color-text-muted) line-through">
+                ৳{originalPriceText}
+              </span>
+            ) : null}
           </div>
+          {dealEndsAt && !Number.isNaN(dealEndsAt.getTime()) ? (
+            <p className="mt-1 text-[12px] font-medium text-(--color-primary)">
+              Ends {dealEndsAt.toLocaleString("en-BD", {
+                day: "numeric",
+                month: "short",
+                hour: "numeric",
+                minute: "2-digit",
+              })}
+            </p>
+          ) : null}
         </div>
       </Link>
 
@@ -148,7 +171,7 @@ export default function PopularProductCard({
             id: product.id,
             slug: product.slug,
             sku: product.sku,
-            price: product.price,
+            price: displayPrice,
             available_qty: stockCount,
             variant_data: product.variant_data,
             product_name: product.product_name,

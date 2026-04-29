@@ -1,7 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import { useGetProductsQuery } from "@/features/catalog/productApi";
+import {
+  type ProductCollection,
+  useGetProductCollectionQuery,
+} from "@/features/catalog/productApi";
 import {
   buildInfiniteQueryKey,
   useInfinitePage,
@@ -40,6 +43,7 @@ interface ProductPageContentProps {
   initialCategory?: string;
   initialBrand?: string;
   initialStore?: string;
+  collection?: ProductCollection;
 }
 
 export default function ProductPageContent({
@@ -48,6 +52,7 @@ export default function ProductPageContent({
   initialCategory,
   initialBrand,
   initialStore,
+  collection = "all",
 }: ProductPageContentProps) {
   const {
     params,
@@ -108,7 +113,7 @@ export default function ProductPageContent({
   );
 
   const { currentData, isFetching, isError } =
-    useGetProductsQuery(queryParams);
+    useGetProductCollectionQuery({ collection, params: queryParams });
   const {
     items: products,
     sentinelRef,

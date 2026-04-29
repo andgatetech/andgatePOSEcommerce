@@ -21,10 +21,21 @@ import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import type { Brand, Category } from "@/types";
 
 const navLinks = [
-  { label: "Deal", href: ROUTES.DEALS, hasDropdown: false, icon: FaFireAlt },
-  { label: "Top Picks", href: ROUTES.TOP_PICKS, hasDropdown: false, icon: FaMedal },
-  { label: "Trending", href: ROUTES.TRENDING, hasDropdown: false, icon: FaStar },
   { label: "Home", href: ROUTES.HOME, hasDropdown: false, icon: FaHome },
+  { label: "Deal", href: ROUTES.DEALS, hasDropdown: false, icon: FaFireAlt },
+  {
+    label: "Top Picks",
+    href: ROUTES.TOP_PICKS,
+    hasDropdown: false,
+    icon: FaMedal,
+  },
+  {
+    label: "Trending",
+    href: ROUTES.TRENDING,
+    hasDropdown: false,
+    icon: FaStar,
+  },
+
   { label: "Store", href: ROUTES.STORE, hasDropdown: false, icon: FaStore },
   { label: "Brand", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
 ];

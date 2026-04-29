@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import ProductDetailPage from "@/app/(public)/product/_components/ProductDetailPage";
+import { API_ROUTES } from "@/config/apiRoutes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type { ApiResponse, EcommerceProduct } from "@/types";
+import type { ApiResponse, EcommerceProduct, PaginatedResponse } from "@/types";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -19,7 +20,7 @@ function trimDescription(description?: string | null, maxLength = 160) {
 async function getProduct(slug: string): Promise<EcommerceProduct | null> {
   try {
     const response = await serverFetchJson<ApiResponse<EcommerceProduct | null>>(
-      `/products/${slug}`,
+      `${API_ROUTES.ECOMMERCE_CATALOG.PRODUCTS}/${slug}`,
       undefined,
       { revalidate: 60 },
     );
@@ -29,11 +30,33 @@ async function getProduct(slug: string): Promise<EcommerceProduct | null> {
   }
 }
 
+async function getProductWithActiveDeal(slug: string): Promise<EcommerceProduct | null> {
+  const product = await getProduct(slug);
+  if (!product) return null;
+
+  try {
+    const response = await serverFetchJson<PaginatedResponse<EcommerceProduct>>(
+      API_ROUTES.ECOMMERCE_CATALOG.DEALS_OF_DAY,
+      { page: 1, limit: 50 },
+      { revalidate: 30 },
+    );
+    const dealProduct = response.data.items.find(
+      (item) => item.id === product.id || item.slug === product.slug,
+    );
+
+    return dealProduct?.promotion
+      ? { ...product, promotion: dealProduct.promotion }
+      : product;
+  } catch {
+    return product;
+  }
+}
+
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const product = await getProductWithActiveDeal(slug);
 
   if (!product) {
     return { title: "Product Not Found" };
@@ -67,7 +90,7 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await getProduct(slug);
+  const product = await getProductWithActiveDeal(slug);
 
   if (!product) {
     notFound();

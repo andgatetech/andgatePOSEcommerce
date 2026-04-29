@@ -8,7 +8,7 @@
 export async function serverFetchJson<T>(
   path: string,
   params?: Record<string, string | number | undefined | null>,
-  init?: { revalidate?: number },
+  init?: { revalidate?: number; cache?: RequestCache },
 ): Promise<T> {
   const base = process.env.NEXT_PUBLIC_API_URL;
   if (!base) {
@@ -23,7 +23,8 @@ export async function serverFetchJson<T>(
 
   const response = await fetch(url.toString(), {
     headers: { Accept: "application/json" },
-    next: { revalidate: init?.revalidate ?? 60 },
+    cache: init?.cache,
+    next: init?.cache === "no-store" ? undefined : { revalidate: init?.revalidate ?? 60 },
   });
 
   if (!response.ok) {

@@ -5,9 +5,12 @@ export const API_ROUTES = {
   },
   ECOMMERCE_CATALOG: {
     CATEGORIES: "/categories",
+    FEATURED_CATEGORIES: "/categories/featured",
     BRANDS: "/brands",
     STORES: "/stores",
     PRODUCTS: "/products",
+    POPULAR_PRODUCTS: "/products/popular",
+    DEALS_OF_DAY: "/products/deals-of-day",
   },
   ECOMMERCE_CART: {
     CART: "/cart",

@@ -25,10 +25,12 @@ export const ROUTES = {
   WISHLIST: "/wishlist",
 
   PRODUCT: "/product",
+  POPULAR_PRODUCT: "/popular-product",
+  DEAL_OF_DAY: "/deal-of-day",
 
   // Temporary fallbacks until dedicated pages are added.
   BLOG: "/about",
-  DEALS: "/#deals-of-the-day",
+  DEALS: "/deal-of-day",
   SHOP: "/category",
   TOP_PICKS: "/#best-sellers",
   TRENDING: "/#trending",
@@ -57,6 +59,8 @@ export const PUBLIC_ROUTES = [
   ROUTES.ORDER_TRACKING,
   ROUTES.PRIVACY_POLICY,
   ROUTES.PRODUCT,
+  ROUTES.POPULAR_PRODUCT,
+  ROUTES.DEAL_OF_DAY,
   ROUTES.REGISTER,
   ROUTES.RETURN_POLICIES,
   ROUTES.TERMS,

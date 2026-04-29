@@ -8,6 +8,13 @@ import type {
   ApiResponse,
 } from "@/types";
 
+export type ProductCollection = "all" | "popular" | "deals-of-day";
+
+interface ProductCollectionParams {
+  collection: ProductCollection;
+  params: ProductListParams;
+}
+
 function cleanParams(
   params: ProductListParams,
 ): Record<string, string | number> {
@@ -44,6 +51,49 @@ export const productApi = baseApi.injectEndpoints({
           : [{ type: "Product" as const, id: "LIST" }],
     }),
 
+    getProductCollection: builder.query<
+      PaginatedPayload<EcommerceProduct>,
+      ProductCollectionParams
+    >({
+      query: ({ collection, params }) => {
+        const url =
+          collection === "popular"
+            ? API_ROUTES.ECOMMERCE_CATALOG.POPULAR_PRODUCTS
+            : collection === "deals-of-day"
+              ? API_ROUTES.ECOMMERCE_CATALOG.DEALS_OF_DAY
+              : API_ROUTES.ECOMMERCE_CATALOG.PRODUCTS;
+
+        const queryParams =
+          collection === "all"
+            ? cleanParams(params)
+            : cleanParams({
+                store: params.store,
+                category: params.category,
+                brand: params.brand,
+                page: params.page,
+                limit: params.per_page ?? params.limit,
+              });
+
+        return {
+          url,
+          params: queryParams,
+        };
+      },
+      transformResponse: (
+        response: PaginatedResponse<EcommerceProduct>,
+      ) => response.data,
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map(({ id }) => ({
+                type: "Product" as const,
+                id,
+              })),
+              { type: "Product" as const, id: "LIST" },
+            ]
+          : [{ type: "Product" as const, id: "LIST" }],
+    }),
+
     getProductBySlug: builder.query<EcommerceProduct | null, string>({
       query: (slug) => `${API_ROUTES.ECOMMERCE_CATALOG.PRODUCTS}/${slug}`,
       transformResponse: (response: ApiResponse<EcommerceProduct | null>) =>
@@ -54,4 +104,8 @@ export const productApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetProductsQuery, useGetProductBySlugQuery } = productApi;
+export const {
+  useGetProductsQuery,
+  useGetProductCollectionQuery,
+  useGetProductBySlugQuery,
+} = productApi;
