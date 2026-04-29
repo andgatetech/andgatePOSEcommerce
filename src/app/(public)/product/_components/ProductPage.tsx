@@ -11,11 +11,13 @@ import {
   useInfinitePaginatedItems,
 } from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
+import Container from "@/components/shared/Container";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
 import PopularProductCard from "./PopularProductCard";
 import ProductPageSkeleton from "./ProductPageSkeleton";
 import type { Brand, Category, ProductListParams } from "@/types";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 const SORT_OPTIONS: SortOption[] = [
   { label: "Newest", field: "created_at", direction: "desc" },
@@ -131,8 +133,8 @@ export default function ProductPageContent({
   };
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8 lg:px-12 lg:pb-16 lg:pt-10">
-      <div className="mx-auto">
+    <section className="bg-(--color-bg) pb-10 pt-6 md:pb-12 md:pt-8 lg:pb-16 lg:pt-10">
+      <Container>
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           <ProductFiltersSidebar
             categories={categories}
@@ -216,7 +218,8 @@ export default function ProductPageContent({
             ) : null}
           </div>
         </div>
-      </div>
+      </Container>
+      <ServiceHighlights className="mt-10"  />
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { FaBoxOpen, FaUndoAlt, FaCreditCard } from 'react-icons/fa';
+import Container from "@/components/shared/Container";
 
 export const metadata: Metadata = {
   title: 'Return & Refund Policies',
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function ReturnPoliciesPage() {
   return (
     <div className="bg-(--color-primary-100) min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <Container>
         <div className="text-center mb-16 px-6 py-12 bg-gradient-to-r from-(--color-primary-900) to-(--color-primary-dark) rounded-3xl shadow-xl text-white">
           <span className="text-(--color-cta) font-bold tracking-widest uppercase text-sm mb-4 block">Satisfaction Guaranteed</span>
           <h1 className="text-4xl md:text-5xl font-bold mb-6">Return & Refund Policy</h1>
@@ -59,7 +60,7 @@ export default function ReturnPoliciesPage() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

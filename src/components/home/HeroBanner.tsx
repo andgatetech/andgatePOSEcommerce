@@ -10,6 +10,7 @@ import { GoArrowUpRight } from "react-icons/go";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useState } from "react";
 import { ROUTES } from "@/config/routes";
+import Container from "@/components/shared/Container";
 
 // @ts-ignore
 import "swiper/css";
@@ -64,8 +65,9 @@ export default function HeroBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="relative w-full px-4 md:px-8 lg:px-12 py-4 md:py-6">
-      <div className="relative rounded-2xl md:rounded-3xl overflow-hidden">
+    <section className="relative w-full py-4 md:py-6">
+      <Container>
+      <div className="relative overflow-hidden rounded-2xl md:rounded-3xl">
         <Swiper
           modules={[Autoplay, Navigation]}
           autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -198,6 +200,7 @@ export default function HeroBanner() {
           </svg>
         </div>
       </div>
+      </Container>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Metadata } from 'next';
 import { FaStoreAlt, FaMoneyBillWave, FaShieldAlt } from 'react-icons/fa';
+import Container from "@/components/shared/Container";
 
 export const metadata: Metadata = {
   title: 'Become a Vendor',
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 export default function BecomeVendorPage() {
   return (
     <div className="bg-(--color-bg) min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-6xl">
+      <Container>
         
         {/* Hero */}
         <div className="bg-(--color-primary-900) rounded-3xl p-10 md:p-16 text-center text-white mb-16 relative overflow-hidden">
@@ -54,7 +55,7 @@ export default function BecomeVendorPage() {
           </div>
         </div>
 
-      </div>
+      </Container>
     </div>
   );
 }

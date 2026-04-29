@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
+import Container from "@/components/shared/Container";
 import PopularProductCard from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
 import type { EcommerceProduct } from "@/types";
@@ -10,8 +11,8 @@ interface PopularProductsSectionProps {
 
 export default function PopularProductsSection({ products }: PopularProductsSectionProps) {
   return (
-    <section id="trending" className="px-4 pb-8 md:px-8 md:pb-10 lg:px-10 lg:pb-14">
-      <div className="mx-auto">
+    <section id="trending" className="pb-8 md:pb-10 lg:pb-14">
+      <Container>
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.24em] text-(--color-primary)">
@@ -44,7 +45,8 @@ export default function PopularProductsSection({ products }: PopularProductsSect
             <p className="text-sm text-(--color-text-muted)">No products available yet.</p>
           </div>
         )}
-      </div>
+      </Container>
+      
     </section>
   );
 }

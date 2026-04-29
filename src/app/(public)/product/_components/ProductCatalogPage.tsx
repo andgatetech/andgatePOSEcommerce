@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { FiSliders } from "react-icons/fi";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
@@ -11,6 +11,7 @@ import {
   useInfinitePaginatedItems,
 } from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
+import Container from "@/components/shared/Container";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
 import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
@@ -39,6 +40,7 @@ const DEFAULT_SORT_FIELD = "created_at";
 const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "desc";
 
 export default function ProductPageContent() {
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const {
     params,
     search,
@@ -134,8 +136,8 @@ export default function ProductPageContent() {
   };
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8 lg:px-12 lg:pb-16 lg:pt-10">
-      <div className="mx-auto">
+    <section className="bg-(--color-bg) pb-10 pt-6 md:pb-12 md:pt-8 lg:pb-16 lg:pt-10">
+      <Container>
         <div className="mb-6 rounded-[28px] border border-(--color-border) bg-[linear-gradient(135deg,#ffffff_0%,#f6fbff_100%)] p-6 shadow-[0_18px_60px_rgba(19,45,69,0.06)] md:p-8">
           <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.18em] text-(--color-primary)">
             Product Page
@@ -150,25 +152,36 @@ export default function ProductPageContent() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-          <ProductFiltersSidebar
-            categories={categoriesData?.items ?? []}
-            brands={brandsData?.items ?? []}
-            selectedCategory={extraParams.category}
-            selectedBrand={extraParams.brand}
-            minPrice={extraParams.min_price}
-            maxPrice={extraParams.max_price}
-            activeFilterCount={activeFilterCount}
-            onCategoryChange={(value) => setExtraParams({ category: value })}
-            onBrandChange={(value) => setExtraParams({ brand: value })}
-            onMinPriceChange={(value) => setExtraParams({ min_price: value })}
-            onMaxPriceChange={(value) => setExtraParams({ max_price: value })}
-            onClear={resetExtraParams}
-          />
+          <div className="hidden lg:block">
+            <ProductFiltersSidebar
+              categories={categoriesData?.items ?? []}
+              brands={brandsData?.items ?? []}
+              selectedCategory={extraParams.category}
+              selectedBrand={extraParams.brand}
+              minPrice={extraParams.min_price}
+              maxPrice={extraParams.max_price}
+              activeFilterCount={activeFilterCount}
+              onCategoryChange={(value) => setExtraParams({ category: value })}
+              onBrandChange={(value) => setExtraParams({ brand: value })}
+              onMinPriceChange={(value) => setExtraParams({ min_price: value })}
+              onMaxPriceChange={(value) => setExtraParams({ max_price: value })}
+              onClear={resetExtraParams}
+            />
+          </div>
 
           <div>
             <div className="mb-5 rounded-[24px] border border-(--color-border) bg-white p-4 shadow-[0_18px_50px_rgba(19,45,69,0.05)] md:p-5">
               <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
                 <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
+                  <button
+                    type="button"
+                    onClick={() => setFiltersOpen((open) => !open)}
+                    className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-full border border-(--color-border) bg-(--color-bg) px-4 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary-200) hover:text-(--color-primary) lg:hidden"
+                  >
+                    <FiSliders className="text-base" />
+                    {filtersOpen ? "Hide filters" : "Show filters"}
+                    {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
+                  </button>
                   <SearchInput
                     value={search}
                     onChange={setSearch}
@@ -201,6 +214,24 @@ export default function ProductPageContent() {
                 </div>
               </div>
             </div>
+
+            {filtersOpen ? (
+              <ProductFiltersSidebar
+                categories={categoriesData?.items ?? []}
+                brands={brandsData?.items ?? []}
+                selectedCategory={extraParams.category}
+                selectedBrand={extraParams.brand}
+                minPrice={extraParams.min_price}
+                maxPrice={extraParams.max_price}
+                activeFilterCount={activeFilterCount}
+                onCategoryChange={(value) => setExtraParams({ category: value })}
+                onBrandChange={(value) => setExtraParams({ brand: value })}
+                onMinPriceChange={(value) => setExtraParams({ min_price: value })}
+                onMaxPriceChange={(value) => setExtraParams({ max_price: value })}
+                onClear={resetExtraParams}
+                className="mb-5 lg:hidden"
+              />
+            ) : null}
 
             {isError && products.length === 0 ? (
               <div className="rounded-[24px] border border-(--color-border) bg-white px-6 py-16 text-center shadow-[0_18px_50px_rgba(19,45,69,0.05)]">
@@ -243,7 +274,7 @@ export default function ProductPageContent() {
             ) : null}
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -1,8 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaUser, FaBars, FaTimes, FaChevronDown } from "react-icons/fa";
+import {
+  FaUser,
+  FaBars,
+  FaTimes,
+  FaChevronDown,
+  FaHome,
+  FaFireAlt,
+  FaHeart,
+  FaShoppingBag,
+  FaStore,
+  FaThLarge,
+  FaWineBottle,
+} from "react-icons/fa";
 import Logo from "../Logo";
 import ProductSearchBox from "../ProductSearchBox";
 import { ROUTES } from "@/config/routes";
@@ -10,10 +23,24 @@ import { useAppSelector } from "@/lib/hooks";
 import { useAuthSession } from "@/features/auth/useAuthSession";
 import CartIconAnimation from "@/app/(protected)/cart/_components/CartIconAnimation";
 
+const mobileQuickLinks = [
+  { label: "Home", href: ROUTES.HOME, icon: FaHome },
+  { label: "Deals", href: ROUTES.DEAL_OF_DAY, icon: FaFireAlt },
+  { label: "Categories", href: ROUTES.CATEGORY, icon: FaThLarge },
+  { label: "Popular", href: ROUTES.POPULAR_PRODUCT, icon: FaHeart },
+  { label: "Store", href: ROUTES.STORE, icon: FaStore },
+  { label: "Fresh", href: ROUTES.PRODUCT, icon: FaShoppingBag },
+  { label: "Brands", href: ROUTES.BRAND, icon: FaWineBottle },
+];
+
 const mobileNavLinks = [
-  { label: "About us", href: ROUTES.ABOUT },
-  { label: "My Account", href: ROUTES.MY_ACCOUNT },
-  { label: "My Wishlist", href: ROUTES.WISHLIST },
+  { label: "Home", href: ROUTES.HOME },
+  { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY },
+  { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT },
+  { label: "Fresh Finds", href: ROUTES.PRODUCT },
+  { label: "Explore All Categories", href: ROUTES.CATEGORY },
+  { label: "Store", href: ROUTES.STORE },
+  { label: "Brands", href: ROUTES.BRAND },
   { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
 ];
 
@@ -26,6 +53,7 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
+  const pathname = usePathname();
   const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
   const { logoutAndRedirect } = useAuthSession();
   const showAuthenticatedMenu = isHydrated && isAuthenticated && !!user;
@@ -75,6 +103,13 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
         <nav className="mt-4 pb-4 border-t border-(--color-border) pt-4">
+          <Link
+            href={ROUTES.CATEGORY}
+            className="mb-4 flex items-center justify-center rounded-[10px] bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-bg) transition-colors hover:bg-(--color-primary-dark)"
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Explore All Categories
+          </Link>
           <ul className="flex flex-col gap-y-3">
             {mobileNavLinks.map((link) => (
               <li key={link.label}>
@@ -158,6 +193,34 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
           </ul>
         </nav>
       )}
+
+      <nav
+        aria-label="Quick access"
+        className="fixed inset-x-0 bottom-0 z-40 border-t border-(--color-border) bg-(--color-bg)/95 px-2 py-2 shadow-[0_-10px_30px_rgba(17,17,17,0.08)] backdrop-blur xl:hidden"
+      >
+        <ul className="grid grid-cols-5 gap-1">
+          {mobileQuickLinks.slice(0, 5).map((link) => {
+            const isActive =
+              link.href === ROUTES.HOME ? pathname === link.href : pathname.startsWith(link.href);
+
+            return (
+              <li key={link.label}>
+                <Link
+                  href={link.href}
+                  className={`flex min-h-14 flex-col items-center justify-center gap-1 rounded-[14px] px-2 py-2 text-[11px] font-semibold transition-colors ${
+                    isActive
+                      ? "bg-(--color-primary) text-(--color-bg)"
+                      : "text-(--color-dark) hover:bg-(--color-primary-100) hover:text-(--color-primary)"
+                  }`}
+                >
+                  <link.icon className="text-sm" />
+                  <span>{link.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
     </div>
   );
 }

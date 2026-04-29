@@ -10,12 +10,14 @@ import {
   useInfinitePaginatedItems,
 } from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
+import Container from "@/components/shared/Container";
 import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import { ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import type { Category, ListQueryParams, PaginatedPayload } from "@/types";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 const SORT_OPTIONS: SortOption[] = [
   { label: "Name (A–Z)", field: "name", direction: "asc" },
@@ -112,8 +114,8 @@ export default function CategoryGallery({
   };
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
-      <div className="mx-auto">
+    <section className="bg-(--color-bg) pb-8 pt-6 md:pb-10 md:pt-8 lg:pb-14 lg:pt-10">
+      <Container>
         <div className="mb-4 flex justify-center">
           <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
             Category
@@ -156,8 +158,7 @@ export default function CategoryGallery({
                 <Link
                   key={category.id}
                   href={ROUTE_BUILDERS.categoryDetail(category.slug)}
-                  className="group flex flex-col items-center text-center"
-                >
+                  className="group flex flex-col items-center text-center">
                   <div className="flex h-[86px] w-[86px] items-center justify-center rounded-full bg-[#F7F7F8] transition-transform duration-300 group-hover:-translate-y-1 group-hover:shadow-[0_18px_40px_rgba(44,95,138,0.14)] sm:h-[94px] sm:w-[94px] md:h-[102px] md:w-[102px]">
                     {resolveImageUrl(category.image_url) ? (
                       <Image
@@ -196,7 +197,8 @@ export default function CategoryGallery({
             <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
           </div>
         ) : null}
-      </div>
+      </Container>
+      <ServiceHighlights />
     </section>
   );
 }

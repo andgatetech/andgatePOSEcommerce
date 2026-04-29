@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
+import Container from "@/components/shared/Container";
 
 const countdownTarget = new Date("2026-12-31T23:59:59");
 
@@ -69,8 +70,8 @@ export default function CountdownPromoBanner() {
   }, []);
 
   return (
-    <section className="px-4 pb-16 md:px-8 md:pb-18 lg:px-12 lg:pb-22">
-      <div className="mx-auto">
+    <section className="pb-16 md:pb-18 lg:pb-22">
+      <Container>
         <div className="relative overflow-hidden rounded-[34px]">
           <Image
             src="/images/banner/countdown-bg.png"
@@ -133,7 +134,7 @@ export default function CountdownPromoBanner() {
             </div>
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

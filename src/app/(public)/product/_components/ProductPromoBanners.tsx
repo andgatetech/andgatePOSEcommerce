@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
+import Container from "@/components/shared/Container";
 
 type PromoBanner = {
   id: number;
@@ -48,8 +49,8 @@ const promoBanners: PromoBanner[] = [
 
 export default function ProductPromoBanners() {
   return (
-    <section className="px-4 pb-10 md:px-8 md:pb-12 lg:px-10 lg:pb-14">
-      <div className="mx-auto">
+    <section className="pb-10 md:pb-12 lg:pb-14">
+      <Container>
         <div className="grid gap-5 xl:grid-cols-3">
           {promoBanners.map((banner) => (
             <article
@@ -97,7 +98,7 @@ export default function ProductPromoBanners() {
             </article>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

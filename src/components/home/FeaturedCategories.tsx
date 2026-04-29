@@ -7,6 +7,7 @@ import { FiArrowLeft, FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
+import Container from "@/components/shared/Container";
 import type { Category } from "@/types";
 
 const scrollAmount = 320;
@@ -26,8 +27,8 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
   };
 
   return (
-    <section className="px-4 pb-8 md:px-8 md:pb-10 lg:px-12 lg:pb-14">
-      <div className="mx-auto">
+    <section className="pb-8 md:pb-10 lg:pb-14">
+      <Container>
         <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">
@@ -111,7 +112,7 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
             })}
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

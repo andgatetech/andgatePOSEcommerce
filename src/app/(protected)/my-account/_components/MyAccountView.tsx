@@ -13,6 +13,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import OrdersListView from "@/components/orders/OrdersListView";
+import Container from "@/components/shared/Container";
 import AccountWishlistPanel from "./AccountWishlistPanel";
 import MyAccountAddressPanel from "./MyAccountAddressPanel";
 import MyAccountOrderTrackingPanel from "./MyAccountOrderTrackingPanel";
@@ -102,8 +103,8 @@ export default function MyAccountView() {
   }
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-8 pt-10 md:px-8 md:pb-10 lg:px-12 lg:pb-14 lg:pt-12">
-      <div className="mx-auto">
+    <section className="bg-(--color-bg) pb-8 pt-10 md:pb-10 lg:pb-14 lg:pt-12">
+      <Container>
         <div className="mb-10 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
@@ -146,7 +147,7 @@ export default function MyAccountView() {
 
           <div className="min-w-0">{renderPanel()}</div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

@@ -8,6 +8,7 @@ import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import AddToCartButton from "@/app/(public)/product/_components/AddToCartButton";
+import Container from "@/components/shared/Container";
 import type { EcommerceProduct } from "@/types";
 
 const labels = ["Days", "Hours", "Mins", "Sec"];
@@ -119,8 +120,8 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
   if (products.length === 0) return null;
 
   return (
-    <section id="deals-of-the-day" className="px-4 pb-12 pt-2 md:px-8 md:pb-14 lg:px-12 lg:pb-16">
-      <div className="mx-auto">
+    <section id="deals-of-the-day" className="pb-12 pt-2 md:pb-14 lg:pb-16">
+      <Container>
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">
@@ -247,7 +248,7 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
             );
           })}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

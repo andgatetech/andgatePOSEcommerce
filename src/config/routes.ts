@@ -32,8 +32,8 @@ export const ROUTES = {
   BLOG: "/about",
   DEALS: "/deal-of-day",
   SHOP: "/category",
-  TOP_PICKS: "/#best-sellers",
-  TRENDING: "/#trending",
+  TOP_PICKS: "/popular-product",
+  TRENDING: "/product",
 } as const;
 
 export const ROUTE_BUILDERS = {

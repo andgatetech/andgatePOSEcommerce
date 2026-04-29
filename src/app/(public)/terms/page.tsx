@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Container from "@/components/shared/Container";
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <div className="bg-(--color-primary-100) min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <Container>
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 lg:p-16 border-t-8 border-(--color-primary)">
           <h1 className="text-4xl md:text-5xl font-bold text-(--color-primary-900) mb-8 pb-8 border-b border-(--color-border)">Terms of Service</h1>
           
@@ -28,7 +29,7 @@ export default function TermsPage() {
             <p>Delivery times are estimated and not guaranteed. Shipping costs and delivery estimates depend on your location and the shipping method selected during checkout.</p>
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

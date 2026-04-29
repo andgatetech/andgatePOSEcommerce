@@ -327,7 +327,7 @@ export default function Footer() {
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="fixed bottom-4 right-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition-all hover:bg-(--color-primary-light) sm:bottom-6 sm:right-6">
+          className="fixed bottom-24 right-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition-all hover:bg-(--color-primary-light) sm:bottom-6 sm:right-6">
           <FaChevronUp size={14} />
         </button>
       )}

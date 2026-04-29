@@ -237,7 +237,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
       <div className="border-b border-(--color-border) bg-white">
         <div className="mx-auto px-4 py-3 md:px-5 lg:px-7 xl:px-8">
           <nav
-            className="flex items-center gap-2 text-[13px]"
+            className="flex flex-wrap items-center gap-2 text-[13px]"
             style={{ color: "var(--color-text-muted)" }}
           >
             <Link
@@ -260,7 +260,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </>
             )}
             <span
-              className="line-clamp-1 max-w-[240px] font-medium"
+              className="line-clamp-2 max-w-full font-medium sm:line-clamp-1 sm:max-w-[240px]"
               style={{ color: "var(--color-primary-900)" }}
             >
               {product.product_name}
@@ -617,7 +617,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                   </button>
 
                   {shareMenuOpen ? (
-                    <div className="absolute right-0 top-[calc(100%+10px)] z-30 min-w-[240px] rounded-[16px] border border-(--color-border) bg-white p-2 shadow-[0_20px_45px_rgba(17,17,17,0.12)]">
+                  <div className="absolute right-0 top-[calc(100%+10px)] z-30 w-[240px] max-w-[calc(100vw-2rem)] rounded-[16px] border border-(--color-border) bg-white p-2 shadow-[0_20px_45px_rgba(17,17,17,0.12)]">
                       <div className="flex items-center justify-between gap-2 px-2 py-1.5">
                         <p
                           className="text-[12px] font-semibold uppercase tracking-[0.12em]"
@@ -734,7 +734,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             {activeTab === "additional" && (
               <div className="overflow-hidden rounded-[12px] border border-(--color-border)">
                 <table className="w-full text-left text-[14px] md:text-[15px]">
-                  <tbody>
+                  <tbody className="block md:table-row-group">
                     {[
                       product.category && ["Category", product.category.name],
                       product.brand && ["Brand", product.brand.name],
@@ -750,16 +750,18 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         return (
                           <tr
                             key={k}
-                            className={i % 2 === 0 ? "bg-[#fafbfc]" : "bg-white"}
+                            className={`block border-b border-(--color-border) p-4 last:border-b-0 md:table-row md:p-0 ${
+                              i % 2 === 0 ? "bg-[#fafbfc]" : "bg-white"
+                            }`}
                           >
                             <td
-                              className="w-[180px] px-4 py-3 font-semibold md:w-[220px] md:px-6"
+                              className="block px-0 py-0 text-[12px] font-semibold uppercase tracking-[0.12em] md:table-cell md:w-[220px] md:px-6 md:py-3 md:text-[15px] md:normal-case md:tracking-normal"
                               style={{ color: "var(--color-primary-900)" }}
                             >
                               {k}
                             </td>
                             <td
-                              className="px-4 py-3 md:px-6"
+                              className="mt-1 block px-0 py-0 md:mt-0 md:table-cell md:px-6 md:py-3"
                               style={{ color: "var(--color-text-muted)" }}
                             >
                               {v}

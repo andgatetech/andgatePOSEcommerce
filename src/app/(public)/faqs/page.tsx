@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Container from "@/components/shared/Container";
 
 export const metadata: Metadata = {
   title: 'FAQs',
@@ -16,7 +17,7 @@ const faqs = [
 export default function FAQsPage() {
   return (
     <div className="bg-(--color-primary-100) min-h-screen py-20 lg:py-28">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <Container>
         <div className="text-center mb-12">
            <span className="text-(--color-cta) font-bold tracking-widest uppercase text-sm mb-4 block">Support</span>
            <h1 className="text-4xl md:text-5xl font-bold text-(--color-primary-dark) mb-6">Frequently Asked Questions</h1>
@@ -29,7 +30,7 @@ export default function FAQsPage() {
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

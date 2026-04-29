@@ -113,8 +113,8 @@ function OrderSubmitOverlay({
       : orderFailAnimation;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] backdrop-blur-[2px]">
-      <div className="flex min-w-[260px] max-w-[360px] flex-col items-center gap-3 rounded-[22px] border border-(--color-border) bg-white px-8 py-7 text-center shadow-[0_24px_70px_rgba(19,45,69,0.18)]">
+      <div className="fixed inset-0 z-100 flex items-center justify-center bg-[rgba(255,255,255,0.78)] px-4 backdrop-blur-[2px]">
+      <div className="flex w-full max-w-[360px] flex-col items-center gap-3 rounded-[22px] border border-(--color-border) bg-white px-6 py-7 text-center shadow-[0_24px_70px_rgba(19,45,69,0.18)] sm:px-8">
         <Lottie
           animationData={animationData}
           autoplay
@@ -172,7 +172,7 @@ function CheckoutItemRow({
       : `${displayStockQuantity} available`;
 
   return (
-    <article className="grid gap-4 px-4 py-4 md:grid-cols-[minmax(0,2fr)_0.6fr_0.5fr_0.6fr] md:items-center md:px-5">
+    <article className="grid gap-3 px-4 py-4 sm:gap-4 md:grid-cols-[minmax(0,2fr)_0.6fr_0.5fr_0.6fr] md:items-center md:px-5">
       {/* Product */}
       <div className="flex gap-3">
         <div className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[16px] bg-[#f7f7f9]">
@@ -210,7 +210,7 @@ function CheckoutItemRow({
       </div>
 
       {/* Unit price */}
-      <div className="flex items-center gap-2 md:block">
+      <div className="flex items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Price
         </span>
@@ -220,7 +220,7 @@ function CheckoutItemRow({
       </div>
 
       {/* Quantity */}
-      <div className="flex items-center gap-2 md:block">
+      <div className="flex items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Qty
         </span>
@@ -230,7 +230,7 @@ function CheckoutItemRow({
       </div>
 
       {/* Subtotal */}
-      <div className="flex items-center gap-2 md:block">
+      <div className="flex items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Total
         </span>
@@ -462,16 +462,17 @@ export default function CheckoutView() {
 
       <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
         {/* Breadcrumb */}
-        <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
+        <div className="mb-7 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
-            className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)"
-          >
+            className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)">
             <FiHome className="text-[17px]" />
             <span>Home</span>
           </Link>
           <span>&bull;</span>
-          <Link href={ROUTES.CART} className="transition hover:text-(--color-primary)">
+          <Link
+            href={ROUTES.CART}
+            className="transition hover:text-(--color-primary)">
             Cart
           </Link>
           <span>&bull;</span>
@@ -483,7 +484,11 @@ export default function CheckoutView() {
             <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[24px]">
               Checkout{" "}
               <span className="text-(--color-text-muted)">
-                ({isLoading ? "…" : `${itemCount} item${itemCount === 1 ? "" : "s"}`})
+                (
+                {isLoading
+                  ? "…"
+                  : `${itemCount} item${itemCount === 1 ? "" : "s"}`}
+                )
               </span>
             </h1>
             <p className="mt-1 text-sm text-(--color-text-muted)">
@@ -500,18 +505,19 @@ export default function CheckoutView() {
               </section>
             ) : activeShippingAddress && !showAddressForm && displayAddress ? (
               <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
-                <div className="flex items-center justify-between gap-4 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
+                <div className="flex flex-col gap-3 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
                   <div>
                     <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
                       Delivery Address
                     </h2>
-                    <p className="text-sm text-(--color-text-muted)">Choose a saved address for this order.</p>
+                    <p className="text-sm text-(--color-text-muted)">
+                      Choose a saved address for this order.
+                    </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setShowAddressForm(true)}
-                    className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-5 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
-                  >
+                    className="inline-flex min-h-[42px] w-full items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-5 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white sm:w-auto">
                     Add New Address
                   </button>
                 </div>
@@ -528,21 +534,24 @@ export default function CheckoutView() {
                           checked
                             ? "border-(--color-primary) bg-(--color-primary-100)"
                             : "border-(--color-border) bg-(--color-bg) hover:border-(--color-primary)"
-                        }`}
-                      >
+                        }`}>
                         <input
                           type="radio"
                           name="savedAddress"
                           checked={checked}
                           onChange={() => {
                             setSelectedAddressId(address.id);
-                            setAddressValue(shippingAddressToFormValue(address));
+                            setAddressValue(
+                              shippingAddressToFormValue(address),
+                            );
                           }}
                           className="mt-1 h-5 w-5 accent-(--color-primary)"
                         />
                         <span className="min-w-0 text-[15px] leading-7 text-(--color-dark)">
                           <span className="flex flex-wrap items-center gap-2">
-                            <span className="font-semibold">{addressLines.name}</span>
+                            <span className="font-semibold">
+                              {addressLines.name}
+                            </span>
                             {address.is_default ? (
                               <span className="rounded-full bg-[#eef6ef] px-2.5 py-0.5 text-xs font-semibold text-[#0d7a74]">
                                 Default
@@ -550,19 +559,24 @@ export default function CheckoutView() {
                             ) : null}
                           </span>
                           <span className="block">{addressLines.phone}</span>
-                          <span className="block">{addressLines.addressLine}</span>
-                          <span className="block text-(--color-text-muted)">{addressLines.locationLine}</span>
+                          <span className="block">
+                            {addressLines.addressLine}
+                          </span>
+                          <span className="block text-(--color-text-muted)">
+                            {addressLines.locationLine}
+                          </span>
                         </span>
                       </label>
                     );
                   })}
-
-
                 </div>
               </section>
             ) : (
               <div className="space-y-4">
-                <AddressDetailsForm value={addressValue} onChange={setAddressValue} />
+                <AddressDetailsForm
+                  value={addressValue}
+                  onChange={setAddressValue}
+                />
                 {savedAddress ? (
                   <div className="flex justify-end">
                     <button
@@ -570,10 +584,11 @@ export default function CheckoutView() {
                       onClick={() => {
                         setShowAddressForm(false);
                         setSelectedAddressId(savedAddress.id);
-                        setAddressValue(shippingAddressToFormValue(savedAddress));
+                        setAddressValue(
+                          shippingAddressToFormValue(savedAddress),
+                        );
                       }}
-                      className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-5 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)"
-                    >
+                      className="inline-flex min-h-[46px] items-center justify-center rounded-full border border-(--color-border) bg-(--color-bg) px-5 text-sm font-semibold text-(--color-dark) transition hover:border-(--color-primary) hover:text-(--color-primary)">
                       Use saved address instead
                     </button>
                   </div>
@@ -598,7 +613,8 @@ export default function CheckoutView() {
                 </div>
               ) : isStockCheckError ? (
                 <div className="border-b border-[#f7e2a7] bg-[#fff9e8] px-5 py-4 text-sm text-[#8a5c00]">
-                  Stock could not be refreshed automatically. It will be checked again before placing the order.
+                  Stock could not be refreshed automatically. It will be checked
+                  again before placing the order.
                 </div>
               ) : null}
 
@@ -611,8 +627,7 @@ export default function CheckoutView() {
                   <p className="text-sm font-medium">Your cart is empty.</p>
                   <Link
                     href={ROUTES.SHOP}
-                    className="text-sm font-semibold text-(--color-primary) hover:underline"
-                  >
+                    className="text-sm font-semibold text-(--color-primary) hover:underline">
                     Go shopping →
                   </Link>
                 </div>
@@ -622,7 +637,9 @@ export default function CheckoutView() {
                     <CheckoutItemRow
                       key={item.id}
                       item={item}
-                      checkedStockQuantity={checkedStockQuantityById.get(item.stock.id)}
+                      checkedStockQuantity={checkedStockQuantityById.get(
+                        item.stock.id,
+                      )}
                     />
                   ))}
                 </div>
@@ -634,7 +651,9 @@ export default function CheckoutView() {
             {/* Payment Method */}
             <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
               <div className="border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
-                <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">Payment method</h2>
+                <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
+                  Payment method
+                </h2>
               </div>
 
               <div className="divide-y divide-(--color-border) px-5 py-2">
@@ -643,12 +662,11 @@ export default function CheckoutView() {
                   return (
                     <label
                       key={option.id}
-                      className={`flex cursor-pointer items-center gap-3 rounded-[14px] px-3 py-3.5 transition ${
+                      className={`flex flex-wrap items-center gap-3 rounded-[14px] px-3 py-3.5 transition sm:flex-nowrap ${
                         checked
                           ? "bg-(--color-primary-100)"
                           : "hover:bg-[#f8f9fb]"
-                      }`}
-                    >
+                      }`}>
                       <input
                         type="radio"
                         name="payment"
@@ -658,22 +676,24 @@ export default function CheckoutView() {
                       />
 
                       {/* Custom radio circle — LEFT of logo */}
-                      <div className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition ${
-                        checked
-                          ? "border-(--color-primary) bg-(--color-primary)"
-                          : "border-(--color-border) bg-white"
-                      }`}>
+                      <div
+                        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition ${
+                          checked
+                            ? "border-(--color-primary) bg-(--color-primary)"
+                            : "border-(--color-border) bg-white"
+                        }`}>
                         {checked && (
                           <div className="h-2 w-2 rounded-full bg-white" />
                         )}
                       </div>
 
                       {/* Logo box */}
-                      <div className={`flex h-13 w-13 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border transition ${
-                        checked
-                          ? "border-(--color-primary) bg-(--color-primary-100)"
-                          : "border-(--color-border) bg-[#f8f9fb]"
-                      }`}>
+                      <div
+                        className={`flex h-13 w-13 shrink-0 items-center justify-center overflow-hidden rounded-[10px] border transition ${
+                          checked
+                            ? "border-(--color-primary) bg-(--color-primary-100)"
+                            : "border-(--color-border) bg-[#f8f9fb]"
+                        }`}>
                         <Image
                           src={option.logo}
                           alt={option.logoAlt}
@@ -685,16 +705,23 @@ export default function CheckoutView() {
                       </div>
 
                       {/* Label */}
-                      <span className={`flex-1 text-[15px] font-medium tracking-[-0.01em] transition ${
-                        checked ? "text-(--color-primary)" : "text-(--color-dark)"
-                      }`}>
+                      <span
+                        className={`flex-1 text-[15px] font-medium tracking-[-0.01em] transition ${
+                          checked
+                            ? "text-(--color-primary)"
+                            : "text-(--color-dark)"
+                        }`}>
                         {option.label}
                       </span>
 
                       {/* Chevron */}
                       <FiChevronRight
                         size={18}
-                        className={checked ? "text-(--color-primary)" : "text-(--color-text-muted)"}
+                        className={
+                          checked
+                            ? "text-(--color-primary)"
+                            : "text-(--color-text-muted)"
+                        }
                       />
                     </label>
                   );
@@ -722,16 +749,26 @@ export default function CheckoutView() {
               <div className="mt-6 space-y-4 text-sm">
                 <div className="flex items-center justify-between gap-4">
                   <span className="text-(--color-text-muted)">Sub-Total</span>
-                  <span className="font-medium text-(--color-dark)">{formatPrice(subtotal)}</span>
+                  <span className="font-medium text-(--color-dark)">
+                    {formatPrice(subtotal)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between gap-4">
-                  <span className="text-(--color-text-muted)">Delivery Charge</span>
-                  <span className="font-medium text-(--color-dark)">{formatPrice(shippingFee)}</span>
+                  <span className="text-(--color-text-muted)">
+                    Delivery Charge
+                  </span>
+                  <span className="font-medium text-(--color-dark)">
+                    {formatPrice(shippingFee)}
+                  </span>
                 </div>
                 <div className="border-t border-(--color-border) pt-5">
                   <div className="flex items-center justify-between gap-4">
-                    <span className="text-sm font-semibold text-(--color-dark)">Total</span>
-                    <span className="text-base font-bold text-(--color-dark)">{formatPrice(total)}</span>
+                    <span className="text-sm font-semibold text-(--color-dark)">
+                      Total
+                    </span>
+                    <span className="text-base font-bold text-(--color-dark)">
+                      {formatPrice(total)}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -741,26 +778,31 @@ export default function CheckoutView() {
               <button
                 type="button"
                 onClick={handlePlaceOrder}
-                disabled={items.length === 0 || isLoading || isSubmitting || isCheckingStockBeforeSubmit || hasKnownStockIssues}
-                className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                disabled={
+                  items.length === 0 ||
+                  isLoading ||
+                  isSubmitting ||
+                  isCheckingStockBeforeSubmit ||
+                  hasKnownStockIssues
+                }
+                className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark) disabled:opacity-50 disabled:cursor-not-allowed">
                 <FiShoppingBag className="mr-2" />
-                {isSubmitting || isCheckingStockBeforeSubmit ? "Placing order..." : "Place order"}
+                {isSubmitting || isCheckingStockBeforeSubmit
+                  ? "Placing order..."
+                  : "Place order"}
               </button>
 
               <Link
                 href={ROUTES.CART}
-                className="flex min-h-[54px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-(--color-bg)"
-              >
+                className="flex min-h-[54px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-(--color-bg)">
                 Back to cart
                 <FiChevronRight className="ml-2" />
               </Link>
             </div>
           </aside>
         </div>
-
-        <ServiceHighlights className="mt-10" />
       </div>
+      <ServiceHighlights />
     </section>
   );
 }

@@ -5,6 +5,7 @@ import PopularProductCard from "./PopularProductCard";
 import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
+import Container from "@/components/shared/Container";
 import type { EcommerceProduct } from "@/types";
 
 type CollectionEntity = {
@@ -30,7 +31,7 @@ export default function ProductCollectionPage({
 
   return (
     <section className="bg-(--color-bg)">
-      <div className="mx-auto px-4 py-8 md:px-8 lg:px-10 lg:py-10">
+      <Container className="py-8 lg:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
@@ -114,7 +115,7 @@ export default function ProductCollectionPage({
             )}
           </div>
         </div>
-      </div>
+      </Container>
     </section>
   );
 }

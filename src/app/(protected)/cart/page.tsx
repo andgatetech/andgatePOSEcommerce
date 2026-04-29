@@ -39,7 +39,7 @@ function formatPrice(value: number | string) {
 function ProductImage({ images, name }: { images: { id: number; url: string }[]; name: string }) {
   const src = resolveImageUrl(images[0]?.url);
   return (
-    <div className="relative h-[108px] w-[108px] shrink-0 overflow-hidden rounded-[20px] bg-[#f7f7f9] max-sm:h-[88px] max-sm:w-[88px]">
+    <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-[20px] bg-[#f7f7f9] sm:h-[108px] sm:w-[108px]">
       {src ? (
         <Image src={src} alt={name} fill unoptimized className="object-cover" sizes="108px" />
       ) : (
@@ -165,12 +165,12 @@ function CartItemRow({
   const isBusy = isUpdating || isRemoving;
 
   return (
-    <article className="grid min-h-[146px] gap-4 px-4 py-3.5 md:grid-cols-[minmax(0,1.8fr)_0.55fr_0.6fr_0.55fr_0.35fr] md:items-center md:px-4">
-      <div className="flex gap-4">
+    <article className="grid min-h-[146px] gap-4 px-4 py-4 md:grid-cols-[minmax(0,1.8fr)_0.55fr_0.6fr_0.55fr_0.35fr] md:items-center md:px-4">
+      <div className="flex gap-3 sm:gap-4">
         <ProductImage images={item.stock.images} name={item.stock.product_name} />
 
         <div className="min-w-0 pt-1">
-          <h2 className="truncate text-base font-semibold tracking-[-0.02em] text-(--color-dark) max-sm:text-[15px]">
+          <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-(--color-dark) sm:text-base md:truncate">
             {item.stock.product_name}
           </h2>
 
@@ -201,7 +201,63 @@ function CartItemRow({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 md:block">
+      <div className="grid grid-cols-3 gap-2 rounded-[18px] bg-[#f8fafc] p-3 md:hidden">
+        <div className="rounded-[14px] bg-white px-2.5 py-3 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-(--color-text-muted)">
+            Price
+          </span>
+          <span className="mt-1 block text-sm font-bold text-(--color-dark)">
+            {formatPrice(item.stock.price)}
+          </span>
+        </div>
+        <div className="rounded-[14px] bg-white px-2.5 py-3 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-(--color-text-muted)">
+            Qty
+          </span>
+          <div className="mt-2 flex justify-center">
+            <div className="inline-flex items-center rounded-full border border-(--color-border) bg-(--color-bg) px-2 py-1.5">
+              <button
+                type="button"
+                disabled={isBusy || item.quantity <= 1}
+                onClick={handleDecrement}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
+              >
+                <FiMinus size={14} />
+              </button>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={quantityInput}
+                onChange={handleQuantityInputChange}
+                onBlur={commitQuantityInput}
+                onKeyDown={handleQuantityKeyDown}
+                disabled={isBusy || isOutOfStock}
+                aria-label="Quantity"
+                style={{ width: `${Math.max(quantityInput.length + 1, 2)}ch` }}
+                className="mx-1 bg-transparent text-center text-sm font-semibold text-(--color-dark) outline-none focus:ring-1 focus:ring-(--color-primary) rounded disabled:opacity-40 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              />
+              <button
+                type="button"
+                disabled={isBusy || item.quantity >= effectiveAvailableQty}
+                onClick={handleIncrement}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
+              >
+                <FiPlus size={14} />
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="rounded-[14px] bg-white px-2.5 py-3 text-center shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+          <span className="block text-[10px] font-medium uppercase tracking-[0.16em] text-(--color-text-muted)">
+            Total
+          </span>
+          <span className="mt-1 block text-sm font-bold text-(--color-dark)">
+            {formatPrice(item.subtotal)}
+          </span>
+        </div>
+      </div>
+
+      <div className="hidden items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Price
         </span>
@@ -210,7 +266,7 @@ function CartItemRow({
         </span>
       </div>
 
-      <div className="flex items-center gap-3 md:block">
+      <div className="hidden items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Quantity
         </span>
@@ -246,7 +302,7 @@ function CartItemRow({
         </div>
       </div>
 
-      <div className="flex items-center gap-3 md:block">
+      <div className="hidden items-center justify-between gap-3 rounded-[16px] bg-[#f8fafc] px-3 py-2.5 md:block md:rounded-none md:bg-transparent md:px-0 md:py-0">
         <span className="text-xs font-medium uppercase tracking-[0.18em] text-(--color-text-muted) md:hidden">
           Total
         </span>
@@ -255,23 +311,23 @@ function CartItemRow({
         </span>
       </div>
 
-      <div className="flex items-center gap-4 text-(--color-dark)">
+      <div className="flex items-center justify-end gap-3 border-t border-(--color-border) pt-3 text-(--color-dark) md:justify-start md:border-t-0 md:pt-0">
         <button
           type="button"
           disabled={isTogglingWishlist}
           onClick={handleMoveToWishlist}
           title="Save to wishlist"
-          className="transition hover:text-(--color-primary) disabled:opacity-40"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-white transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-40"
         >
-          <FiHeart size={24} />
+          <FiHeart size={20} />
         </button>
         <button
           type="button"
           disabled={isRemoving}
           onClick={handleRemove}
-          className="transition hover:text-(--color-danger) disabled:opacity-40"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-white transition hover:border-[rgba(220,38,38,0.2)] hover:text-(--color-danger) disabled:opacity-40"
         >
-          <FiTrash2 size={24} />
+          <FiTrash2 size={20} />
         </button>
       </div>
     </article>
@@ -348,11 +404,10 @@ export default function CartPage() {
   return (
     <section className="bg-(--color-bg)">
       <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
-        <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
+        <div className="mb-6 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
-            className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)"
-          >
+            className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)">
             <FiHome className="text-[17px]" />
             <span>Home</span>
           </Link>
@@ -360,14 +415,7 @@ export default function CartPage() {
           <span>Cart</span>
         </div>
 
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[24px]">
-            Cart{" "}
-            <span className="text-(--color-text-muted)">
-              ({isLoading ? "…" : `${itemCount} item${itemCount === 1 ? "" : "s"}`})
-            </span>
-          </h1>
-        </div>
+        
 
         {isLoading ? (
           <div className="flex min-h-[300px] items-center justify-center text-(--color-text-muted)">
@@ -379,8 +427,7 @@ export default function CartPage() {
             <p className="text-lg font-medium">Your cart is empty</p>
             <Link
               href={ROUTES.SHOP}
-              className="inline-flex items-center gap-2 rounded-full bg-(--color-primary) px-6 py-3 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-            >
+              className="inline-flex items-center gap-2 rounded-full bg-(--color-primary) px-6 py-3 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)">
               Start Shopping
               <FiChevronRight />
             </Link>
@@ -388,14 +435,20 @@ export default function CartPage() {
         ) : (
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
             <div>
-              <div className="mb-4 flex flex-wrap items-center justify-between gap-4 text-sm">
-                <span className="font-semibold text-(--color-dark)">{itemCount} item(s)</span>
+              <div className="mb-4 flex flex-col gap-3 rounded-[20px] border border-(--color-border) bg-white p-4 text-sm sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="font-semibold text-(--color-dark)">
+                    {itemCount} item(s)
+                  </span>
+                  <span className="rounded-full bg-(--color-primary-100) px-3 py-1 text-xs font-semibold text-(--color-primary)">
+                    Cart ready
+                  </span>
+                </div>
                 <button
                   type="button"
                   disabled={isClearing}
                   onClick={handleClearCart}
-                  className="inline-flex items-center gap-2 font-semibold text-(--color-danger) transition hover:opacity-80 disabled:opacity-40"
-                >
+                  className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-full border border-[rgba(220,38,38,0.12)] bg-[#fff7f8] px-4 font-semibold text-(--color-danger) transition hover:opacity-80 disabled:opacity-40">
                   <FiTrash2 />
                   Remove All
                 </button>
@@ -411,26 +464,29 @@ export default function CartPage() {
                 </div>
 
                 {hasStockIssues ? (
-                <div className="flex items-center gap-2 border-b border-[#f6ccd4] bg-[#fff7f8] px-4 py-3 text-sm text-(--color-danger)">
-                  <FiAlertTriangle className="shrink-0" />
-                  {stockIssues.some((issue) => issue.availableQuantity <= 0)
-                    ? "One or more items are out of stock."
-                    : "Some items exceed available stock. Please adjust quantities."}
-                </div>
-              ) : isStockCheckError ? (
-                <div className="flex items-center gap-2 border-b border-[#f7e2a7] bg-[#fff9e8] px-4 py-3 text-sm text-[#8a5c00]">
-                  <FiAlertTriangle className="shrink-0" />
-                  Stock could not be verified. It will be checked again at checkout.
-                </div>
-              ) : null}
+                  <div className="flex items-center gap-2 border-b border-[#f6ccd4] bg-[#fff7f8] px-4 py-3 text-sm text-(--color-danger)">
+                    <FiAlertTriangle className="shrink-0" />
+                    {stockIssues.some((issue) => issue.availableQuantity <= 0)
+                      ? "One or more items are out of stock."
+                      : "Some items exceed available stock. Please adjust quantities."}
+                  </div>
+                ) : isStockCheckError ? (
+                  <div className="flex items-center gap-2 border-b border-[#f7e2a7] bg-[#fff9e8] px-4 py-3 text-sm text-[#8a5c00]">
+                    <FiAlertTriangle className="shrink-0" />
+                    Stock could not be verified. It will be checked again at
+                    checkout.
+                  </div>
+                ) : null}
 
-              <div className="divide-y divide-(--color-border)">
+                <div className="divide-y divide-(--color-border)">
                   {items.map((item) => (
                     <CartItemRow
                       key={item.id}
                       item={item}
                       isAuthenticated={hasActiveSession}
-                      checkedStockQuantity={checkedStockQuantityById.get(item.stock.id)}
+                      checkedStockQuantity={checkedStockQuantityById.get(
+                        item.stock.id,
+                      )}
                       isStockChecking={isCheckingStock}
                     />
                   ))}
@@ -440,9 +496,10 @@ export default function CartPage() {
               </div>
             </div>
 
-            <aside className="h-fit rounded-[22px] border border-(--color-border) bg-(--color-bg) p-4.5 max-sm:p-4">
-              <div className="mb-5 rounded-full bg-[#eef6ef] px-4.5 py-3 text-sm font-semibold text-(--color-dark)">
-                <span className="text-(--color-primary)">Free shipping</span> on all orders
+            <aside className="h-fit rounded-[22px] border border-(--color-border) bg-(--color-bg) p-4.5 max-sm:p-4 xl:sticky xl:top-16">
+              <div className="mb-5 rounded-full bg-[#eef6ef] px-4.5 py-3 text-center text-sm font-semibold text-(--color-dark) sm:text-left">
+                <span className="text-(--color-primary)">Free shipping</span> on
+                all orders
               </div>
 
               <div className="rounded-[20px] border border-(--color-border) p-4.5 max-sm:p-4">
@@ -453,12 +510,18 @@ export default function CartPage() {
                 <div className="mt-6 space-y-4 text-sm">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-(--color-text-muted)">Sub-Total</span>
-                    <span className="font-medium text-(--color-dark)">{formatPrice(cartTotal)}</span>
+                    <span className="font-medium text-(--color-dark)">
+                      {formatPrice(cartTotal)}
+                    </span>
                   </div>
                   <div className="border-t border-(--color-border) pt-5">
                     <div className="flex items-center justify-between gap-4">
-                      <span className="text-sm font-semibold text-(--color-dark)">Total</span>
-                      <span className="text-base font-bold text-(--color-dark)">{formatPrice(total)}</span>
+                      <span className="text-sm font-semibold text-(--color-dark)">
+                        Total
+                      </span>
+                      <span className="text-base font-bold text-(--color-dark)">
+                        {formatPrice(total)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -469,17 +532,17 @@ export default function CartPage() {
                   <button
                     type="button"
                     disabled
-                    onClick={() => toast.error("Please fix stock issues before checkout.")}
-                    className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white opacity-50 cursor-not-allowed"
-                  >
+                    onClick={() =>
+                      toast.error("Please fix stock issues before checkout.")
+                    }
+                    className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white opacity-50 cursor-not-allowed">
                     <FiShoppingBag className="mr-2" />
                     Proceed to checkout
                   </button>
                 ) : (
                   <Link
                     href={ROUTES.CHECKOUT}
-                    className="flex min-h-[54px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-                  >
+                    className="flex min-h-[54px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)">
                     <FiShoppingBag className="mr-2" />
                     Proceed to checkout
                   </Link>
@@ -487,8 +550,7 @@ export default function CartPage() {
 
                 <Link
                   href={ROUTES.SHOP}
-                  className="flex min-h-[54px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-(--color-bg)"
-                >
+                  className="flex min-h-[54px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-(--color-bg)">
                   Continue Shopping
                   <FiChevronRight className="ml-2" />
                 </Link>
@@ -496,9 +558,8 @@ export default function CartPage() {
             </aside>
           </div>
         )}
-
-        <ServiceHighlights className="mt-10" />
       </div>
+      <ServiceHighlights/>
     </section>
   );
 }

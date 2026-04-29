@@ -6,13 +6,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import {
   FaChevronDown,
-  FaFireAlt,
+  FaHeart,
   FaHome,
-  FaMedal,
   FaPhoneAlt,
-  FaStar,
+  FaShoppingBag,
   FaStore,
   FaThLarge,
+  FaFireAlt,
   FaWineBottle,
 } from "react-icons/fa";
 import { FiArrowRight, FiGrid } from "react-icons/fi";
@@ -22,22 +22,22 @@ import type { Brand, Category } from "@/types";
 
 const navLinks = [
   { label: "Home", href: ROUTES.HOME, hasDropdown: false, icon: FaHome },
-  { label: "Deal", href: ROUTES.DEALS, hasDropdown: false, icon: FaFireAlt },
+  { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY, hasDropdown: false, icon: FaFireAlt },
   {
-    label: "Top Picks",
-    href: ROUTES.TOP_PICKS,
+    label: "Popular Picks",
+    href: ROUTES.POPULAR_PRODUCT,
     hasDropdown: false,
-    icon: FaMedal,
+    icon: FaHeart,
   },
   {
-    label: "Trending",
-    href: ROUTES.TRENDING,
+    label: "Fresh Finds",
+    href: ROUTES.PRODUCT,
     hasDropdown: false,
-    icon: FaStar,
+    icon: FaShoppingBag,
   },
 
   { label: "Store", href: ROUTES.STORE, hasDropdown: false, icon: FaStore },
-  { label: "Brand", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
+  { label: "Brands", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
 ];
 
 interface SecondaryNavProps {
@@ -89,7 +89,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
               {navLinks.map((link) => (
                 <li
                   key={link.label}
-                  className={link.label === "Brand" ? "group static" : "relative group"}
+                  className={link.label === "Brands" ? "group static" : "relative group"}
                 >
                   <Link
                     href={link.href}
@@ -98,7 +98,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                     {"icon" in link && link.icon ? (
                       <span className="mr-1 inline-flex items-center justify-center">
                         <link.icon
-                          className={`${link.label === "Deal" ? "nav-fire-icon text-[18px]" : "text-[15px]"} text-(--color-cta)`}
+                          className={`${link.label === "Daily Deals" ? "nav-fire-icon text-[18px]" : "text-[15px]"} text-(--color-cta)`}
                         />
                       </span>
                     ) : null}
@@ -109,7 +109,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                   </Link>
 
                   {/* ── Brand mega-menu ── */}
-                  {link.label === "Brand" ? (
+                  {link.label === "Brands" ? (
                     <div className="invisible absolute left-0 top-full z-50 w-full translate-y-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                       <div className="mt-1 flex w-full rounded-[18px] border border-(--color-border) bg-(--color-bg) p-7 shadow-[0_30px_70px_rgba(17,17,17,0.08)]">
                         <div className="grid flex-1 grid-cols-3 gap-8 pr-8">

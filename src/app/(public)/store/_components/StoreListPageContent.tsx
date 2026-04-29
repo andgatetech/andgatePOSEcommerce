@@ -1,9 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
-import StoreCard from "./StoreCard";
-import StoreListToolbar from "./shared/StoreListToolbar";
-import { sameStoreParams } from "./shared/storeListShared";
 import { useGetStoresQuery } from "@/features/catalog/storeApi";
 import {
   buildInfiniteQueryKey,
@@ -12,6 +8,11 @@ import {
 } from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import type { ListQueryParams, PaginatedPayload, Store } from "@/types";
+import { useMemo } from "react";
+import StoreCard from "./StoreCard";
+import StoreListToolbar from "./shared/StoreListToolbar";
+import { sameStoreParams } from "./shared/storeListShared";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 interface StoreListPageContentProps {
   initialData: PaginatedPayload<Store> | null;
@@ -41,12 +42,7 @@ export default function StoreListPageContent({
       sort_field: params.sort_field,
       sort_direction: params.sort_direction,
     }),
-    [
-      params.search,
-      params.per_page,
-      params.sort_field,
-      params.sort_direction,
-    ],
+    [params.search, params.per_page, params.sort_field, params.sort_direction],
   );
   const queryKey = useMemo(
     () => buildInfiniteQueryKey(baseQueryParams),
@@ -73,11 +69,7 @@ export default function StoreListPageContent({
   const payload: PaginatedPayload<Store> | null =
     isInitial && initialData ? initialData : (currentData ?? null);
 
-  const {
-    items,
-    sentinelRef,
-    isLoadingMore,
-  } = useInfinitePaginatedItems({
+  const { items, sentinelRef, isLoadingMore } = useInfinitePaginatedItems({
     payload,
     queryKey,
     isFetching,
@@ -139,6 +131,8 @@ export default function StoreListPageContent({
           </div>
         ) : null}
       </div>
+
+      <ServiceHighlights />
     </section>
   );
 }

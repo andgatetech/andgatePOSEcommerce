@@ -1,5 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Container from "@/components/shared/Container";
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <div className="bg-(--color-primary-100) min-h-screen py-16">
-      <div className="container mx-auto px-4 max-w-4xl">
+      <Container>
         <div className="bg-white rounded-3xl shadow-xl p-8 md:p-12 lg:p-16 border-t-8 border-(--color-cta)">
           <h1 className="text-4xl md:text-5xl font-bold text-(--color-primary-900) mb-8 pb-8 border-b border-(--color-border)">Privacy Policy</h1>
           
@@ -29,7 +30,7 @@ export default function PrivacyPolicyPage() {
             <p>We implement robust security measures to protect your personal information when you place an order or enter, submit, or access your account details. Payment information is processed through secure gateways and is never stored on our direct servers.</p>
           </div>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

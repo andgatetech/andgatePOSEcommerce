@@ -4,6 +4,7 @@ import { FiShoppingCart, FiArrowUpRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
+import Container from "@/components/shared/Container";
 import type { EcommerceProduct } from "@/types";
 
 const columnLabels = ["Top Selling", "Trending Products", "Recently Added", "Top Rated"];
@@ -24,8 +25,8 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
   })).filter((col) => col.products.length > 0);
 
   return (
-    <section id="best-sellers" className="px-4 pb-12 md:px-8 lg:px-12">
-      <div className="mx-auto">
+    <section id="best-sellers" className="pb-12">
+      <Container>
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-[640px]">
             <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.24em] text-(--color-primary)">
@@ -135,7 +136,7 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
             </div>
           ))}
         </div>
-      </div>
+      </Container>
     </section>
   );
 }
