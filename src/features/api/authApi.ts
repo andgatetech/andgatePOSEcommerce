@@ -3,6 +3,7 @@ import { API_ROUTES } from "@/config/apiRoutes";
 import {
   LoginRequest,
   RegisterRequest,
+  GoogleAuthRequest,
   AuthResponse,
 } from "@/types";
 
@@ -25,10 +26,20 @@ export const authApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Auth"],
     }),
+
+    googleAuth: builder.mutation<AuthResponse, GoogleAuthRequest>({
+      query: (data) => ({
+        url: API_ROUTES.ECOMMERCE_AUTH.GOOGLE,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Auth"],
+    }),
   }),
 });
 
 export const {
   useLoginMutation,
   useRegisterMutation,
+  useGoogleAuthMutation,
 } = authApi;

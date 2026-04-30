@@ -2,6 +2,7 @@ export const API_ROUTES = {
   ECOMMERCE_AUTH: {
     LOGIN: "/login",
     REGISTER: "/register",
+    GOOGLE: "/auth/google",
   },
   ECOMMERCE_CATALOG: {
     CATEGORIES: "/categories",

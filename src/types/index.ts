@@ -5,6 +5,11 @@ export interface User {
   mobile_number: string | null;
   status: "active" | "blocked" | "disabled";
   otp_verify: 0 | 1;
+  has_password: boolean;
+  email_verified_at: string | null;
+  terms_accepted_at: string | null;
+  registration_provider: "password" | "google" | string;
+  last_login_provider: "password" | "google" | string | null;
   created_at: string;
   updated_at: string;
 }
@@ -33,6 +38,13 @@ export interface RegisterRequest {
   password: string;
   email?: string;
   mobile_number?: string;
+  accepted_terms: true;
+}
+
+export interface GoogleAuthRequest {
+  credential: string;
+  intent: "login" | "register";
+  accepted_terms?: true;
 }
 
 export interface ApiResponse<T> {

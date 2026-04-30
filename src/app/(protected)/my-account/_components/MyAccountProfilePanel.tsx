@@ -177,15 +177,18 @@ export default function MyAccountProfilePanel() {
     const nextErrors: FieldErrors = {};
     const trimmedName = form.name.trim();
     const trimmedEmail = form.email.trim();
+    const requiresCurrentPassword = user.has_password;
     const passwordTouched =
-      form.currentPassword.trim() || form.newPassword.trim() || form.confirmPassword.trim();
+      (requiresCurrentPassword ? form.currentPassword.trim() : "") ||
+      form.newPassword.trim() ||
+      form.confirmPassword.trim();
 
     if (!trimmedName) {
       nextErrors.name = "Name is required.";
     }
 
     if (passwordTouched) {
-      if (!form.currentPassword.trim()) {
+      if (requiresCurrentPassword && !form.currentPassword.trim()) {
         nextErrors.currentPassword = "Current password is required.";
       }
       if (!form.newPassword.trim()) {
@@ -202,6 +205,7 @@ export default function MyAccountProfilePanel() {
         nextErrors.confirmPassword = "Password confirmation does not match.";
       }
       if (
+        requiresCurrentPassword &&
         form.currentPassword.trim() &&
         form.newPassword.trim() &&
         form.currentPassword === form.newPassword
@@ -226,7 +230,9 @@ export default function MyAccountProfilePanel() {
     }
 
     if (passwordTouched) {
-      payload.current_password = form.currentPassword;
+      if (requiresCurrentPassword) {
+        payload.current_password = form.currentPassword;
+      }
       payload.new_password = form.newPassword;
       payload.new_password_confirmation = form.confirmPassword;
     }
@@ -401,25 +407,29 @@ export default function MyAccountProfilePanel() {
               <div>
                 <h3 className="text-lg font-semibold text-(--color-dark)">Password Change</h3>
                 <p className="mt-1 text-sm leading-7 text-(--color-text-muted)">
-                  Leave these fields empty if you do not want to change your password.
+                  {user.has_password
+                    ? "Leave these fields empty if you do not want to change your password."
+                    : "Set a password if you also want to sign in with email and password."}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
-              <label className="space-y-2 text-sm md:col-span-2">
-                <span className="font-medium text-(--color-dark)">Current Password</span>
-                <input
-                  type="password"
-                  value={form.currentPassword}
-                  onChange={(event) => updateField("currentPassword", event.target.value)}
-                  placeholder="Enter current password"
-                  className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
-                />
-                {fieldErrors.currentPassword ? (
-                  <p className="text-sm text-(--color-danger)">{fieldErrors.currentPassword}</p>
-                ) : null}
-              </label>
+              {user.has_password ? (
+                <label className="space-y-2 text-sm md:col-span-2">
+                  <span className="font-medium text-(--color-dark)">Current Password</span>
+                  <input
+                    type="password"
+                    value={form.currentPassword}
+                    onChange={(event) => updateField("currentPassword", event.target.value)}
+                    placeholder="Enter current password"
+                    className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
+                  />
+                  {fieldErrors.currentPassword ? (
+                    <p className="text-sm text-(--color-danger)">{fieldErrors.currentPassword}</p>
+                  ) : null}
+                </label>
+              ) : null}
 
               <label className="space-y-2 text-sm">
                 <span className="font-medium text-(--color-dark)">New Password</span>
