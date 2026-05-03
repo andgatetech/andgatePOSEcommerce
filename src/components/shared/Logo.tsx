@@ -11,8 +11,10 @@ interface LogoProps {
   noLink?: boolean;
   /** Optional extra class names */
   className?: string;
-  /** Light variant (for dark backgrounds like footer) */
-  variant?: "default" | "light";
+  /** Visual variant: 'default' (normal), 'light' (white filter), 'invert' (brightness invert for dark BGs) */
+  variant?: "default" | "light" | "invert";
+  /** Override the default logo image src */
+  src?: string;
 }
 
 export default function Logo({
@@ -21,17 +23,24 @@ export default function Logo({
   noLink = false,
   className = "",
   variant = "default",
+  src = "/images/Hawkeri1.png",
 }: LogoProps) {
   const image = (
     <Image
-      src="/images/andgatePOS.jpeg"
+      src={src}
       alt="Hawkeri"
       width={width}
       height={height}
       priority
-      style={{ width: 'auto', height: 'auto' }}
+      style={{
+        width: "auto",
+        height: "auto",
+        ...(variant === "default"
+          ? { mixBlendMode: "multiply" as const, filter: "brightness(1.08)" }
+          : {}),
+      }}
       className={`object-contain ${
-        variant === "light" ? "brightness-0 invert" : ""
+        variant === "light" || variant === "invert" ? "brightness-0 invert" : ""
       } ${className}`}
     />
   );
