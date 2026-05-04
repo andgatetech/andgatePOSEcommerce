@@ -152,7 +152,7 @@ export default function ProductPageContent() {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-          <div className="hidden lg:block">
+          <div className="filter-scrollbar-none hidden overscroll-contain lg:sticky lg:top-[154px] lg:block lg:max-h-[calc(100vh-178px)] lg:self-start lg:overflow-y-auto xl:top-[176px] xl:max-h-[calc(100vh-200px)]">
             <ProductFiltersSidebar
               categories={categoriesData?.items ?? []}
               brands={brandsData?.items ?? []}

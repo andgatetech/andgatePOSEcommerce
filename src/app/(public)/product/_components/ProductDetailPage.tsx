@@ -26,14 +26,66 @@ import { resolveImageUrl } from "@/lib/imageUrl";
 import { useAppSelector } from "@/lib/hooks";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import { useCheckStockQuery } from "@/features/cart/cartApi";
+import { useGetProductsQuery } from "@/features/catalog/productApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
+import PopularProductCard from "./PopularProductCard";
 import styles from "./ProductDetailPage.module.css";
 import type { EcommerceProduct } from "@/types";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 interface ProductDetailPageProps {
   product: EcommerceProduct;
+}
+
+function ProductRecommendationSection({
+  title,
+  subtitle,
+  products,
+  showViewMore,
+  isLoadingMore,
+  onViewMore,
+}: {
+  title: string;
+  subtitle: string;
+  products: EcommerceProduct[];
+  showViewMore: boolean;
+  isLoadingMore: boolean;
+  onViewMore: () => void;
+}) {
+  if (products.length === 0) return null;
+
+  return (
+    <section className="mt-8">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-(--color-text-muted)">
+            {subtitle}
+          </p>
+          <h2 className="mt-1 text-[24px] font-bold text-(--color-primary-900)">
+            {title}
+          </h2>
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {products.map((item) => (
+          <PopularProductCard key={item.id} product={item} />
+        ))}
+      </div>
+      {showViewMore ? (
+        <div className="mt-6 flex justify-center">
+          <button
+            type="button"
+            onClick={onViewMore}
+            disabled={isLoadingMore}
+            className="inline-flex min-h-[42px] items-center justify-center rounded-full border border-(--color-primary) px-6 text-[14px] font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
+          >
+            {isLoadingMore ? "Loading..." : "View more"}
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
 }
 
 const ALLOWED_RICH_TEXT_TAGS = new Set([
@@ -175,6 +227,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const [copied, setCopied] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
   const [descriptionHtml, setDescriptionHtml] = useState("");
+  const [relatedPage, setRelatedPage] = useState(1);
+  const [storePage, setStorePage] = useState(1);
+  const [relatedProducts, setRelatedProducts] = useState<EcommerceProduct[]>([]);
+  const [moreFromStoreProducts, setMoreFromStoreProducts] = useState<EcommerceProduct[]>([]);
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const descriptionPreview = useMemo(
@@ -228,6 +284,42 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const variantEntries = product.variant_data
     ? Object.entries(product.variant_data)
     : [];
+  const relatedQueryParams = useMemo(
+    () => ({
+      category: product.category?.slug,
+      brand: product.brand?.slug,
+      per_page: 6,
+      page: relatedPage,
+    }),
+    [product.brand?.slug, product.category?.slug, relatedPage],
+  );
+
+  const storeQueryParams = useMemo(
+    () => ({
+      store: product.sold_by.store_slug,
+      per_page: 6,
+      page: storePage,
+    }),
+    [product.sold_by.store_slug, storePage],
+  );
+
+  const {
+    data: relatedProductsData,
+    isFetching: isFetchingRelatedProducts,
+  } = useGetProductsQuery(relatedQueryParams, {
+    skip: !product.category?.slug,
+  });
+  const {
+    data: storeProductsData,
+    isFetching: isFetchingStoreProducts,
+  } = useGetProductsQuery(storeQueryParams, {
+    skip: !product.sold_by.store_slug,
+  });
+
+  const showRelatedViewMore =
+    Boolean(relatedProductsData?.pagination.has_more_pages);
+  const showStoreViewMore =
+    Boolean(storeProductsData?.pagination.has_more_pages);
 
   const tabs = [
     { key: "description", label: "Description" },
@@ -243,6 +335,39 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   useEffect(() => {
     setDescriptionHtml(sanitizeRichTextHtml(product.description));
   }, [product.description]);
+
+  useEffect(() => {
+    setRelatedPage(1);
+    setStorePage(1);
+    setRelatedProducts([]);
+    setMoreFromStoreProducts([]);
+  }, [product.id, product.brand?.slug, product.category?.slug, product.sold_by.store_slug]);
+
+  useEffect(() => {
+    if (!relatedProductsData?.items) return;
+
+    setRelatedProducts((current) => {
+      const existingIds = new Set(current.map((item) => item.id));
+      const nextItems = relatedProductsData.items.filter(
+        (item) => item.id !== product.id && !existingIds.has(item.id),
+      );
+
+      return relatedPage === 1 ? nextItems : [...current, ...nextItems];
+    });
+  }, [product.id, relatedPage, relatedProductsData?.items]);
+
+  useEffect(() => {
+    if (!storeProductsData?.items) return;
+
+    setMoreFromStoreProducts((current) => {
+      const existingIds = new Set(current.map((item) => item.id));
+      const nextItems = storeProductsData.items.filter(
+        (item) => item.id !== product.id && !existingIds.has(item.id),
+      );
+
+      return storePage === 1 ? nextItems : [...current, ...nextItems];
+    });
+  }, [product.id, storePage, storeProductsData?.items]);
 
   useEffect(() => {
     if (!copied) return;
@@ -952,6 +1077,24 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
             )}
           </div>
         </div>
+      </div>
+      <div className="mx-auto px-4 pb-8 md:px-5 lg:px-7 xl:px-8">
+        <ProductRecommendationSection
+          title="Related Products"
+          subtitle="Similar picks"
+          products={relatedProducts}
+          showViewMore={showRelatedViewMore}
+          isLoadingMore={isFetchingRelatedProducts && relatedPage > 1}
+          onViewMore={() => setRelatedPage((page) => page + 1)}
+        />
+        <ProductRecommendationSection
+          title="More from this store"
+          subtitle={product.sold_by.store_name}
+          products={moreFromStoreProducts}
+          showViewMore={showStoreViewMore}
+          isLoadingMore={isFetchingStoreProducts && storePage > 1}
+          onViewMore={() => setStorePage((page) => page + 1)}
+        />
       </div>
       <ServiceHighlights></ServiceHighlights>
     </div>

@@ -41,7 +41,7 @@ export default function ProductFiltersSidebar({
 }: ProductFiltersSidebarProps) {
   return (
     <aside
-      className={`rounded-[24px] border border-(--color-border) bg-white p-5 shadow-[0_18px_50px_rgba(19,45,69,0.06)] ${className}`}
+      className={`filter-scrollbar-none rounded-[24px] border border-(--color-border) bg-white p-5 shadow-[0_18px_50px_rgba(19,45,69,0.06)] ${className}`}
     >
       <div className="flex items-center justify-between gap-3">
         <div>
@@ -64,7 +64,7 @@ export default function ProductFiltersSidebar({
               Category
             </h3>
           </div>
-          <div className="max-h-[260px] space-y-2 overflow-y-auto pr-1">
+          <div className="filter-scrollbar-none max-h-[260px] space-y-2 overflow-y-auto pr-1">
             {categories.map((category) => {
               const checked = selectedCategory === category.slug;
               return (
@@ -101,7 +101,7 @@ export default function ProductFiltersSidebar({
               Brand
             </h3>
           </div>
-          <div className="max-h-[260px] space-y-2 overflow-y-auto pr-1">
+          <div className="filter-scrollbar-none max-h-[260px] space-y-2 overflow-y-auto pr-1">
             {brands.map((brand) => {
               const checked = selectedBrand === brand.slug;
               return (

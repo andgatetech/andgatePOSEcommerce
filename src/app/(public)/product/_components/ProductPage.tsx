@@ -157,6 +157,7 @@ export default function ProductPageContent({
             onMinPriceChange={(value) => setExtraParams({ min_price: value })}
             onMaxPriceChange={(value) => setExtraParams({ max_price: value })}
             onClear={resetExtraParams}
+            className="filter-scrollbar-none lg:sticky lg:top-[154px] lg:max-h-[calc(100vh-178px)] lg:self-start lg:overflow-y-auto xl:top-[176px] xl:max-h-[calc(100vh-200px)]"
           />
 
           <div>

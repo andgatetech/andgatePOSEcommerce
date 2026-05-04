@@ -35,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.className} antialiased`}>
         <ReduxProvider>{children}</ReduxProvider>
       </body>
     </html>
