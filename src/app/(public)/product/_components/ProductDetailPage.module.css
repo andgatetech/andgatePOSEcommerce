@@ -1,0 +1,164 @@
+.richProductDescription {
+  color: var(--color-text-muted);
+}
+
+.richProductDescription > * + * {
+  margin-top: 0.9rem;
+}
+
+.richProductDescription h1,
+.richProductDescription h2,
+.richProductDescription h3,
+.richProductDescription h4,
+.richProductDescription h5,
+.richProductDescription h6 {
+  color: var(--color-primary-900);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.richProductDescription h1 {
+  font-size: 1.75rem;
+}
+
+.richProductDescription h2 {
+  font-size: 1.5rem;
+}
+
+.richProductDescription h3 {
+  font-size: 1.25rem;
+}
+
+.richProductDescription h4,
+.richProductDescription h5,
+.richProductDescription h6 {
+  font-size: 1.05rem;
+}
+
+.richProductDescription strong {
+  color: var(--color-primary-900);
+  font-weight: 700;
+}
+
+.richProductDescription em {
+  font-style: italic;
+}
+
+.richProductDescription u {
+  text-decoration: underline;
+}
+
+.richProductDescription s {
+  text-decoration: line-through;
+}
+
+.richProductDescription a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.richProductDescription ul,
+.richProductDescription ol {
+  padding-left: 1.4rem;
+}
+
+.richProductDescription ul {
+  list-style: disc;
+}
+
+.richProductDescription ol {
+  list-style: decimal;
+}
+
+.richProductDescription li + li {
+  margin-top: 0.35rem;
+}
+
+.richProductDescription blockquote {
+  border-left: 3px solid var(--color-primary-200);
+  color: var(--color-primary-900);
+  padding-left: 1rem;
+}
+
+.richProductDescription pre {
+  overflow-x: auto;
+  border-radius: 8px;
+  background: #f3f4f6;
+  color: var(--color-primary-900);
+  padding: 1rem;
+}
+
+.richProductDescription code {
+  border-radius: 4px;
+  background: #f3f4f6;
+  color: var(--color-primary-900);
+  padding: 0.1rem 0.25rem;
+}
+
+.richProductDescription pre code {
+  background: transparent;
+  padding: 0;
+}
+
+.richProductDescription :global(.ql-align-center) {
+  text-align: center;
+}
+
+.richProductDescription :global(.ql-align-right) {
+  text-align: right;
+}
+
+.richProductDescription :global(.ql-align-justify) {
+  text-align: justify;
+}
+
+.richProductDescription :global(.ql-direction-rtl) {
+  direction: rtl;
+  text-align: inherit;
+}
+
+.richProductDescription :global(.ql-size-small) {
+  font-size: 0.875em;
+}
+
+.richProductDescription :global(.ql-size-large) {
+  font-size: 1.25em;
+}
+
+.richProductDescription :global(.ql-size-huge) {
+  font-size: 1.5em;
+}
+
+.richProductDescription :global(.ql-indent-1) {
+  padding-left: 3em;
+}
+
+.richProductDescription :global(.ql-indent-2) {
+  padding-left: 6em;
+}
+
+.richProductDescription :global(.ql-indent-3) {
+  padding-left: 9em;
+}
+
+.richProductDescription :global(.ql-indent-4) {
+  padding-left: 12em;
+}
+
+.richProductDescription :global(.ql-indent-5) {
+  padding-left: 15em;
+}
+
+.richProductDescription :global(.ql-indent-6) {
+  padding-left: 18em;
+}
+
+.richProductDescription :global(.ql-indent-7) {
+  padding-left: 21em;
+}
+
+.richProductDescription :global(.ql-indent-8) {
+  padding-left: 24em;
+}

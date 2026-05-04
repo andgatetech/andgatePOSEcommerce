@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,10 +28,139 @@ import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import { useCheckStockQuery } from "@/features/cart/cartApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
+import styles from "./ProductDetailPage.module.css";
 import type { EcommerceProduct } from "@/types";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 
 interface ProductDetailPageProps {
   product: EcommerceProduct;
+}
+
+const ALLOWED_RICH_TEXT_TAGS = new Set([
+  "a",
+  "blockquote",
+  "br",
+  "code",
+  "em",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "li",
+  "ol",
+  "p",
+  "pre",
+  "s",
+  "span",
+  "strong",
+  "sub",
+  "sup",
+  "u",
+  "ul",
+]);
+
+const ALLOWED_QUILL_CLASSES = /^(ql-(align|direction|font|indent|size)-[\w-]+)$/;
+const ALLOWED_RICH_TEXT_STYLES = new Set([
+  "background-color",
+  "color",
+  "text-align",
+]);
+
+function getPlainDescription(description?: string | null) {
+  if (!description) return "";
+  return description
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getDescriptionPreview(description?: string | null, maxLength = 220) {
+  const plainDescription = getPlainDescription(description);
+  if (plainDescription.length <= maxLength) return plainDescription;
+  return `${plainDescription.slice(0, maxLength).trim()}...`;
+}
+
+function sanitizeRichTextHtml(html?: string | null) {
+  if (!html || typeof window === "undefined") return "";
+
+  const document = window.document;
+  const template = document.createElement("template");
+  template.innerHTML = html;
+
+  function cleanNode(node: Node): Node | null {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return document.createTextNode(node.textContent ?? "");
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return null;
+
+    const element = node as HTMLElement;
+    const tagName = element.tagName.toLowerCase();
+    const cleanedChildren = Array.from(element.childNodes)
+      .map(cleanNode)
+      .filter((child): child is Node => Boolean(child));
+
+    if (!ALLOWED_RICH_TEXT_TAGS.has(tagName)) {
+      const fragment = document.createDocumentFragment();
+      cleanedChildren.forEach((child) => fragment.appendChild(child));
+      return fragment;
+    }
+
+    const cleanElement = document.createElement(tagName);
+
+    if (tagName === "a") {
+      const href = element.getAttribute("href")?.trim();
+      if (href && /^(https?:|mailto:|tel:|#|\/)/i.test(href)) {
+        cleanElement.setAttribute("href", href);
+        cleanElement.setAttribute("rel", "noopener noreferrer");
+        if (/^https?:/i.test(href)) {
+          cleanElement.setAttribute("target", "_blank");
+        }
+      }
+    }
+
+    const cleanStyles = Array.from(element.style)
+      .filter((propertyName) => ALLOWED_RICH_TEXT_STYLES.has(propertyName))
+      .map((propertyName) => {
+        const value = element.style.getPropertyValue(propertyName).trim();
+        if (/url\s*\(|expression\s*\(|javascript:/i.test(value)) return "";
+        return `${propertyName}: ${value}`;
+      })
+      .filter(Boolean);
+    if (cleanStyles.length > 0) {
+      cleanElement.setAttribute("style", cleanStyles.join("; "));
+    }
+
+    const quillClasses = (element.getAttribute("class") ?? "")
+      .split(/\s+/)
+      .filter((className) => ALLOWED_QUILL_CLASSES.test(className));
+    if (quillClasses.length > 0) {
+      cleanElement.setAttribute("class", quillClasses.join(" "));
+    }
+
+    cleanedChildren.forEach((child) => cleanElement.appendChild(child));
+    return cleanElement;
+  }
+
+  const fragment = document.createDocumentFragment();
+  Array.from(template.content.childNodes).forEach((node) => {
+    const clean = cleanNode(node);
+    if (clean) fragment.appendChild(clean);
+  });
+
+  const wrapper = document.createElement("div");
+  wrapper.appendChild(fragment);
+  return wrapper.innerHTML;
 }
 
 export default function ProductDetailPage({ product }: ProductDetailPageProps) {
@@ -45,8 +174,13 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const [shareUrl, setShareUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [descriptionHtml, setDescriptionHtml] = useState("");
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
+  const descriptionPreview = useMemo(
+    () => getDescriptionPreview(product.description),
+    [product.description],
+  );
 
   const [toggleWishlist, { isLoading: isTogglingWishlist }] = useToggleWishlistMutation();
   const { data: wishlistData } = useGetWishlistQuery(undefined, { skip: !isAuthenticated });
@@ -105,6 +239,10 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
     if (typeof window === "undefined") return;
     setShareUrl(`${window.location.origin}${pathname}`);
   }, [pathname]);
+
+  useEffect(() => {
+    setDescriptionHtml(sanitizeRichTextHtml(product.description));
+  }, [product.description]);
 
   useEffect(() => {
     if (!copied) return;
@@ -444,14 +582,12 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </div>
 
               {/* Description */}
-              {product.description && (
+              {descriptionPreview && (
                 <p
                   className="text-[15px] leading-relaxed"
                   style={{ color: "var(--color-text-muted)" }}
                 >
-                  {product.description.length > 220
-                    ? `${product.description.slice(0, 220).trim()}...`
-                    : product.description}
+                  {descriptionPreview}
                 </p>
               )}
 
@@ -723,12 +859,26 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
           <div className="p-6 md:p-8">
             {activeTab === "description" && (
-              <div
-                className="whitespace-pre-line text-[15px] leading-relaxed"
-                style={{ color: "var(--color-text-muted)" }}
-              >
-                {product.description || "No description available."}
-              </div>
+              descriptionHtml ? (
+                <div
+                  className={`${styles.richProductDescription} text-[15px] leading-relaxed`}
+                  dangerouslySetInnerHTML={{ __html: descriptionHtml }}
+                />
+              ) : descriptionPreview ? (
+                <p
+                  className="text-[15px] leading-relaxed"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  {descriptionPreview}
+                </p>
+              ) : (
+                <p
+                  className="text-[15px] leading-relaxed"
+                  style={{ color: "var(--color-text-muted)" }}
+                >
+                  No description available.
+                </p>
+              )
             )}
 
             {activeTab === "additional" && (
@@ -803,6 +953,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
           </div>
         </div>
       </div>
+      <ServiceHighlights></ServiceHighlights>
     </div>
   );
 }
