@@ -72,7 +72,7 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
 
           <div
             ref={railRef}
-            className="flex gap-5 overflow-x-auto px-10 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="filter-scrollbar-none flex gap-5 overflow-x-auto px-10 pb-2"
           >
             {categories.map((category) => {
               return (
