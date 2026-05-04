@@ -13,6 +13,7 @@ import {
 import { useListQuery } from "@/hooks/useListQuery";
 import Container from "@/components/shared/Container";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
+import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
 import PopularProductCard from "./PopularProductCard";
 import ProductPageSkeleton from "./ProductPageSkeleton";
@@ -58,6 +59,8 @@ export default function ProductPageContent({
 }: ProductPageContentProps) {
   const {
     params,
+    search,
+    setSearch,
     setSort,
     setPerPage,
     extraParams,
@@ -77,7 +80,7 @@ export default function ProductPageContent({
 
   const baseQueryParams = useMemo<ProductListParams>(
     () => ({
-      search: params.search,
+      search: initialStore ? params.search : undefined,
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,
@@ -158,7 +161,19 @@ export default function ProductPageContent({
 
           <div>
             <div className="mb-5 rounded-[24px] border border-(--color-border) bg-white p-4 shadow-[0_18px_50px_rgba(19,45,69,0.05)] md:p-5">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-end">
+              <div
+                className={`flex flex-col gap-3 xl:flex-row xl:items-center ${
+                  initialStore ? "xl:justify-between" : "xl:justify-end"
+                }`}
+              >
+                {initialStore ? (
+                  <SearchInput
+                    value={search}
+                    onChange={setSearch}
+                    placeholder="Search store products..."
+                    className="xl:max-w-md"
+                  />
+                ) : null}
                 <div className="flex flex-col gap-3 md:flex-row md:items-center">
                   <SortSelect options={SORT_OPTIONS} value={sortValue} onChange={setSort} />
                   <select

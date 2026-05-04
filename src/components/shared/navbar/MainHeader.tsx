@@ -43,7 +43,7 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
       <div className="mx-auto px-4">
         <div className="flex items-center">
           {/* Logo */}
-          <Logo width={180} height={48} />
+          <Logo width={180} height={48} className="translate-x-2" />
 
           {/* Right: Search + Account + Cart */}
           <div className="flex items-center w-full justify-end gap-x-[54px]">

@@ -9,6 +9,7 @@ import {
 import { useListQuery } from "@/hooks/useListQuery";
 import type { ListQueryParams, PaginatedPayload, Store } from "@/types";
 import { useMemo } from "react";
+import Container from "@/components/shared/Container";
 import StoreCard from "./StoreCard";
 import StoreListToolbar from "./shared/StoreListToolbar";
 import { sameStoreParams } from "./shared/storeListShared";
@@ -81,8 +82,8 @@ export default function StoreListPageContent({
   };
 
   return (
-    <section className="bg-(--color-bg) px-4 pb-8 pt-6 md:px-8 md:pb-10 md:pt-8 lg:px-12 lg:pb-14 lg:pt-10">
-      <div className="mx-auto">
+    <section className="bg-(--color-bg) pb-8 pt-6 md:pb-10 md:pt-8 lg:pb-14 lg:pt-10">
+      <Container>
         <div className="mb-4 flex justify-center">
           <h1 className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[14px] font-semibold tracking-normal text-(--color-primary-900) md:text-[15px]">
             Store
@@ -130,7 +131,7 @@ export default function StoreListPageContent({
             <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
           </div>
         ) : null}
-      </div>
+      </Container>
 
       <ServiceHighlights />
     </section>

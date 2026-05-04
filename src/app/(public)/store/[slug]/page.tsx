@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FiChevronRight, FiHome, FiShoppingBag } from "react-icons/fi";
 import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
+import Container from "@/components/shared/Container";
 import { ROUTES } from "@/config/routes";
 import { resolveStoreLogoUrl } from "@/lib/storeLogo";
 import { serverFetchJson } from "@/lib/serverFetch";
@@ -81,7 +82,7 @@ export default async function StoreDetailPage({
 
   return (
     <section className="bg-(--color-bg)">
-      <div className="mx-auto px-4 py-8 md:px-5 lg:px-7 xl:px-8 xl:py-10">
+      <Container className="py-8 xl:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
             href={ROUTES.HOME}
@@ -156,12 +157,13 @@ export default async function StoreDetailPage({
           </div>
         </div>
 
-        <ProductPageDataProvider
-          initialStore={store.slug}
-          categories={categories}
-          brands={brands}
-        />
-      </div>
+      </Container>
+
+      <ProductPageDataProvider
+        initialStore={store.slug}
+        categories={categories}
+        brands={brands}
+      />
     </section>
   );
 }

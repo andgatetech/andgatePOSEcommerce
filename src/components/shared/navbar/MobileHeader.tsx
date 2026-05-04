@@ -73,7 +73,7 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
   return (
     <div className="xl:hidden bg-(--color-bg) border-b border-(--color-border) py-3 px-4 shadow-sm">
       <div className="flex items-center justify-between">
-        <Logo width={140} height={38} />
+        <Logo width={140} height={38} className="translate-x-2" />
         <div className="flex items-center gap-x-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

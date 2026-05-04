@@ -110,8 +110,14 @@ export default function Footer() {
           <div className="grid grid-cols-12 gap-8 pb-8 sm:gap-7 lg:pb-9">
             {/* Brand Column */}
             <div className="col-span-12 flex flex-col gap-y-5 sm:gap-y-6 md:col-span-12 xl:col-span-3">
-              <div className="max-w-[180px] inline-flex items-center rounded-xl bg-white px-3 py-3">
-                <Logo width={120} height={60} variant="default" />
+              <div className="max-w-[180px] inline-flex items-center rounded-xl bg-white px-3 pb-5 pt-3">
+                <Logo
+                  width={120}
+                  height={60}
+                  variant="default"
+                  src="/images/HawkeriFooter.png"
+                  className="translate-x-1"
+                />
               </div>
               <p className="max-w-[520px] text-sm leading-7 text-(--color-primary-200) sm:text-base">
                 Hawkeri is your trusted destination for seamless online
