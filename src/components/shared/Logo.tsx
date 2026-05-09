@@ -32,9 +32,10 @@ export default function Logo({
       width={width}
       height={height}
       priority
+      fetchPriority="high"
       style={{
-        width: "auto",
-        height: "auto",
+        width: `${width}px`,
+        height: `${height}px`,
         ...(variant === "default"
           ? { mixBlendMode: "multiply" as const, filter: "brightness(1.08)" }
           : {}),

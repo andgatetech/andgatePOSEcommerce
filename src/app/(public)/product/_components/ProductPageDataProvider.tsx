@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import ProductPageContent from "./ProductPage";
 import { useProductData } from "@/lib/product-data-context";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
@@ -40,13 +41,15 @@ export default function ProductPageDataProvider({
   const brands = initialBrandsProp ?? (initialStore ? (storeBrands?.items ?? []) : globalData.brands);
 
   return (
-    <ProductPageContent
-      categories={categories}
-      brands={brands}
-      initialCategory={initialCategory}
-      initialBrand={initialBrand}
-      initialStore={initialStore}
-      collection={collection}
-    />
+    <Suspense fallback={null}>
+      <ProductPageContent
+        categories={categories}
+        brands={brands}
+        initialCategory={initialCategory}
+        initialBrand={initialBrand}
+        initialStore={initialStore}
+        collection={collection}
+      />
+    </Suspense>
   );
 }

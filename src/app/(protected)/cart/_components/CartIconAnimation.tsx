@@ -1,8 +1,11 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
-import addToCartAnimation from "../../../../../public/images/svg/Add to cart.json";
+
+const CartLottiePlayer = dynamic(() => import("./CartLottiePlayer"), {
+  ssr: false,
+});
 
 type CartIconAnimationProps = {
   count?: number;
@@ -13,13 +16,9 @@ export default function CartIconAnimation({
   count = 0,
   variant = "desktop",
 }: CartIconAnimationProps) {
-  const lottieRef = useRef<LottieRefCurrentProps>(null);
   const previousCount = useRef(count);
   const [countMotion, setCountMotion] = useState<"up" | "down" | null>(null);
-
-  useEffect(() => {
-    lottieRef.current?.goToAndStop(0, true);
-  }, []);
+  const [playToken, setPlayToken] = useState(0);
 
   useEffect(() => {
     if (count === previousCount.current) {
@@ -37,22 +36,14 @@ export default function CartIconAnimation({
     }, 380);
 
     previousCount.current = count;
-    lottieRef.current?.stop();
 
     if (direction === "up") {
-      lottieRef.current?.setDirection(1);
-      lottieRef.current?.goToAndPlay(0, true);
+      setPlayToken((token) => token + 1);
     }
-
-    const resetTimer = window.setTimeout(() => {
-      lottieRef.current?.setDirection(1);
-      lottieRef.current?.goToAndStop(0, true);
-    }, 1200);
 
     return () => {
       cancelAnimationFrame(frame);
       window.clearTimeout(timer);
-      window.clearTimeout(resetTimer);
     };
   }, [count]);
 
@@ -61,15 +52,7 @@ export default function CartIconAnimation({
       className={`cart-lottie-animation cart-lottie-animation--${variant}`}
       aria-hidden="true"
     >
-      <Lottie
-        lottieRef={lottieRef}
-        animationData={addToCartAnimation}
-        autoplay={false}
-        loop={false}
-        rendererSettings={{
-          preserveAspectRatio: "xMidYMid meet",
-        }}
-      />
+      <CartLottiePlayer playToken={playToken} />
       <span
         key={count}
         className={`cart-lottie-animation__count ${

@@ -82,12 +82,10 @@ html { scroll-behavior: smooth; }
 }
 
 @keyframes nav-fire-flicker {
-  0%,100% { transform: translateY(0) scale(1);    filter: drop-shadow(0 0 0 rgba(216,137,31,0)); }
-  25%      { transform: translateY(-1px) scale(1.1);  filter: drop-shadow(0 0 8px rgba(216,137,31,.28)); }
-  50%      { transform: translateY(-3px) scale(1.18); filter: drop-shadow(0 0 14px rgba(216,137,31,.45)); }
-  75%      { transform: translateY(-1px) scale(1.08); filter: drop-shadow(0 0 10px rgba(216,137,31,.24)); }
+  0%,100% { transform: translate3d(0,0,0) scale(1); opacity: .96; }
+  50%      { transform: translate3d(0,-2px,0) scale(1.12); opacity: 1; }
 }
-.nav-fire-icon { animation: nav-fire-flicker 1.35s ease-in-out infinite; transform-origin: center bottom; will-change: transform, filter; }
+.nav-fire-icon { animation: nav-fire-flicker 1.35s ease-in-out infinite; transform-origin: center bottom; will-change: transform, opacity; }
 
 .cart-lottie-animation {
   position: relative;
