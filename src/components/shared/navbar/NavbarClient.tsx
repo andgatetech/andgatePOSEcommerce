@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MainHeader from "./MainHeader";
 import MobileHeader from "./MobileHeader";
 import CartDrawer from "./CartDrawer";
@@ -11,6 +11,7 @@ import { isTokenExpired } from "@/features/auth/authStorage";
 export default function NavbarClient() {
   const [hasMounted, setHasMounted] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const cartTriggerRef = useRef<HTMLElement | null>(null);
   const { isAuthenticated, expiresAt } = useAppSelector((state) => state.auth);
   const hasActiveSession = isAuthenticated && !isTokenExpired(expiresAt);
   const guestCart = useAppSelector((state) => state.guestCart);
@@ -27,21 +28,33 @@ export default function NavbarClient() {
     setHasMounted(true);
   }, []);
 
+  function openCart() {
+    cartTriggerRef.current = document.activeElement as HTMLElement | null;
+    setIsCartOpen(true);
+  }
+
+  function closeCart() {
+    setIsCartOpen(false);
+    window.requestAnimationFrame(() => cartTriggerRef.current?.focus());
+  }
+
   return (
     <>
       <MainHeader
         cartCount={displayedCartCount}
-        onCartClick={() => setIsCartOpen(true)}
+        isCartOpen={isCartOpen}
+        onCartClick={openCart}
       />
       <MobileHeader
         cartCount={displayedCartCount}
-        onCartClick={() => setIsCartOpen(true)}
+        isCartOpen={isCartOpen}
+        onCartClick={openCart}
       />
       <CartDrawer
         isOpen={isCartOpen}
         items={displayedCartItems}
         isAuthenticated={hasActiveSession}
-        onClose={() => setIsCartOpen(false)}
+        onClose={closeCart}
       />
     </>
   );

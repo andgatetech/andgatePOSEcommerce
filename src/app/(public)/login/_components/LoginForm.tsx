@@ -126,7 +126,7 @@ export default function LoginForm() {
             Password
           </label>
           <Link
-            href="#"
+            href="/login#forgot-password"
             className="text-xs text-[var(--color-primary)] hover:text-[var(--color-primary-dark)] font-medium transition"
           >
             Forgot password?
@@ -145,6 +145,7 @@ export default function LoginForm() {
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
+            aria-label={showPassword ? "Hide password" : "Show password"}
             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition"
           >
             {showPassword ? <FiEyeOff size={18} /> : <FiEye size={18} />}

@@ -181,7 +181,6 @@ function CheckoutItemRow({
               src={imageSrc}
               alt={item.stock.product_name}
               fill
-              unoptimized
               className="object-cover"
               sizes="80px"
             />
@@ -700,7 +699,6 @@ export default function CheckoutView() {
                           width={40}
                           height={40}
                           className="h-9 w-9 object-contain"
-                          unoptimized
                         />
                       </div>
 

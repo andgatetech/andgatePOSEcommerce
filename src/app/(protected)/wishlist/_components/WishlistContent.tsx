@@ -42,7 +42,7 @@ function WishlistProductImage({
       className="relative shrink-0 overflow-hidden rounded-[20px] bg-[#f5f7fa]"
     >
       {src ? (
-        <Image src={src} alt={name} fill unoptimized className="object-cover" sizes={`${size}px`} />
+        <Image src={src} alt={name} fill className="object-cover" sizes={`${size}px`} />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-xl font-bold text-(--color-text-muted)">
           {name.charAt(0).toUpperCase()}

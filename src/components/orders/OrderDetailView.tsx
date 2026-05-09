@@ -324,7 +324,6 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
                               src={imageUrl}
                               alt={item.product_name}
                               fill
-                              unoptimized
                               className="object-cover"
                               sizes="108px"
                             />

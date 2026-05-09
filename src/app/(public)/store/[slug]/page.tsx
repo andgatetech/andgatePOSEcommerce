@@ -130,7 +130,7 @@ export default async function StoreDetailPage({
                       src={logoUrl}
                       alt={store.store_name}
                       fill
-                      unoptimized
+                      sizes="340px"
                       className="object-contain"
                     />
                   </div>

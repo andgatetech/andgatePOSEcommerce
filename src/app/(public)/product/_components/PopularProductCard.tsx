@@ -66,24 +66,23 @@ export default function PopularProductCard({
 
   return (
     <div className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-(--color-border) bg-white shadow-[0_10px_35px_rgba(19,45,69,0.06)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_48px_rgba(19,45,69,0.12)]">
-      {/* Clickable area → product detail page */}
-      <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="flex flex-col">
-        <div className="relative p-4 pb-3">
-          <button
-            type="button"
-            aria-label={`Save ${product.product_name} to wishlist`}
-            onClick={handleToggleWishlist}
-            disabled={isTogglingWishlist}
-            className={`absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-50 ${
-              isWishlisted
-                ? "text-(--color-primary)"
-                : "text-(--color-primary-900)"
-            }`}>
-            <FiHeart
-              className={`text-[18px] ${isWishlisted ? "fill-(--color-primary)" : ""}`}
-            />
-          </button>
+      <div className="relative p-4 pb-3">
+        <button
+          type="button"
+          aria-label={`Save ${product.product_name} to wishlist`}
+          onClick={handleToggleWishlist}
+          disabled={isTogglingWishlist}
+          className={`absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-50 ${
+            isWishlisted
+              ? "text-(--color-primary)"
+              : "text-(--color-primary-900)"
+          }`}>
+          <FiHeart
+            className={`text-[18px] ${isWishlisted ? "fill-(--color-primary)" : ""}`}
+          />
+        </button>
 
+        <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
           <div className="relative flex h-[176px] items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(180deg,var(--color-primary-100),#ffffff)]">
             {primaryImage ? (
               <>
@@ -92,7 +91,7 @@ export default function PopularProductCard({
                   src={primaryImage}
                   alt={product.product_name}
                   fill
-                  unoptimized
+                  sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 17vw"
                   className="object-contain p-9 transition duration-300 group-hover:scale-[1.05]"
                 />
               </>
@@ -107,8 +106,10 @@ export default function PopularProductCard({
               />
             )}
           </div>
-        </div>
+        </Link>
+      </div>
 
+      <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col px-4 pb-2">
           {product.category && (
             <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-(--color-text-muted)">

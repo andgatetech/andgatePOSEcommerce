@@ -36,6 +36,7 @@ export default function EditorialPromoGrid() {
                 src="/images/banner/female.jpg"
                 alt="Featured promo"
                 fill
+                sizes="(max-width: 1023px) 100vw, 42vw"
                 className="object-cover object-center"
               />
             </div>
@@ -45,11 +46,11 @@ export default function EditorialPromoGrid() {
                 Glow Skin Edit
               </p>
               <div className="mt-3">
-                <h4 className="text-[22px] font-semibold tracking-[-0.03em] text-(--color-primary-900)">
+                <h3 className="text-[22px] font-semibold tracking-[-0.03em] text-(--color-primary-900)">
                   Skincare picks,
                   <br />
                   glow essentials
-                </h4>
+                </h3>
                 <p className="mt-2 text-[14px] font-medium leading-6 text-(--color-primary-900)/72">
                   Fresh beauty picks for radiant, everyday skin.
                 </p>
@@ -72,6 +73,7 @@ export default function EditorialPromoGrid() {
                 src="/images/banner/promo-bg-3.jpg"
                 alt="Gift spotlight"
                 fill
+                sizes="(max-width: 1023px) 100vw, 34vw"
                 className="object-cover object-center"
               />
             </div>
@@ -108,6 +110,7 @@ export default function EditorialPromoGrid() {
                 src="/images/banner/promo-bg-2.jpg"
                 alt="Lifestyle promo"
                 fill
+                sizes="(max-width: 1023px) 100vw, 25vw"
                 className="object-cover object-center"
               />
             </div>
@@ -143,6 +146,7 @@ export default function EditorialPromoGrid() {
                 src="/images/banner/promo-bg-1.png"
                 alt="Workspace promo"
                 fill
+                sizes="(max-width: 1023px) 100vw, 17vw"
                 className="object-cover transition duration-500 group-hover:scale-[1.04]"
               />
             </div>
@@ -173,6 +177,7 @@ export default function EditorialPromoGrid() {
                 src="/images/banner/smart-watch-1.png"
                 alt="Smart watch promo"
                 fill
+                sizes="(max-width: 1023px) 100vw, 17vw"
                 className="object-cover transition duration-500 group-hover:scale-[1.04]"
               />
             </div>

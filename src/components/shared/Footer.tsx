@@ -51,11 +51,11 @@ const categoryLinks = [
 ];
 
 const socialLinks = [
-  { icon: FaFacebookF, href: "#" },
-  { icon: FaInstagram, href: "#" },
-  { icon: FaLinkedinIn, href: "#" },
-  { icon: FaPinterestP, href: "#" },
-  { icon: FaBehance, href: "#" },
+  { label: "Facebook", icon: FaFacebookF, href: "#facebook" },
+  { label: "Instagram", icon: FaInstagram, href: "#instagram" },
+  { label: "LinkedIn", icon: FaLinkedinIn, href: "#linkedin" },
+  { label: "Pinterest", icon: FaPinterestP, href: "#pinterest" },
+  { label: "Behance", icon: FaBehance, href: "#behance" },
 ];
 
 export default function Footer() {
@@ -95,7 +95,7 @@ export default function Footer() {
                 placeholder="Enter your email"
                 className="min-h-[44px] flex-1 rounded-full bg-transparent px-3 text-sm text-(--color-dark) outline-none sm:min-h-0 sm:px-2 sm:py-2 sm:text-base"
               />
-              <button className="min-h-[44px] cursor-pointer rounded-full bg-(--color-primary) px-6 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-light) sm:min-h-0 sm:py-2.5">
+              <button type="button" className="min-h-[44px] cursor-pointer rounded-full bg-(--color-primary) px-6 text-sm font-medium text-white transition-colors hover:bg-(--color-primary-light) sm:min-h-0 sm:py-2.5">
                 Subscribe
               </button>
             </div>
@@ -128,6 +128,7 @@ export default function Footer() {
                   <Link
                     key={index}
                     href={social.href}
+                    aria-label={`Visit Hawkeri on ${social.label}`}
                     className="w-10 h-10 rounded-full bg-(--color-primary-dark) flex items-center justify-center hover:bg-(--color-cta) transition-colors">
                     <social.icon size={16} className="text-white" />
                   </Link>
@@ -139,7 +140,8 @@ export default function Footer() {
                 </p>
                 <div className="flex flex-col gap-2.5 min-[420px]:flex-row min-[420px]:flex-wrap">
                   <Link
-                    href="#"
+                    href="#google-play"
+                    aria-label="Get Hawkeri on Google Play"
                     className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaGooglePlay size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
@@ -150,7 +152,8 @@ export default function Footer() {
                     </div>
                   </Link>
                   <Link
-                    href="#"
+                    href="#app-store"
+                    aria-label="Download Hawkeri on the App Store"
                     className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaAppStoreIos size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
@@ -166,9 +169,9 @@ export default function Footer() {
 
             {/* About Column */}
             <div className="col-span-12 sm:col-span-6 xl:col-span-2">
-              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
+              <h2 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 About
-              </h5>
+              </h2>
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {aboutLinks.map((link) => (
                   <li
@@ -192,9 +195,9 @@ export default function Footer() {
 
             {/* My Account Column */}
             <div className="col-span-12 sm:col-span-6 xl:col-span-2">
-              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
+              <h2 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 My Account
-              </h5>
+              </h2>
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {accountLinks.map((link) => (
                   <li
@@ -218,9 +221,9 @@ export default function Footer() {
 
             {/* Categories Column */}
             <div className="col-span-12 sm:col-span-6 xl:col-span-2">
-              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
+              <h2 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 Categories
-              </h5>
+              </h2>
               <ul className="flex flex-col gap-y-1.5 pt-4">
                 {categoryLinks.map((link, index) => (
                   <li key={index} className="py-1.5 flex items-center gap-x-2">
@@ -242,9 +245,9 @@ export default function Footer() {
 
             {/* Contact Information Column */}
             <div className="col-span-12 sm:col-span-6 xl:col-span-3">
-              <h5 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
+              <h2 className="border-b border-(--color-primary-dark) pb-4 text-base font-semibold text-white sm:pb-5 sm:text-lg">
                 Contact Information
-              </h5>
+              </h2>
               <ul className="flex flex-col gap-y-2 py-4">
                 <li className="flex items-start gap-x-3">
                   <span className="w-10 h-10 inline-flex items-center justify-center rounded-full bg-(--color-primary-dark) shrink-0">
@@ -313,7 +316,9 @@ export default function Footer() {
       {/* Scroll to Top Button */}
       {showScrollTop && (
         <button
+          type="button"
           onClick={scrollToTop}
+          aria-label="Scroll to top"
           className="fixed bottom-24 right-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition-all hover:bg-(--color-primary-light) sm:bottom-6 sm:right-6">
           <FaChevronUp size={14} />
         </button>

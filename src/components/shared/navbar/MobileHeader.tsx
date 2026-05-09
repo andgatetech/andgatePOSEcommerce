@@ -46,10 +46,11 @@ const mobileNavLinks = [
 
 type MobileHeaderProps = {
   cartCount: number;
+  isCartOpen: boolean;
   onCartClick: () => void;
 };
 
-export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderProps) {
+export default function MobileHeader({ cartCount, isCartOpen, onCartClick }: MobileHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -76,7 +77,11 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
         <Logo width={140} height={38} className="translate-x-2" />
         <div className="flex items-center gap-x-4">
           <button
+            type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-main-menu"
             className="text-(--color-dark) cursor-pointer"
           >
             {mobileMenuOpen ? (
@@ -85,7 +90,15 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
               <FaBars className="text-xl" />
             )}
           </button>
-          <button type="button" onClick={onCartClick} className="relative">
+          <button
+            type="button"
+            onClick={onCartClick}
+            aria-label={`Open cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+            aria-haspopup="dialog"
+            aria-expanded={isCartOpen}
+            aria-controls="cart-drawer"
+            className="relative"
+          >
             <CartIconAnimation variant="mobile" count={cartCount} />
           </button>
         </div>
@@ -102,7 +115,7 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <nav className="mt-4 pb-4 border-t border-(--color-border) pt-4">
+        <nav id="mobile-main-menu" className="mt-4 pb-4 border-t border-(--color-border) pt-4">
           <Link
             href={ROUTES.CATEGORY}
             className="mb-4 flex items-center justify-center rounded-[10px] bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-bg) transition-colors hover:bg-(--color-primary-dark)"
@@ -127,6 +140,8 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
                 type="button"
                 className="text-(--color-dark) text-sm font-medium flex w-full items-center justify-between gap-x-2 hover:text-(--color-cta) transition-colors"
                 onClick={() => setAccountMenuOpen((current) => !current)}
+                aria-expanded={accountMenuOpen}
+                aria-controls="mobile-account-menu"
               >
                 <span className="flex items-center gap-x-2">
                   <FaUser className="text-sm" />
@@ -136,7 +151,7 @@ export default function MobileHeader({ cartCount, onCartClick }: MobileHeaderPro
               </button>
             </li>
             {accountMenuOpen ? (
-              <li className="rounded-[16px] border border-(--color-border) bg-white p-2">
+              <li id="mobile-account-menu" className="rounded-[16px] border border-(--color-border) bg-white p-2">
                 {hasMounted && showAuthenticatedMenu ? (
                   <>
                     {accountMenuItems.map((item) => (

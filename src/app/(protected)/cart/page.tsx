@@ -41,7 +41,7 @@ function ProductImage({ images, name }: { images: { id: number; url: string }[];
   return (
     <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-[20px] bg-[#f7f7f9] sm:h-[108px] sm:w-[108px]">
       {src ? (
-        <Image src={src} alt={name} fill unoptimized className="object-cover" sizes="108px" />
+        <Image src={src} alt={name} fill className="object-cover" sizes="108px" />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-(--color-text-muted)">
           {name.charAt(0).toUpperCase()}
@@ -185,7 +185,7 @@ function CartItemRow({
                 ? "text-(--color-text-muted)"
                 : isOutOfStock || hasInsufficientStock
                   ? "font-medium text-(--color-danger)"
-                  : "font-medium text-green-600"
+                  : "font-medium text-(--color-success)"
             }>
               {isStockChecking
                 ? "Checking..."
@@ -220,6 +220,7 @@ function CartItemRow({
                 type="button"
                 disabled={isBusy || item.quantity <= 1}
                 onClick={handleDecrement}
+                aria-label={`Decrease quantity for ${item.stock.product_name}`}
                 className="flex h-7 w-7 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
               >
                 <FiMinus size={14} />
@@ -240,6 +241,7 @@ function CartItemRow({
                 type="button"
                 disabled={isBusy || item.quantity >= effectiveAvailableQty}
                 onClick={handleIncrement}
+                aria-label={`Increase quantity for ${item.stock.product_name}`}
                 className="flex h-7 w-7 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
               >
                 <FiPlus size={14} />
@@ -275,6 +277,7 @@ function CartItemRow({
             type="button"
             disabled={isBusy || item.quantity <= 1}
             onClick={handleDecrement}
+            aria-label={`Decrease quantity for ${item.stock.product_name}`}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
           >
             <FiMinus size={15} />
@@ -295,6 +298,7 @@ function CartItemRow({
             type="button"
             disabled={isBusy || item.quantity >= effectiveAvailableQty}
             onClick={handleIncrement}
+            aria-label={`Increase quantity for ${item.stock.product_name}`}
             className="flex h-8 w-8 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
           >
             <FiPlus size={15} />
@@ -317,6 +321,7 @@ function CartItemRow({
           disabled={isTogglingWishlist}
           onClick={handleMoveToWishlist}
           title="Save to wishlist"
+          aria-label={`Save ${item.stock.product_name} to wishlist`}
           className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-white transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-40"
         >
           <FiHeart size={20} />
@@ -325,6 +330,7 @@ function CartItemRow({
           type="button"
           disabled={isRemoving}
           onClick={handleRemove}
+          aria-label={`Remove ${item.stock.product_name} from cart`}
           className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-white transition hover:border-[rgba(220,38,38,0.2)] hover:text-(--color-danger) disabled:opacity-40"
         >
           <FiTrash2 size={20} />
@@ -448,6 +454,7 @@ export default function CartPage() {
                   type="button"
                   disabled={isClearing}
                   onClick={handleClearCart}
+                  aria-label="Remove all items from cart"
                   className="inline-flex min-h-[42px] items-center justify-center gap-2 rounded-full border border-[rgba(220,38,38,0.12)] bg-[#fff7f8] px-4 font-semibold text-(--color-danger) transition hover:opacity-80 disabled:opacity-40">
                   <FiTrash2 />
                   Remove All
@@ -535,6 +542,7 @@ export default function CartPage() {
                     onClick={() =>
                       toast.error("Please fix stock issues before checkout.")
                     }
+                    aria-label="Proceed to checkout unavailable until stock issues are fixed"
                     className="flex min-h-[54px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white opacity-50 cursor-not-allowed">
                     <FiShoppingBag className="mr-2" />
                     Proceed to checkout

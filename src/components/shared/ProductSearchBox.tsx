@@ -77,9 +77,10 @@ export default function ProductSearchBox({
     <div ref={wrapperRef} className={`relative ${className}`}>
       <div
         className={`flex items-center gap-3 rounded-full border border-(--color-border) bg-white ${compact ? "px-4 py-2.5" : "px-5 py-3.5"} shadow-[0_10px_30px_rgba(19,45,69,0.06)] transition`}>
-        <FaSearch className="shrink-0 text-(--color-primary)" />
+        <FaSearch className="shrink-0 text-(--color-primary)" aria-hidden="true" />
         <input
           type="text"
+          aria-label={placeholder}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -143,7 +144,7 @@ export default function ProductSearchBox({
                             src={image}
                             alt={product.product_name}
                             fill
-                            unoptimized
+                            sizes="56px"
                             className="object-contain p-2.5"
                           />
                         ) : (

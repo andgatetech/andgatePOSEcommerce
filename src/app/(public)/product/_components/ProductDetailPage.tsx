@@ -558,7 +558,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                           src={img}
                           alt={`${product.product_name} thumbnail ${i + 1}`}
                           fill
-                          unoptimized
+                          sizes="72px"
                           className="object-cover"
                         />
                       </button>
@@ -574,8 +574,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         src={resolvedImages[activeImage] ?? resolvedImages[0]}
                         alt={product.product_name}
                         fill
-                        unoptimized
                         priority
+                        sizes="(max-width: 1023px) 100vw, 50vw"
                         className="object-contain p-6 transition duration-500 group-hover:scale-105"
                       />
                     ) : (

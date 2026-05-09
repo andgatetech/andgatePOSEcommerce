@@ -77,6 +77,7 @@ export default function CountdownPromoBanner() {
             src="/images/banner/countdown-bg.png"
             alt="Limited time countdown promotion"
             fill
+            sizes="100vw"
             className="object-cover"
           />
           <div

@@ -98,7 +98,7 @@ export default function HeroBanner() {
                       >
                         {slide.badge}
                       </span>
-                      <span className="text-[11px] font-bold bg-[#4ade80] text-white px-3 py-[3px] rounded-[4px] tracking-wide uppercase">
+                      <span className="text-[11px] font-bold bg-[#166534] text-white px-3 py-[3px] rounded-[4px] tracking-wide uppercase">
                         {slide.discount}
                       </span>
                     </div>
@@ -107,17 +107,18 @@ export default function HeroBanner() {
                       {slide.heading}
                     </h1>
 
-                    <p className="text-[14px] md:text-[15px] text-[#5a6a7a] max-w-[420px] mb-7 leading-[1.7]">
+                    <p className="text-[14px] md:text-[15px] text-[#334155] max-w-[420px] mb-7 leading-[1.7]">
                       {slide.description}
                     </p>
 
-                    <Link href={ROUTES.LOGIN} className="inline-block">
-                      <button className="group inline-flex items-center gap-2.5 bg-[#facc15] hover:bg-[#eab308] text-[#1a1a2e] font-semibold text-[14px] px-6 py-3 rounded-full transition-all duration-300 cursor-pointer">
-                        Shop Now
-                        <span className="w-6 h-6 bg-white rounded-full flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
-                          <GoArrowUpRight className="text-[#1a1a2e] text-xs" />
-                        </span>
-                      </button>
+                    <Link
+                      href={ROUTES.LOGIN}
+                      className="group inline-flex items-center gap-2.5 bg-[#facc15] hover:bg-[#eab308] text-[#1a1a2e] font-semibold text-[14px] px-6 py-3 rounded-full transition-all duration-300"
+                    >
+                      Shop Now
+                      <span className="w-6 h-6 bg-white rounded-full flex items-center justify-center group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-300">
+                        <GoArrowUpRight className="text-[#1a1a2e] text-xs" />
+                      </span>
                     </Link>
                   </div>
 
@@ -128,7 +129,6 @@ export default function HeroBanner() {
                         src={slide.image}
                         alt={slide.heading}
                         fill
-                        unoptimized={true}
                         sizes="(max-width: 768px) 100vw, 52vw"
                         className="object-contain object-bottom"
                         priority={slide.id === 1}
@@ -144,6 +144,8 @@ export default function HeroBanner() {
 
         {/* Navigation Arrows */}
       <button
+        type="button"
+        aria-label="Previous hero slide"
         className="banner-prev absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
         style={{ background: "rgba(255,255,255,0.25)" }}
         onMouseEnter={(e) =>
@@ -156,6 +158,8 @@ export default function HeroBanner() {
         <FiChevronLeft className="text-lg text-[#4a5568]" />
       </button>
       <button
+        type="button"
+        aria-label="Next hero slide"
         className="banner-next absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 w-9 h-9 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-300 cursor-pointer"
         style={{ background: "rgba(255,255,255,0.25)" }}
         onMouseEnter={(e) =>
@@ -179,13 +183,13 @@ export default function HeroBanner() {
             <div className="flex items-center gap-2.5 justify-center">
               {slides.map((_, index) => (
                 <button
+                  type="button"
                   key={index}
+                  aria-label={`Go to hero slide ${index + 1}`}
+                  aria-current={activeIndex === index ? "step" : undefined}
                   onClick={() => swiperRef.current?.slideToLoop(index)}
-                  className="transition-all duration-300 cursor-pointer"
+                  className="relative h-2.5 w-[42px] cursor-pointer rounded-full transition-colors duration-300"
                   style={{
-                    width: activeIndex === index ? "42px" : "10px",
-                    height: "10px",
-                    borderRadius: activeIndex === index ? "5px" : "50%",
                     background: activeIndex === index ? "#0d9488" : "#d1d5db",
                     border: "none",
                     padding: 0,

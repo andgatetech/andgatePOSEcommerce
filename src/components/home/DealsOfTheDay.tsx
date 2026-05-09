@@ -166,7 +166,7 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
                         src={image}
                         alt={product.product_name}
                         fill
-                        unoptimized
+                        sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 25vw"
                         className="object-cover transition duration-500 group-hover:scale-[1.04]"
                       />
                     ) : (

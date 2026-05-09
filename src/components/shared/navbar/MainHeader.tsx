@@ -15,10 +15,11 @@ import CartIconAnimation from "@/app/(protected)/cart/_components/CartIconAnimat
 
 type MainHeaderProps = {
   cartCount: number;
+  isCartOpen: boolean;
   onCartClick: () => void;
 };
 
-export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) {
+export default function MainHeader({ cartCount, isCartOpen, onCartClick }: MainHeaderProps) {
   const [hasMounted, setHasMounted] = useState(false);
   const { isAuthenticated, isHydrated, user } = useAppSelector((state) => state.auth);
   const { logoutAndRedirect } = useAuthSession();
@@ -62,6 +63,10 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                 <button
                   type="button"
                   onClick={onCartClick}
+                  aria-label={`Open cart, ${cartCount} ${cartCount === 1 ? "item" : "items"}`}
+                  aria-haspopup="dialog"
+                  aria-expanded={isCartOpen}
+                  aria-controls="cart-drawer"
                   className="flex items-center gap-x-4 cursor-pointer group text-left"
                 >
                   <CartIconAnimation count={cartCount} />
@@ -73,6 +78,8 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                 <button
                   type="button"
                   onClick={() => setIsMenuOpen((current) => !current)}
+                  aria-expanded={isMenuOpen}
+                  aria-controls="desktop-account-menu"
                   className="flex items-center gap-x-4 cursor-pointer relative"
                 >
                   <span className="inline-flex items-center justify-center bg-(--color-cta) w-10 h-10 rounded-full group-hover:bg-(--color-cta-hover) transition-colors">
@@ -88,6 +95,7 @@ export default function MainHeader({ cartCount, onCartClick }: MainHeaderProps) 
                   />
                 </button>
                 <div
+                  id="desktop-account-menu"
                   className={`absolute right-0 top-[calc(100%+12px)] z-30 min-w-[220px] rounded-[18px] border border-(--color-border) bg-white p-2 shadow-[0_18px_40px_rgba(17,17,17,0.12)] transition ${
                     isMenuOpen ? "visible opacity-100" : "invisible opacity-0"
                   }`}

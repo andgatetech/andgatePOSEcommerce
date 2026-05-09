@@ -87,10 +87,9 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
                     {resolveImageUrl(category.image_url) ? (
                       <Image
                         src={resolveImageUrl(category.image_url)!}
-                        alt={category.name}
+                        alt=""
                         width={92}
                         height={92}
-                        unoptimized
                         className="h-auto w-auto max-h-[88px] max-w-[88px] object-contain"
                       />
                     ) : (

@@ -61,6 +61,7 @@ export default function ProductPromoBanners() {
                 src={banner.image}
                 alt={banner.title}
                 fill
+                sizes="(max-width: 1279px) 100vw, 33vw"
                 priority={banner.id === 1}
                 className="object-cover transition duration-500 group-hover:scale-[1.04]"
               />

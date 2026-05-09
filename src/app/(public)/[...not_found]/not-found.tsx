@@ -19,6 +19,7 @@ export default function NotFound() {
           src="/svg/444.gif"
           alt="Page not found"
           fill
+          sizes="(max-width: 767px) 100vw, 768px"
           className="object-contain object-top -translate-y-4 md:-translate-y-6 lg:-translate-y-11"
           priority
           unoptimized

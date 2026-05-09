@@ -42,7 +42,7 @@ function StoreAvatar({
           src={logoUrl}
           alt={storeName}
           fill
-          unoptimized
+          sizes={`${size}px`}
           className="object-cover"
         />
       </div>

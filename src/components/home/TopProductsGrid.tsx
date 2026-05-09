@@ -86,7 +86,7 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
                               src={image}
                               alt={product.product_name}
                               fill
-                              unoptimized
+                              sizes="80px"
                               className="object-cover transition duration-300 group-hover:scale-[1.05]"
                             />
                           ) : (

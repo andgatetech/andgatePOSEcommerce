@@ -166,7 +166,6 @@ export default function CategoryGallery({
                         alt={category.name}
                         width={84}
                         height={84}
-                        unoptimized
                         className="h-auto w-auto max-h-[68px] max-w-[68px] object-contain sm:max-h-[76px] sm:max-w-[76px] md:max-h-[84px] md:max-w-[84px]"
                       />
                     ) : (

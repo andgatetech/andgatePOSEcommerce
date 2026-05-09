@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import {
   FiMinus,
@@ -124,7 +124,7 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
       <div className="flex gap-3">
         <div className="relative h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-[#f7f7f9] max-sm:h-[76px] max-sm:w-[76px]">
           {imageSrc ? (
-            <Image src={imageSrc} alt={item.stock.product_name} fill unoptimized className="object-cover" sizes="82px" />
+            <Image src={imageSrc} alt={item.stock.product_name} fill className="object-cover" sizes="82px" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xl font-bold text-(--color-text-muted)">
               {item.stock.product_name.charAt(0).toUpperCase()}
@@ -145,6 +145,7 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
               type="button"
               disabled={isRemoving}
               onClick={handleRemove}
+              aria-label={`Remove ${item.stock.product_name} from cart`}
               className="rounded-full p-1 transition hover:bg-[#fff1f0] hover:text-(--color-danger) disabled:opacity-40"
             >
               <FiTrash2 size={16} />
@@ -161,6 +162,7 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
                 type="button"
                 disabled={isBusy || item.quantity <= 1}
                 onClick={handleDecrement}
+                aria-label={`Decrease quantity for ${item.stock.product_name}`}
                 className="flex h-6.5 w-6.5 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
               >
                 <FiMinus size={13} />
@@ -181,6 +183,7 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
                 type="button"
                 disabled={isBusy || item.quantity >= availableQty}
                 onClick={handleIncrement}
+                aria-label={`Increase quantity for ${item.stock.product_name}`}
                 className="flex h-6.5 w-6.5 items-center justify-center rounded-full border border-(--color-primary) text-(--color-primary) transition hover:bg-(--color-primary-100) disabled:opacity-40"
               >
                 <FiPlus size={13} />
@@ -196,13 +199,34 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
 export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: CartDrawerProps) {
   const dispatch = useAppDispatch();
   const [clearCart, { isLoading: isClearing }] = useClearCartMutation();
+  const dialogRef = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const titleId = useId();
 
   useEffect(() => {
     if (!isOpen) return;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    window.requestAnimationFrame(() => closeButtonRef.current?.focus());
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {
+        onClose();
+        return;
+      }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      );
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => {
@@ -231,26 +255,27 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
     toast.success(result.data.message || "Cart cleared.");
   }
 
+  if (!isOpen) return null;
+
   return (
     <>
       <div
-        aria-hidden={!isOpen}
-        className={`fixed inset-0 z-40 bg-black/35 transition-opacity duration-300 ${
-          isOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
-        }`}
+        aria-hidden="true"
+        className="fixed inset-0 z-40 bg-black/35 transition-opacity duration-300"
         onClick={onClose}
       />
 
       <aside
-        aria-hidden={!isOpen}
-        aria-label="Cart products"
-        className={`fixed bottom-3 right-3 top-3 z-50 flex w-full max-w-[540px] flex-col overflow-hidden rounded-[28px] bg-(--color-bg) shadow-[0_24px_80px_rgba(17,17,17,0.18)] transition-transform duration-300 max-sm:bottom-0 max-sm:right-0 max-sm:top-0 max-sm:max-w-full max-sm:rounded-none ${
-          isOpen ? "translate-x-0" : "translate-x-[110%]"
-        }`}
+        id="cart-drawer"
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="fixed bottom-3 right-3 top-3 z-50 flex w-full max-w-[540px] flex-col overflow-hidden rounded-[28px] bg-(--color-bg) shadow-[0_24px_80px_rgba(17,17,17,0.18)] transition-transform duration-300 max-sm:bottom-0 max-sm:right-0 max-sm:top-0 max-sm:max-w-full max-sm:rounded-none translate-x-0"
       >
         <div className="flex items-start justify-between border-b border-(--color-border) bg-(--color-bg) px-6 pb-3.5 pt-4.5 max-sm:px-4 max-sm:pb-3 max-sm:pt-4">
           <div>
-            <h2 className="text-[20px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[18px]">
+            <h2 id={titleId} className="text-[20px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[18px]">
               Cart Products
             </h2>
             <p className="mt-1 text-[14px] text-(--color-text-muted)">
@@ -264,6 +289,7 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
                 type="button"
                 onClick={handleClearCart}
                 disabled={isClearing}
+                aria-label="Clear all cart items"
                 className="inline-flex min-h-10 items-center justify-center gap-2 rounded-full border border-(--color-border) bg-[#f7f7f9] px-4 text-[13px] font-semibold text-(--color-dark) transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <FiRefreshCw className={isClearing ? "animate-spin" : ""} size={14} />
@@ -273,7 +299,9 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
 
             <button
               type="button"
+              ref={closeButtonRef}
               onClick={onClose}
+              aria-label="Close cart"
               className="flex h-10 w-10 items-center justify-center rounded-full border border-(--color-border) bg-[#f7f7f9] text-(--color-dark) transition hover:bg-white"
             >
               <FiX size={22} />

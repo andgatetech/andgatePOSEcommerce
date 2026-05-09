@@ -12,15 +12,15 @@
   --color-primary-light: #3D7AAF;
   --color-primary-200: #B0CCDE;
   --color-primary-100: #E1EBF3;
-  --color-cta: #D8891F;
-  --color-cta-hover: #E89D3A;
-  --color-cta-dark: #B87318;
+  --color-cta: #9A5A00;
+  --color-cta-hover: #7C4700;
+  --color-cta-dark: #5F3600;
   --color-dark: #111111;
   --color-bg: #FFFFFF;
   --color-border: #E5E5E5;
   --color-text: #111111;
   --color-text-muted: #6B7280;
-  --color-success: #2D8F4E;
+  --color-success: #166534;
   --color-danger: #D93025;
   --color-warning: #E8A317;
 }
@@ -88,6 +88,91 @@ html { scroll-behavior: smooth; }
   75%      { transform: translateY(-1px) scale(1.08); filter: drop-shadow(0 0 10px rgba(216,137,31,.24)); }
 }
 .nav-fire-icon { animation: nav-fire-flicker 1.35s ease-in-out infinite; transform-origin: center bottom; will-change: transform, filter; }
+
+.cart-lottie-animation {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  overflow: visible;
+  transition: transform 180ms ease;
+}
+
+.cart-lottie-animation--desktop {
+  width: 3rem;
+  height: 3rem;
+}
+
+.cart-lottie-animation--mobile {
+  width: 2.65rem;
+  height: 2.65rem;
+}
+
+.cart-lottie-animation > div,
+.cart-lottie-animation svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.group:hover .cart-lottie-animation--desktop,
+.cart-lottie-animation--desktop:hover {
+  transform: translateY(-1px);
+}
+
+.cart-lottie-animation__count {
+  position: absolute;
+  right: 0.05rem;
+  top: 0.08rem;
+  z-index: 2;
+  display: flex;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--color-cta);
+  color: #ffffff;
+  font-size: 0.63rem;
+  font-weight: 800;
+  line-height: 1;
+  padding: 0 0.24rem;
+  box-shadow: 0 0.1rem 0.3rem rgba(17, 17, 17, 0.16);
+}
+
+.cart-lottie-animation--mobile .cart-lottie-animation__count {
+  right: -0.12rem;
+  top: 0.02rem;
+}
+
+.cart-lottie-animation__count--up {
+  animation: cart-count-up 360ms ease-out 1;
+}
+
+.cart-lottie-animation__count--down {
+  animation: cart-count-down 360ms ease-out 1;
+}
+
+@keyframes cart-count-up {
+  0% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(-0.28rem) scale(1.18); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes cart-count-down {
+  0% { transform: translateY(0) scale(1); }
+  45% { transform: translateY(0.2rem) scale(0.88); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-fire-icon,
+  .cart-lottie-animation__count {
+    animation: none;
+  }
+}
 
 /* ============================================================
    Add-to-Cart Button Animation

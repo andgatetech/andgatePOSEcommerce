@@ -11,36 +11,16 @@ import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
 import type { Category, EcommerceProduct, PaginatedResponse } from "@/types";
 
-function shuffleItems<T>(items: T[]): T[] {
-  const shuffled = [...items];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-async function getRandomPageItems<T>(
+async function getPageItems<T>(
   path: string,
   params: Record<string, string | number | undefined | null>,
 ): Promise<T[]> {
-  const firstResponse = await serverFetchJson<PaginatedResponse<T>>(
+  const response = await serverFetchJson<PaginatedResponse<T>>(
     path,
     { ...params, page: 1 },
-    { cache: "no-store" },
+    { revalidate: 60 },
   );
-  const lastPage = Math.max(1, firstResponse.data.pagination.last_page);
-  const randomPage = Math.floor(Math.random() * lastPage) + 1;
-  const response =
-    randomPage === 1
-      ? firstResponse
-      : await serverFetchJson<PaginatedResponse<T>>(
-          path,
-          { ...params, page: randomPage },
-          { cache: "no-store" },
-        );
-
-  return shuffleItems(response.data.items);
+  return response.data.items;
 }
 
 async function getHomeProducts(): Promise<EcommerceProduct[]> {
@@ -59,7 +39,7 @@ async function getHomeProducts(): Promise<EcommerceProduct[]> {
 
 async function getFeaturedCategories(): Promise<Category[]> {
   try {
-    return await getRandomPageItems<Category>(
+    return await getPageItems<Category>(
       API_ROUTES.ECOMMERCE_CATALOG.FEATURED_CATEGORIES,
       { limit: 10 },
     );
@@ -71,7 +51,7 @@ async function getFeaturedCategories(): Promise<Category[]> {
 
 async function getPopularProducts(): Promise<EcommerceProduct[]> {
   try {
-    return await getRandomPageItems<EcommerceProduct>(
+    return await getPageItems<EcommerceProduct>(
       API_ROUTES.ECOMMERCE_CATALOG.POPULAR_PRODUCTS,
       { limit: 12 },
     );
@@ -83,7 +63,7 @@ async function getPopularProducts(): Promise<EcommerceProduct[]> {
 
 async function getDealsOfTheDay(): Promise<EcommerceProduct[]> {
   try {
-    return await getRandomPageItems<EcommerceProduct>(
+    return await getPageItems<EcommerceProduct>(
       API_ROUTES.ECOMMERCE_CATALOG.DEALS_OF_DAY,
       { limit: 4 },
     );

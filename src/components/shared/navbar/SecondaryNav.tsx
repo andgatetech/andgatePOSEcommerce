@@ -74,6 +74,8 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
           <button
             type="button"
             onClick={() => setIsCategoryOpen((open) => !open)}
+            aria-expanded={isCategoryOpen}
+            aria-controls="desktop-category-menu"
             className="flex items-center gap-x-2 rounded-[6px] bg-(--color-primary) px-3 py-2 text-[13px] font-semibold whitespace-nowrap text-(--color-bg) transition-colors hover:bg-(--color-primary-dark)"
           >
             <FaThLarge className="text-base" />
@@ -96,7 +98,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                     className="flex items-center gap-x-1 px-3.5 py-3 text-[15px] font-medium text-(--color-dark) transition-colors hover:text-(--color-primary)"
                   >
                     {"icon" in link && link.icon ? (
-                      <span className="mr-1 inline-flex items-center justify-center">
+                      <span className="mr-1 inline-flex items-center justify-center" aria-hidden="true">
                         <link.icon
                           className={`${link.label === "Daily Deals" ? "nav-fire-icon text-[18px]" : "text-[15px]"} text-(--color-cta)`}
                         />
@@ -182,7 +184,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
 
           {/* ── Category dropdown panel ── */}
           {isCategoryOpen && (
-            <div className="absolute left-0 top-[calc(100%+12px)] z-40 w-[440px] overflow-hidden rounded-[20px] border border-(--color-border) bg-(--color-bg) shadow-[0_32px_80px_rgba(17,17,17,0.10)]">
+            <div id="desktop-category-menu" className="absolute left-0 top-[calc(100%+12px)] z-40 w-[440px] overflow-hidden rounded-[20px] border border-(--color-border) bg-(--color-bg) shadow-[0_32px_80px_rgba(17,17,17,0.10)]">
 
               {/* Header */}
               <div className="flex items-center justify-between border-b border-(--color-border) px-6 py-4">
@@ -223,10 +225,9 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                           {resolveImageUrl(category.image_url) ? (
                             <Image
                               src={resolveImageUrl(category.image_url)!}
-                              alt={category.name}
+                              alt=""
                               width={40}
                               height={40}
-                              unoptimized
                               className="h-auto w-auto max-h-[36px] max-w-[36px] object-contain"
                             />
                           ) : (

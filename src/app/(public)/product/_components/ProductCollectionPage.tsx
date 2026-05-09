@@ -78,6 +78,7 @@ export default function ProductCollectionPage({
                       src={resolveImageUrl(entity.image_url)!}
                       alt={entity.name}
                       fill
+                      sizes="340px"
                       className="object-contain"
                     />
                   </div>
