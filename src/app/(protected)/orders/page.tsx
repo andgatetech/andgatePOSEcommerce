@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 import OrdersListView from "@/components/orders/OrdersListView";
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function OrdersPage() {
-  return <OrdersListView />;
+  return (
+    <>
+      <OrdersListView />
+      <ServiceHighlights className="bg-(--color-bg)" />
+    </>
+  );
 }

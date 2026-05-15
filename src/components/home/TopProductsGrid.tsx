@@ -1,10 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiShoppingCart, FiArrowUpRight } from "react-icons/fi";
+import { FiArrowUpRight } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import Container from "@/components/shared/Container";
+import AddToCartButton from "@/app/(public)/product/_components/AddToCartButton";
 import type { EcommerceProduct } from "@/types";
 
 const columnLabels = ["Top Selling", "Trending Products", "Recently Added", "Top Rated"];
@@ -69,48 +70,57 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
               <ul className="flex flex-col divide-y divide-(--color-border)">
                 {col.products.map((product) => {
                   const image = resolveImageUrl(product.images[0]?.url ?? null);
-                  const price = parseFloat(product.price);
+                  const displayPrice = product.promotion?.deal_price ?? product.price;
+                  const price = parseFloat(displayPrice);
+                  const stockCount = parseFloat(product.quantity);
 
                   return (
                     <li key={product.id} className="group">
-                      <Link
-                        href={ROUTE_BUILDERS.productDetail(product.slug)}
-                        className="flex items-center gap-4 py-4"
-                      >
-                        <div
-                          className="relative h-[80px] w-[80px] shrink-0 overflow-hidden rounded-[12px]"
-                          style={{ backgroundColor: "var(--color-primary-100)" }}
-                        >
-                          {image ? (
-                            <Image
-                              src={image}
-                              alt={product.product_name}
-                              fill
-                              sizes="80px"
-                              className="object-cover transition duration-300 group-hover:scale-[1.05]"
-                            />
-                          ) : (
-                            <GeneratedImageFallback
-                              name={product.product_name}
-                              kind="product"
-                              className="h-full w-full border-0"
-                              iconClassName="text-[15px]"
-                              textClassName="text-[18px]"
-                            />
-                          )}
-                        </div>
+                      <div className="flex items-center gap-4 py-4">
+                        <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="shrink-0">
+                          <div
+                            className="relative h-[80px] w-[80px] overflow-hidden rounded-[12px]"
+                            style={{ backgroundColor: "var(--color-primary-100)" }}
+                          >
+                            {image ? (
+                              <Image
+                                src={image}
+                                alt={product.product_name}
+                                fill
+                                sizes="80px"
+                                className="object-cover transition duration-300 group-hover:scale-[1.05]"
+                              />
+                            ) : (
+                              <GeneratedImageFallback
+                                name={product.product_name}
+                                kind="product"
+                                className="h-full w-full border-0"
+                                iconClassName="text-[15px]"
+                                textClassName="text-[18px]"
+                              />
+                            )}
+                          </div>
+                        </Link>
 
                         <div className="min-w-0 flex-1">
-                          <p
-                            className="line-clamp-2 text-[14px] font-semibold leading-[1.4] transition-colors duration-200 group-hover:text-(--color-primary)"
-                            style={{ color: "var(--color-primary-900)" }}
-                          >
-                            {product.product_name}
-                          </p>
+                          <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
+                            <p
+                              className="line-clamp-2 text-[14px] font-semibold leading-[1.4] transition-colors duration-200 group-hover:text-(--color-primary)"
+                              style={{ color: "var(--color-primary-900)" }}
+                            >
+                              {product.product_name}
+                            </p>
+                          </Link>
 
                           {product.sold_by && (
                             <p className="mt-1 text-[12px] text-(--color-text-muted)">
-                              By <span className="text-(--color-primary)">{product.sold_by.store_name}</span>
+                              By{" "}
+                              <Link
+                                href={ROUTE_BUILDERS.storeDetail(product.sold_by.store_slug)}
+                                className="text-(--color-primary) transition hover:text-(--color-primary-900)"
+                              >
+                                {product.sold_by.store_name}
+                              </Link>
                             </p>
                           )}
 
@@ -122,13 +132,30 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
                               ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
                             </span>
 
-                            <span className="inline-flex items-center gap-[5px] rounded-[6px] bg-(--color-primary) px-3 py-[7px] text-[13px] font-semibold text-white">
-                              <FiShoppingCart className="text-[12px]" />
-                              Add
-                            </span>
+                            <AddToCartButton
+                              stockId={product.id}
+                              stockCount={stockCount}
+                              product={{
+                                id: product.id,
+                                slug: product.slug,
+                                sku: product.sku,
+                                price: displayPrice,
+                                available_qty: stockCount,
+                                variant_data: product.variant_data,
+                                product_name: product.product_name,
+                                description: product.description,
+                                images: product.images,
+                                store: {
+                                  id: 0,
+                                  store_name: product.sold_by.store_name,
+                                  slug: product.sold_by.store_slug,
+                                },
+                              }}
+                              className="max-w-[132px]"
+                            />
                           </div>
                         </div>
-                      </Link>
+                      </div>
                     </li>
                   );
                 })}

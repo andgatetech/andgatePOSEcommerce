@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 import WishlistPageContent from "./_components/WishlistPageContent";
 
 export const metadata: Metadata = {
@@ -7,5 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default function WishlistPage() {
-  return <WishlistPageContent />;
+  return (
+    <>
+      <WishlistPageContent />
+      <ServiceHighlights className="bg-(--color-bg)" />
+    </>
+  );
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import OrderDetailView from "@/components/orders/OrderDetailView";
+import OrderDetailView from "../../../../components/orders/OrderDetailView";
 
 export async function generateMetadata({
   params,

@@ -1,7 +1,7 @@
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import type { EcommerceOrder } from "@/types";
-import { formatPaymentMethodLabel } from "@/components/orders/orderUi";
+import { PAYMENT_STATUS_LABELS, formatPaymentMethodLabel } from "@/components/orders/orderUi";
 
 const BRAND_NAME = "Hawkeri";
 const BRAND_TAGLINE = "Multi-vendor marketplace";
@@ -90,6 +90,14 @@ function getVariantText(variantData: Record<string, string> | null) {
 }
 
 export function generateInvoicePdf(order: EcommerceOrder) {
+  const storeOrders = order.orders ?? order.store_orders ?? [];
+  const items = order.items ?? storeOrders.flatMap((storeOrder) => storeOrder.items ?? []);
+  const subtotal = order.checkout_summary?.subtotal ?? order.subtotal ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.subtotal), 0);
+  const shippingFee =
+    order.checkout_summary?.shipping_fee ?? order.shipping_fee ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.shipping_fee), 0);
+  const total = order.checkout_summary?.total ?? order.total ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.total), 0);
+  const paymentMethod = order.payment_method ?? storeOrders[0]?.payment_method;
+  const paymentStatus = order.payment_status ?? storeOrders[0]?.payment_status ?? "pending";
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
@@ -166,7 +174,7 @@ export function generateInvoicePdf(order: EcommerceOrder) {
   const metaCols = [
     { label: "Invoice No.", value: order.order_number },
     { label: "Issue Date", value: order.created_at || "—" },
-    { label: "Payment Method", value: formatPaymentMethodLabel(order.payment_method) },
+    { label: "Payment Method", value: formatPaymentMethodLabel(paymentMethod) },
     { label: "Payment Status", value: "" },
   ];
 
@@ -176,12 +184,7 @@ export function generateInvoicePdf(order: EcommerceOrder) {
     drawSectionTitle(doc, col.label, colX, metaTop + 7);
 
     if (col.label === "Payment Status") {
-      const statusText =
-        order.payment_status === "paid"
-          ? "Paid"
-          : order.payment_status === "failed"
-            ? "Failed"
-            : "Pending";
+      const statusText = PAYMENT_STATUS_LABELS[paymentStatus];
       drawBadge(doc, statusText, colX, metaTop + 16);
     } else {
       doc.setFont("helvetica", "bold");
@@ -209,7 +212,7 @@ export function generateInvoicePdf(order: EcommerceOrder) {
   // ==== Items table ====
   const tableTop = addressTop + billHeight + 8;
 
-  const itemRows = order.items.map((item, index) => {
+  const itemRows = items.map((item, index) => {
     const variant = getVariantText(item.variant_data);
     const description = variant
       ? `${item.product_name}\nSKU: ${item.sku}  |  ${variant}`
@@ -219,7 +222,7 @@ export function generateInvoicePdf(order: EcommerceOrder) {
       String(index + 1),
       description,
       String(item.quantity),
-      formatMoney(item.unit_price),
+      formatMoney(item.unit_price ?? 0),
       formatMoney(item.subtotal),
     ];
   });
@@ -285,9 +288,9 @@ export function generateInvoicePdf(order: EcommerceOrder) {
   doc.roundedRect(totalsX, totalsTop, totalsWidth, totalsHeight, 2, 2, "S");
 
   const totalRows: { label: string; value: string; emphasize?: boolean }[] = [
-    { label: "Subtotal", value: formatMoney(order.subtotal) },
-    { label: "Shipping", value: formatMoney(order.shipping_fee) },
-    { label: "Grand Total", value: formatMoney(order.total), emphasize: true },
+    { label: "Subtotal", value: formatMoney(subtotal) },
+    { label: "Shipping", value: formatMoney(shippingFee) },
+    { label: "Grand Total", value: formatMoney(total), emphasize: true },
   ];
 
   const rowHeight = 8;

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 import Container from "@/components/shared/Container";
 import OrderTrackingContent from "@/components/shared/order-tracking/OrderTrackingContent";
 
@@ -13,6 +14,7 @@ export default function OrderTrackingPage() {
       <Container>
         <OrderTrackingContent variant="public" />
       </Container>
+      <ServiceHighlights className="pt-8 md:pt-10 lg:pt-12" />
     </section>
   );
 }

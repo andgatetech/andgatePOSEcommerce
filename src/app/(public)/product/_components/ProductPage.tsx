@@ -80,7 +80,7 @@ export default function ProductPageContent({
 
   const baseQueryParams = useMemo<ProductListParams>(
     () => ({
-      search: initialStore ? params.search : undefined,
+      search: params.search,
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,

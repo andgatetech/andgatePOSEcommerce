@@ -305,7 +305,19 @@ export default function CheckoutView() {
         ? 50
         : 85
       : 0;
-  const total = subtotal + shippingFee;
+  const storeShippingFees = useMemo(() => {
+    const storeIds = Array.from(new Set(items.map((item) => item.store.id))).sort((a, b) => a - b);
+
+    return storeIds.map((storeId) => ({
+      store_id: storeId,
+      amount: shippingFee,
+    }));
+  }, [items, shippingFee]);
+  const totalShippingFee =
+    storeShippingFees.length > 1
+      ? storeShippingFees.reduce((sum, fee) => sum + fee.amount, 0)
+      : shippingFee;
+  const total = subtotal + totalShippingFee;
 
   useEffect(() => {
     if (defaultAddress) {
@@ -400,9 +412,14 @@ export default function CheckoutView() {
         quantity: item.quantity,
       })),
       payment_method: paymentMethodMap[paymentId] ?? paymentId,
-      shipping_fee: shippingFee,
       notes: addressValue.note.trim() || undefined,
     };
+
+    if (storeShippingFees.length > 1) {
+      payload.store_shipping_fees = storeShippingFees;
+    } else {
+      payload.shipping_fee = shippingFee;
+    }
 
     if (activeShippingAddress) {
       payload.address_id = activeShippingAddress.id;
@@ -734,7 +751,7 @@ export default function CheckoutView() {
               <span className="text-(--color-primary)">Delivery Charge:</span>{" "}
               <span className="text-[#0d7a74]">
                 {activeShippingAddress?.city || addressValue.districtName
-                  ? formatPrice(shippingFee)
+                  ? formatPrice(totalShippingFee)
                   : "Select district first"}
               </span>
             </div>
@@ -756,7 +773,7 @@ export default function CheckoutView() {
                     Delivery Charge
                   </span>
                   <span className="font-medium text-(--color-dark)">
-                    {formatPrice(shippingFee)}
+                    {formatPrice(totalShippingFee)}
                   </span>
                 </div>
                 <div className="border-t border-(--color-border) pt-5">

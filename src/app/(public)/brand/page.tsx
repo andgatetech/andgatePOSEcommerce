@@ -6,6 +6,7 @@ import type {
   PaginatedPayload,
   PaginatedResponse,
 } from "@/types";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 import BrandGallery from "./_components/BrandGallery";
 
 const DEFAULT_PER_PAGE = 20;
@@ -57,12 +58,15 @@ export default async function BrandPage({ searchParams }: BrandPageProps) {
   }
 
   return (
-    <BrandGallery
-      initialData={initialData}
-      initialParams={initialParams}
-      defaultPerPage={DEFAULT_PER_PAGE}
-      defaultSortField={DEFAULT_SORT_FIELD}
-      defaultSortDirection={DEFAULT_SORT_DIRECTION}
-    />
+    <>
+      <BrandGallery
+        initialData={initialData}
+        initialParams={initialParams}
+        defaultPerPage={DEFAULT_PER_PAGE}
+        defaultSortField={DEFAULT_SORT_FIELD}
+        defaultSortDirection={DEFAULT_SORT_DIRECTION}
+      />
+      <ServiceHighlights className="bg-(--color-bg)" />
+    </>
   );
 }

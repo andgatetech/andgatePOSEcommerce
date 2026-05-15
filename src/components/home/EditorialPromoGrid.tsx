@@ -4,6 +4,10 @@ import { FiArrowUpRight, FiGift, FiMonitor, FiSmartphone } from "react-icons/fi"
 import { ROUTES } from "@/config/routes";
 import Container from "@/components/shared/Container";
 
+function productSearchHref(search: string) {
+  return `${ROUTES.PRODUCT}?search=${encodeURIComponent(search)}`;
+}
+
 export default function EditorialPromoGrid() {
   return (
     <section className="pb-12 md:pb-14 lg:pb-16">
@@ -19,7 +23,7 @@ export default function EditorialPromoGrid() {
           </div>
 
           <Link
-            href={ROUTES.CATEGORY}
+            href={productSearchHref("new arrivals")}
             className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
           >
             Explore Collection
@@ -55,7 +59,7 @@ export default function EditorialPromoGrid() {
                   Fresh beauty picks for radiant, everyday skin.
                 </p>
                 <Link
-                  href={ROUTES.CATEGORY}
+                  href={productSearchHref("skincare")}
                   className="mt-4 inline-flex items-center gap-3 rounded-full bg-(--color-cta) px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(216,137,31,0.28)] transition hover:bg-(--color-cta-hover)"
                 >
                   Shop skincare
@@ -92,7 +96,7 @@ export default function EditorialPromoGrid() {
                 </p>
 
                 <Link
-                  href={ROUTES.BRAND}
+                  href={productSearchHref("gift")}
                   className="mt-4 ml-auto inline-flex w-fit items-center gap-3 rounded-full bg-(--color-primary) px-4 py-2.5 text-[13px] font-semibold text-white shadow-[0_16px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
                 >
                   Shop Gift Sets
@@ -128,7 +132,7 @@ export default function EditorialPromoGrid() {
                 High-contrast color, portrait imagery, and a clean CTA block for a sharper eCommerce feel.
               </p>
               <Link
-                href={ROUTES.CATEGORY}
+                href={productSearchHref("phone")}
                 className="mt-3 inline-flex items-center gap-2 text-[12px] font-semibold text-(--color-primary-900)"
               >
                 Browse now
@@ -138,7 +142,7 @@ export default function EditorialPromoGrid() {
           </article>
 
           <Link
-            href={ROUTES.CATEGORY}
+            href={productSearchHref("monitor")}
             className="group relative block overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 lg:col-span-2 lg:row-span-1"
           >
             <div className="absolute inset-0">
@@ -169,7 +173,7 @@ export default function EditorialPromoGrid() {
           </Link>
 
           <Link
-            href={ROUTES.BRAND}
+            href={productSearchHref("smart watch")}
             className="group relative block overflow-hidden rounded-[28px] border border-(--color-border) shadow-[0_16px_36px_rgba(15,23,42,0.05)] transition hover:-translate-y-1 lg:col-span-2 lg:row-span-1"
           >
             <div className="absolute inset-0 bg-[#f8f8f8]">

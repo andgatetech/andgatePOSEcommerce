@@ -13,6 +13,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import OrdersListView from "@/components/orders/OrdersListView";
+import ServiceHighlights from "@/components/home/ServiceHighlights";
 import Container from "@/components/shared/Container";
 import AccountWishlistPanel from "./AccountWishlistPanel";
 import MyAccountAddressPanel from "./MyAccountAddressPanel";
@@ -148,6 +149,7 @@ export default function MyAccountView() {
           <div className="min-w-0">{renderPanel()}</div>
         </div>
       </Container>
+      <ServiceHighlights className="pt-8 md:pt-10 lg:pt-12" />
     </section>
   );
 }

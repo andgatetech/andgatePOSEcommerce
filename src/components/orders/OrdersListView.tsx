@@ -1,15 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import {
   FiAlertCircle,
   FiArrowRight,
-  FiChevronRight,
-  FiClock,
   FiCreditCard,
-  FiGrid,
   FiHome,
   FiPackage,
   FiRefreshCw,
@@ -17,30 +15,36 @@ import {
 import Pagination from "@/components/shared/Pagination";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetOrdersQuery } from "@/features/orders/ordersApi";
-import type { EcommerceOrderStatus } from "@/types";
+import { resolveImageUrl } from "@/lib/imageUrl";
+import type { EcommerceOrderStatus, EcommerceOrderSummary } from "@/types";
 import {
-  ORDER_STATUS_LABELS,
-  PAYMENT_STATUS_LABELS,
   formatOrderCurrency,
   formatPaymentMethodLabel,
-  getOrderListPageValue,
+  getCustomerOrderStatusLabel,
+  getOrderItemImage,
   getOrderStatusTone,
   getOrderSummaryUnitCount,
-  getPaymentStatusTone,
-  isOrderCancellable,
+  getStoreOrderItemCount,
+  getStoreOrderSellerName,
   toOrdersPagination,
 } from "./orderUi";
 
-type StatusFilter = "all" | EcommerceOrderStatus;
+type StatusFilter =
+  | "all"
+  | "to_pay"
+  | "to_ship"
+  | "out_for_delivery"
+  | Extract<EcommerceOrderStatus, "pending" | "confirmed" | "shipped" | "delivered">;
 
 const STATUS_FILTERS: StatusFilter[] = [
   "all",
+  "to_pay",
   "pending",
   "confirmed",
-  "processing",
+  "to_ship",
   "shipped",
+  "out_for_delivery",
   "delivered",
-  "cancelled",
 ];
 
 interface OrdersListViewProps {
@@ -48,7 +52,37 @@ interface OrdersListViewProps {
 }
 
 function getFilterLabel(filter: StatusFilter) {
-  return filter === "all" ? "All orders" : ORDER_STATUS_LABELS[filter];
+  const labels: Record<StatusFilter, string> = {
+    all: "All",
+    to_pay: "To Pay",
+    pending: "Pending",
+    confirmed: "Confirmed",
+    to_ship: "To Ship",
+    shipped: "Shipped",
+    out_for_delivery: "Out for Delivery",
+    delivered: "Delivered",
+  };
+
+  return labels[filter];
+}
+
+function getStoreHref(order: EcommerceOrderSummary) {
+  return order.store?.slug ? ROUTE_BUILDERS.storeDetail(order.store.slug) : ROUTES.STORE;
+}
+
+function matchesFilter(order: EcommerceOrderSummary, filter: StatusFilter) {
+  switch (filter) {
+    case "all":
+      return true;
+    case "to_pay":
+      return order.payment_status === "pending" || order.payment_status === "partial" || order.payment_status === "failed";
+    case "to_ship":
+      return order.status === "partially_processing" || order.status === "processing" || order.status === "packed";
+    case "out_for_delivery":
+      return (order.status as string) === "out_for_delivery";
+    default:
+      return order.status === filter;
+  }
 }
 
 export default function OrdersListView({
@@ -67,19 +101,10 @@ export default function OrdersListView({
   const orders = data?.orders ?? [];
 
   const filteredOrders = useMemo(() => {
-    if (activeFilter === "all") {
-      return orders;
-    }
-
-    return orders.filter((order) => order.status === activeFilter);
+    return orders.filter((order) => matchesFilter(order, activeFilter));
   }, [activeFilter, orders]);
 
   const pagination = data ? toOrdersPagination(data) : null;
-  const openOrders = orders.filter((order) => order.status !== "delivered" && order.status !== "cancelled").length;
-  const cancellableOrders = orders.filter((order) => isOrderCancellable(order.status)).length;
-  const pageValue = getOrderListPageValue(orders);
-  const latestOrder = orders[0] ?? null;
-
   function handlePageChange(nextPage: number) {
     if (embedded) {
       setEmbeddedPage(nextPage);
@@ -114,111 +139,22 @@ export default function OrdersListView({
             <span className="text-(--color-dark)">Orders</span>
           </div>
 
-          <section className="overflow-hidden rounded-[32px] border border-(--color-border) bg-[radial-gradient(circle_at_top_left,rgba(220,234,246,0.92),transparent_42%),linear-gradient(135deg,#ffffff_0%,#f8fbff_100%)] shadow-[0_22px_60px_rgba(19,45,69,0.08)]">
-            <div className="grid gap-8 px-6 py-7 md:px-8 lg:grid-cols-[minmax(0,1.1fr)_390px] lg:px-10 lg:py-9">
-              <div>
-                <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-4 py-1.5 text-[12px] font-semibold uppercase tracking-[0.22em] text-(--color-primary)">
-                  Order Center
-                </span>
-                <h1 className="mt-5 text-[30px] font-semibold tracking-[-0.04em] text-(--color-primary-900) md:text-[40px]">
-                  A cleaner order workspace for repeat customers.
-                </h1>
-                <p className="mt-4 max-w-[760px] text-sm leading-7 text-(--color-text-muted) md:text-[15px]">
-                  Review order status, payment state, totals, and current page activity from one place, then open any order for full shipping and item details.
-                </p>
-
-                <div className="mt-7 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                  <article className="rounded-[20px] border border-white/70 bg-white/78 p-4 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      All orders
-                    </p>
-                    <p className="mt-2 text-[24px] font-semibold text-(--color-dark)">
-                      {data?.total ?? "—"}
-                    </p>
-                  </article>
-                  <article className="rounded-[20px] border border-white/70 bg-white/78 p-4 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      On this page
-                    </p>
-                    <p className="mt-2 text-[24px] font-semibold text-(--color-dark)">{orders.length}</p>
-                  </article>
-                  <article className="rounded-[20px] border border-white/70 bg-white/78 p-4 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      Open now
-                    </p>
-                    <p className="mt-2 text-[24px] font-semibold text-(--color-dark)">{openOrders}</p>
-                  </article>
-                  <article className="rounded-[20px] border border-white/70 bg-white/78 p-4 backdrop-blur">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      Page value
-                    </p>
-                    <p className="mt-2 text-[24px] font-semibold text-(--color-dark)">
-                      {formatOrderCurrency(pageValue)}
-                    </p>
-                  </article>
-                </div>
-              </div>
-
-              <aside className="rounded-[28px] border border-white/80 bg-white/80 p-5 shadow-[0_18px_40px_rgba(19,45,69,0.08)] backdrop-blur">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
-                    <FiGrid className="text-[20px]" />
-                  </div>
-                  <div>
-                    <h2 className="text-[20px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-                      Current page snapshot
-                    </h2>
-                    <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
-                      Quick visibility into pending action and the newest order loaded on this page.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-                  <div className="rounded-[20px] border border-(--color-border) bg-[#fbfcfd] p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      Cancellable now
-                    </p>
-                    <p className="mt-2 text-lg font-semibold text-(--color-dark)">
-                      {cancellableOrders} order{cancellableOrders === 1 ? "" : "s"}
-                    </p>
-                  </div>
-                  <div className="rounded-[20px] border border-(--color-border) bg-[#fbfcfd] p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted)">
-                      Latest order loaded
-                    </p>
-                    {latestOrder ? (
-                      <>
-                        <p className="mt-2 text-base font-semibold text-(--color-dark)">
-                          {latestOrder.order_number}
-                        </p>
-                        <p className="mt-1 text-sm text-(--color-text-muted)">
-                          {ORDER_STATUS_LABELS[latestOrder.status]} • {formatOrderCurrency(latestOrder.total)}
-                        </p>
-                        <Link
-                          href={ROUTE_BUILDERS.orderDetail(latestOrder.order_number)}
-                          className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-(--color-primary) transition hover:text-(--color-primary-900)"
-                        >
-                          Open details
-                          <FiChevronRight className="text-[15px]" />
-                        </Link>
-                      </>
-                    ) : (
-                      <p className="mt-2 text-sm text-(--color-text-muted)">No orders loaded yet.</p>
-                    )}
-                  </div>
-                </div>
-              </aside>
-            </div>
-          </section>
+          <div>
+            <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
+              My Orders
+            </h1>
+            <p className="mt-3 max-w-3xl text-sm leading-7 text-(--color-text-muted)">
+              Review your recent store orders, payment state, and delivery progress.
+            </p>
+          </div>
         </>
       ) : (
         <div>
           <h1 className="text-[34px] font-semibold tracking-[-0.04em] text-(--color-dark)">
-            Orders
+            My Orders
           </h1>
           <p className="mt-3 max-w-3xl text-sm leading-7 text-(--color-text-muted)">
-            Review recent orders from your account and jump into the dedicated order detail workspace when you need item, payment, or delivery specifics.
+            Review your recent orders, seller packages, payment state, and delivery progress.
           </p>
         </div>
       )}
@@ -226,8 +162,7 @@ export default function OrdersListView({
       <section className="rounded-[30px] border border-(--color-border) bg-(--color-bg) p-5 shadow-[0_18px_40px_rgba(17,17,17,0.04)] md:p-6 xl:p-7">
         <div className="flex flex-wrap gap-3">
           {STATUS_FILTERS.map((filter) => {
-            const count =
-              filter === "all" ? orders.length : orders.filter((order) => order.status === filter).length;
+            const count = orders.filter((order) => matchesFilter(order, filter)).length;
             const isActive = activeFilter === filter;
 
             return (
@@ -254,18 +189,9 @@ export default function OrdersListView({
           })}
         </div>
 
-        <div className="mt-6 rounded-[24px] border border-(--color-border) bg-[#fcfcfd]">
-          <div className="hidden grid-cols-[1.1fr_0.75fr_0.7fr_0.55fr_0.7fr_0.55fr] gap-4 border-b border-(--color-border) px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) xl:grid">
-            <span>Order</span>
-            <span>Created</span>
-            <span>Status</span>
-            <span>Items</span>
-            <span>Payment</span>
-            <span className="text-right">Total</span>
-          </div>
-
+        <div className="mt-6">
           {isError ? (
-            <div className="flex min-h-[260px] flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[24px] border border-(--color-border) bg-[#fcfcfd] px-6 py-10 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#fff3f0] text-[#d65e42]">
                 <FiAlertCircle className="text-[24px]" />
               </div>
@@ -294,7 +220,7 @@ export default function OrdersListView({
               ))}
             </div>
           ) : filteredOrders.length === 0 ? (
-            <div className="flex min-h-[260px] flex-col items-center justify-center px-6 py-10 text-center">
+            <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[24px] border border-(--color-border) bg-[#fcfcfd] px-6 py-10 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">
                 <FiPackage className="text-[24px]" />
               </div>
@@ -308,79 +234,142 @@ export default function OrdersListView({
               </p>
             </div>
           ) : (
-            <div className="divide-y divide-(--color-border)">
+            <div className="space-y-4">
               {filteredOrders.map((order) => {
-                const statusTone = getOrderStatusTone(order.status);
-                const paymentTone = getPaymentStatusTone(order.payment_status);
+                const sellerName = getStoreOrderSellerName(order);
+                const storeHref = getStoreHref(order);
+                const unitCount = getOrderSummaryUnitCount(order);
+                const dueAmount = order.due_amount ?? Math.max(Number(order.total) - Number(order.paid_amount ?? 0), 0);
 
                 return (
-                  <Link
-                    key={order.order_number}
-                    href={ROUTE_BUILDERS.orderDetail(order.order_number)}
-                    className="group block px-5 py-5 transition hover:bg-white"
+                  <article
+                    key={`${order.store_order_id ?? order.id}-${order.order_number}`}
+                    className="rounded-[24px] border border-(--color-border) bg-[#fcfcfd] p-4 transition hover:border-(--color-primary-200) hover:bg-white md:p-5"
                   >
-                    <div className="grid gap-4 xl:grid-cols-[1.1fr_0.75fr_0.7fr_0.55fr_0.7fr_0.55fr] xl:items-center">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-3">
-                          <h2 className="text-[19px] font-semibold tracking-[-0.03em] text-(--color-dark)">
-                            {order.order_number}
-                          </h2>
-                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusTone.badge}`}>
-                            {ORDER_STATUS_LABELS[order.status]}
-                          </span>
-                        </div>
-                        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
-                          <span className="inline-flex items-center gap-2 rounded-full bg-[#f4f6f8] px-3 py-1.5">
-                            <FiCreditCard className="text-[14px] text-(--color-primary)" />
-                            {formatPaymentMethodLabel(order.payment_method)}
-                          </span>
-                          {isOrderCancellable(order.status) ? (
-                            <span className="inline-flex items-center gap-2 rounded-full bg-[#fffaf0] px-3 py-1.5 text-[#c97a12]">
-                              <FiClock className="text-[14px]" />
-                              Cancellable
-                            </span>
-                          ) : null}
-                        </div>
-                      </div>
-
-                      <div className="text-sm text-(--color-dark)">
-                        <p className="font-semibold xl:hidden">Created</p>
-                        <p>{order.created_at}</p>
-                      </div>
-
+                    <div className="flex flex-wrap items-start justify-between gap-4 border-b border-(--color-border) pb-4">
                       <div>
-                        <p className="font-semibold text-(--color-dark) xl:hidden">Status</p>
-                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${statusTone.badge}`}>
-                          {ORDER_STATUS_LABELS[order.status]}
-                        </span>
+                        <h2 className="text-[19px] font-semibold tracking-[-0.03em] text-(--color-dark)">
+                          #{order.order_number} - {sellerName}
+                        </h2>
+                        <p className="mt-2 text-sm text-(--color-text-muted)">Placed on: {order.created_at}</p>
                       </div>
-
-                      <div className="text-sm text-(--color-dark)">
-                        <p className="font-semibold xl:hidden">Items</p>
-                        <p>{getOrderSummaryUnitCount(order)} unit{getOrderSummaryUnitCount(order) === 1 ? "" : "s"}</p>
-                      </div>
-
-                      <div>
-                        <p className="font-semibold text-(--color-dark) xl:hidden">Payment</p>
-                        <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${paymentTone.badge}`}>
-                          {PAYMENT_STATUS_LABELS[order.payment_status]}
-                        </span>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-4 xl:justify-end">
-                        <div className="text-left xl:text-right">
-                          <p className="font-semibold text-(--color-dark) xl:hidden">Total</p>
-                          <p className="text-[18px] font-semibold text-(--color-dark)">
-                            {formatOrderCurrency(order.total)}
-                          </p>
-                        </div>
-                        <span className="inline-flex items-center gap-2 text-sm font-semibold text-(--color-primary)">
-                          Details
-                          <FiArrowRight className="text-[15px] transition-transform group-hover:translate-x-1" />
-                        </span>
-                      </div>
+                      <Link
+                        href={ROUTE_BUILDERS.orderDetail(order.order_number)}
+                        className="inline-flex items-center gap-2 rounded-full bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white transition hover:bg-(--color-primary-900)"
+                      >
+                        View Details
+                        <FiArrowRight className="text-[15px]" />
+                      </Link>
                     </div>
-                  </Link>
+
+                    <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5">
+                        <FiCreditCard className="text-[14px] text-(--color-primary)" />
+                        {formatPaymentMethodLabel(order.payment_method)}
+                      </span>
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5">
+                        <FiPackage className="text-[14px] text-(--color-primary)" />
+                        {unitCount} item{unitCount === 1 ? "" : "s"}
+                      </span>
+                      <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5">
+                        Due {formatOrderCurrency(dueAmount)}
+                      </span>
+                    </div>
+
+                    <div className="mt-5 hidden grid-cols-[minmax(0,1fr)_180px_90px_80px_120px_130px] gap-4 border-b border-(--color-border) pb-3 text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:grid">
+                      <span>Name</span>
+                      <span>Seller Name</span>
+                      <span>Image</span>
+                      <span>Qty</span>
+                      <span>Amount</span>
+                      <span>Order Status</span>
+                    </div>
+
+                    <div className="divide-y divide-(--color-border)">
+                      {(() => {
+                        const rowStatusTone = getOrderStatusTone(order.status);
+                        const itemCount = getStoreOrderItemCount(order) || unitCount;
+                        const itemRows = order.items?.length ? order.items : [null];
+
+                        return itemRows.map((item, itemIndex) => {
+                          const imageUrl = item ? resolveImageUrl(getOrderItemImage(item)) : null;
+
+                          return (
+                            <div
+                              key={`${order.store_order_id ?? order.id}-${item?.id ?? itemIndex}`}
+                              className="grid gap-3 py-4 lg:grid-cols-[minmax(0,1fr)_180px_90px_80px_120px_130px] lg:items-center"
+                            >
+                              <div className="min-w-0">
+                                <p className="font-semibold text-(--color-dark)">
+                                  {item?.product_name ?? "Order items"}
+                                </p>
+                                {item?.variant_data ? (
+                                  <p className="mt-1 text-sm text-(--color-text-muted)">
+                                    {Object.entries(item.variant_data).map(([key, value]) => `${key}-${value}`).join(", ")}
+                                  </p>
+                                ) : null}
+                                <p className="mt-1 text-sm text-(--color-text-muted)">Fulfilled by {sellerName}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
+                                  Seller Name
+                                </p>
+                                <Link
+                                  href={storeHref}
+                                  className="text-sm font-semibold text-(--color-dark) transition hover:text-(--color-primary)"
+                                >
+                                  {sellerName}
+                                </Link>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
+                                  Image
+                                </p>
+                                <div className="relative mt-1 flex h-14 w-14 items-center justify-center overflow-hidden rounded-[14px] border border-(--color-border) bg-white text-(--color-primary) lg:mt-0">
+                                  {imageUrl ? (
+                                    <Image src={imageUrl} alt={item?.product_name ?? "Order item"} fill className="object-cover" sizes="56px" />
+                                  ) : (
+                                    <FiPackage className="text-[20px]" />
+                                  )}
+                                </div>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
+                                  Qty
+                                </p>
+                                <p className="text-sm font-semibold text-(--color-dark)">
+                                  {item?.quantity ?? itemCount}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
+                                  Amount
+                                </p>
+                                <p className="text-sm font-semibold text-(--color-dark)">
+                                  {formatOrderCurrency(item?.subtotal ?? order.total)}
+                                </p>
+                              </div>
+                              <div>
+                                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
+                                  Order Status
+                                </p>
+                                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${rowStatusTone.badge}`}>
+                                  {getCustomerOrderStatusLabel(order.status)}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        });
+                      })()}
+                    </div>
+
+                    <div className="mt-2 flex justify-end border-t border-(--color-border) pt-4">
+                      <p className="text-base font-semibold text-(--color-dark)">
+                        Store total ({unitCount} Item{unitCount === 1 ? "" : "s"}):{" "}
+                        {formatOrderCurrency(order.total)}
+                      </p>
+                    </div>
+                  </article>
                 );
               })}
             </div>

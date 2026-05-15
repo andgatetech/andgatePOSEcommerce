@@ -21,7 +21,7 @@ import type { OrderMutationResult } from "@/types";
 import {
   formatOrderCurrency,
   formatPaymentMethodLabel,
-  getOrderUnitCount,
+  getStoreOrderItemCount,
 } from "./orderUi";
 
 interface OrderSuccessViewProps {
@@ -38,8 +38,13 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
   }, [orderNumber]);
 
   const order = checkoutResult?.data ?? null;
-  const units = useMemo(() => (order ? getOrderUnitCount(order) : 0), [order]);
-  const firstItems = useMemo(() => order?.items.slice(0, 3) ?? [], [order]);
+  const storeOrders = useMemo(() => order?.orders ?? [], [order]);
+  const firstItems = useMemo(() => storeOrders.flatMap((storeOrder) => storeOrder.items ?? []).slice(0, 3), [storeOrders]);
+  const units = storeOrders.reduce((sum, storeOrder) => sum + getStoreOrderItemCount(storeOrder), 0);
+  const checkoutTotal = order?.checkout_summary?.total ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.total), 0);
+  const checkoutSubtotal = order?.checkout_summary?.subtotal ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.subtotal), 0);
+  const checkoutShipping = order?.checkout_summary?.shipping_fee ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.shipping_fee), 0);
+  const paymentMethod = storeOrders[0]?.payment_method;
 
   if (!isHydrated) {
     return (
@@ -151,7 +156,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     Total
                   </p>
                   <p className="mt-3 text-[24px] font-semibold text-(--color-dark)">
-                    {formatOrderCurrency(order.total)}
+                    {formatOrderCurrency(checkoutTotal)}
                   </p>
                 </article>
                 <article className="rounded-[24px] border border-[rgba(20,33,43,0.08)] bg-[#fbfcfd] p-5">
@@ -159,7 +164,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     Payment Method
                   </p>
                   <p className="mt-3 text-[24px] font-semibold text-(--color-dark)">
-                    {formatPaymentMethodLabel(order.payment_method)}
+                    {formatPaymentMethodLabel(paymentMethod)}
                   </p>
                 </article>
                 <article className="rounded-[24px] border border-[rgba(20,33,43,0.08)] bg-[#fbfcfd] p-5">
@@ -167,7 +172,7 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     Items
                   </p>
                   <p className="mt-3 text-[24px] font-semibold text-(--color-dark)">
-                    {units} unit{units === 1 ? "" : "s"}
+                    {units} item{units === 1 ? "" : "s"}
                   </p>
                 </article>
               </div>
@@ -240,9 +245,11 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                         <p className="text-[16px] font-semibold text-(--color-dark)">
                           {item.product_name}
                         </p>
-                        <p className="mt-1 text-sm text-(--color-text-muted)">
-                          SKU {item.sku}
-                        </p>
+                        {item.sku ? (
+                          <p className="mt-1 text-sm text-(--color-text-muted)">
+                            SKU {item.sku}
+                          </p>
+                        ) : null}
                       </div>
                       <p className="text-sm text-(--color-text-muted)">
                         Qty <span className="font-semibold text-(--color-dark)">{item.quantity}</span>
@@ -320,26 +327,26 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-(--color-text-muted)">Subtotal</span>
                           <span className="font-semibold text-(--color-dark)">
-                            {formatOrderCurrency(order.subtotal)}
+                            {formatOrderCurrency(checkoutSubtotal)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-(--color-text-muted)">Shipping</span>
                           <span className="font-semibold text-(--color-dark)">
-                            {formatOrderCurrency(order.shipping_fee)}
+                            {formatOrderCurrency(checkoutShipping)}
                           </span>
                         </div>
                         <div className="flex items-center justify-between gap-4">
                           <span className="text-(--color-text-muted)">Method</span>
                           <span className="font-semibold text-(--color-dark)">
-                            {formatPaymentMethodLabel(order.payment_method)}
+                            {formatPaymentMethodLabel(paymentMethod)}
                           </span>
                         </div>
                         <div className="border-t border-[rgba(20,33,43,0.08)] pt-3">
                           <div className="flex items-center justify-between gap-4">
                             <span className="text-sm font-semibold text-(--color-dark)">Grand total</span>
                             <span className="text-[18px] font-semibold text-(--color-dark)">
-                              {formatOrderCurrency(order.total)}
+                              {formatOrderCurrency(checkoutTotal)}
                             </span>
                           </div>
                         </div>
