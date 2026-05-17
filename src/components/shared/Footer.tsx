@@ -110,25 +110,24 @@ export default function Footer() {
           <div className="grid grid-cols-12 gap-8 pb-8 sm:gap-7 lg:pb-9">
             {/* Brand Column */}
             <div className="col-span-12 flex flex-col gap-y-5 sm:gap-y-6 md:col-span-12 xl:col-span-3">
-              <div className="max-w-[180px] inline-flex items-center rounded-xl bg-white px-3 pb-5 pt-3">
+              <div className="max-w-[200px] inline-flex items-center rounded-xl bg-white px-4 py-3">
                 <Logo
-                  width={120}
-                  height={60}
+                  width={140}
+                  height={44}
                   variant="default"
-                  src="/images/HawkeriFooter.png"
-                  className="translate-x-1"
+                  src="/images/andgatePOS.jpeg"
                 />
               </div>
               <p className="max-w-[520px] text-sm leading-7 text-(--color-primary-200) sm:text-base">
-                Hawkeri is your trusted destination for seamless online
-                shopping and modern ecommerce experiences across Bangladesh.
+                AndgatePOS Shop — your trusted destination for verified local
+                businesses across Bangladesh. Smart shopping, real stores.
               </p>
               <div className="flex flex-wrap gap-3 sm:gap-4">
                 {socialLinks.map((social, index) => (
                   <Link
                     key={index}
                     href={social.href}
-                    aria-label={`Visit Hawkeri on ${social.label}`}
+                    aria-label={`Visit AndgatePOS on ${social.label}`}
                     className="w-10 h-10 rounded-full bg-(--color-primary-dark) flex items-center justify-center hover:bg-(--color-cta) transition-colors">
                     <social.icon size={16} className="text-white" />
                   </Link>
@@ -141,7 +140,7 @@ export default function Footer() {
                 <div className="flex flex-col gap-2.5 min-[420px]:flex-row min-[420px]:flex-wrap">
                   <Link
                     href="#google-play"
-                    aria-label="Get Hawkeri on Google Play"
+                    aria-label="Get AndgatePOS Shop on Google Play"
                     className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaGooglePlay size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
@@ -153,7 +152,7 @@ export default function Footer() {
                   </Link>
                   <Link
                     href="#app-store"
-                    aria-label="Download Hawkeri on the App Store"
+                    aria-label="Download AndgatePOS Shop on the App Store"
                     className="flex min-h-[48px] items-center gap-2 rounded-lg border border-(--color-primary) bg-(--color-primary-dark) px-3 py-2 transition-colors hover:bg-(--color-primary) min-[420px]:w-auto">
                     <FaAppStoreIos size={20} className="text-white" />
                     <div className="text-xs leading-tight text-white">
@@ -307,7 +306,7 @@ export default function Footer() {
               />
             </svg>
             <p className="px-4 pt-4 text-xs leading-6 text-(--color-primary-200) sm:text-sm">
-              © {new Date().getFullYear()} Copyright By Hawkeri
+              © {new Date().getFullYear()} AndgatePOS — All rights reserved
             </p>
           </div>
         </div>

@@ -309,6 +309,28 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
           </div>
         </div>
 
+        {/* Free Shipping Progress Bar */}
+        {(() => {
+          const FREE_SHIPPING_THRESHOLD = 1000;
+          const pct = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
+          const remaining = FREE_SHIPPING_THRESHOLD - subtotal;
+          return (
+            <div className="border-b border-(--color-border) bg-(--color-primary-100) px-6 py-3 max-sm:px-4">
+              <p className="mb-1.5 text-xs font-medium text-(--color-primary)">
+                {remaining > 0
+                  ? <>Spend <strong>৳{remaining.toFixed(0)}</strong> more for <strong>Free Delivery</strong> 🚚</>
+                  : <><strong>🎉 You unlocked Free Delivery!</strong></>}
+              </p>
+              <div className="h-1.5 w-full overflow-hidden rounded-full bg-(--color-primary-200)">
+                <div
+                  className="h-full rounded-full bg-(--color-primary) transition-all duration-500"
+                  style={{ width: `${pct}%` }}
+                />
+              </div>
+            </div>
+          );
+        })()}
+
         <div className="flex-1 overflow-y-auto bg-[#fcfcfd] px-6 py-3 [scrollbar-color:var(--color-text-muted)_transparent] [scrollbar-width:thin] max-sm:px-4">
           {items.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 text-(--color-text-muted)">

@@ -7,6 +7,7 @@ import EditorialPromoGrid from "@/components/home/EditorialPromoGrid";
 import TopProductsGrid from "@/components/home/TopProductsGrid";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import CountdownPromoBanner from "@/components/home/CountdownPromoBanner";
+import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
 import type { Category, EcommerceProduct, PaginatedResponse } from "@/types";
@@ -93,6 +94,7 @@ export default async function HomePage() {
       <DealsOfTheDay products={dealProducts} />
       <EditorialPromoGrid />
       <TopProductsGrid products={topProducts} />
+      <RecentlyViewedSection />
       <ServiceHighlights />
       <CountdownPromoBanner />
     </main>

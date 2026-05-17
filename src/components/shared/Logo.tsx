@@ -23,12 +23,12 @@ export default function Logo({
   noLink = false,
   className = "",
   variant = "default",
-  src = "/images/Hawkeri1.png",
+  src = "/images/andgatePOS.jpeg",
 }: LogoProps) {
   const image = (
     <Image
       src={src}
-      alt="Hawkeri"
+      alt="AndgatePOS"
       width={width}
       height={height}
       priority

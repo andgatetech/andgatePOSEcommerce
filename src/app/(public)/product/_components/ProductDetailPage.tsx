@@ -30,9 +30,12 @@ import { useGetProductsQuery } from "@/features/catalog/productApi";
 import { useGetWishlistQuery, useToggleWishlistMutation } from "@/features/wishlist/wishlistApi";
 import AddToCartButton from "./AddToCartButton";
 import PopularProductCard from "./PopularProductCard";
+import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import styles from "./ProductDetailPage.module.css";
 import type { EcommerceProduct } from "@/types";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
+import { addRecentlyViewed } from "@/hooks/useRecentlyViewed";
+import { resolveImageUrl as resolveImg } from "@/lib/imageUrl";
 
 interface ProductDetailPageProps {
   product: EcommerceProduct;
@@ -231,6 +234,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   const [storePage, setStorePage] = useState(1);
   const [relatedProducts, setRelatedProducts] = useState<EcommerceProduct[]>([]);
   const [moreFromStoreProducts, setMoreFromStoreProducts] = useState<EcommerceProduct[]>([]);
+  const [stickyAtcVisible, setStickyAtcVisible] = useState(false);
+  const ctaRef = useRef<HTMLDivElement | null>(null);
 
   const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
   const descriptionPreview = useMemo(
@@ -376,6 +381,17 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
   }, [copied]);
 
   useEffect(() => {
+    addRecentlyViewed({
+      id: product.id,
+      slug: product.slug,
+      product_name: product.product_name,
+      price: product.price,
+      imageUrl: resolveImg(product.images[0]?.url),
+      categorySlug: product.category?.slug,
+    });
+  }, [product.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
       if (!shareMenuRef.current?.contains(event.target as Node)) {
         setShareMenuOpen(false);
@@ -391,6 +407,17 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
       setQuantity(Math.max(1, realTimeStock));
     }
   }, [realTimeStock]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setStickyAtcVisible(!entry.isIntersecting),
+      { threshold: 0, rootMargin: "-64px 0px 0px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     setQuantityInput(String(quantity));
@@ -793,7 +820,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
               </div>
 
               {/* Qty + Add to Cart + Wishlist + Share */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div ref={ctaRef} className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex h-[46px] items-center rounded-full border border-(--color-border) bg-white px-2">
                   <button
                     type="button"
@@ -1096,7 +1123,44 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
           onViewMore={() => setStorePage((page) => page + 1)}
         />
       </div>
+      <RecentlyViewedSection excludeId={product.id} />
       <ServiceHighlights></ServiceHighlights>
+
+      {/* Sticky Add-to-Cart Bar */}
+      <div
+        className={`fixed bottom-16 xl:bottom-0 left-0 right-0 z-30 border-t border-(--color-border) bg-white shadow-[0_-4px_24px_rgba(17,17,17,0.10)] transition-all duration-300 ${
+          stickyAtcVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="mx-auto flex max-w-5xl items-center gap-4 px-4 py-3 md:px-6">
+          {resolvedImages[0] && (
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-[10px] border border-(--color-border) bg-[#fafbfc]">
+              <Image src={resolvedImages[0]} alt={product.product_name} fill className="object-contain p-1" sizes="48px" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-(--color-primary-900)">{product.product_name}</p>
+            <p className="text-sm font-bold" style={{ color: "var(--color-primary)" }}>৳{displayPrice}</p>
+          </div>
+          <AddToCartButton
+            stockId={product.id}
+            stockCount={effectiveStockCount}
+            product={{
+              id: product.id,
+              slug: product.slug,
+              sku: product.sku,
+              price: displayPriceRaw,
+              available_qty: effectiveStockCount,
+              variant_data: product.variant_data,
+              product_name: product.product_name,
+              description: product.description,
+              images: product.images,
+              store: { id: 0, store_name: product.sold_by.store_name, slug: product.sold_by.store_slug },
+            }}
+            quantity={quantity}
+          />
+        </div>
+      </div>
     </div>
   );
 }

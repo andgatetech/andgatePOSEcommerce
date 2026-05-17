@@ -7,10 +7,10 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: {
-    default: "Hawkeri",
-    template: "Hawkeri | %s",
+    default: "AndgatePOS Shop",
+    template: "AndgatePOS | %s",
   },
-  description: "Hawkeri Ecommerce Platform",
+  description: "AndgatePOS — Bangladesh's Smart Business Platform. Shop from verified local stores.",
   icons: {
     icon: [
       { url: "/images/favicon_io/favicon.ico" },
