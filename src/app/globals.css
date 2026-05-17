@@ -6,15 +6,15 @@
    ============================================================ */
 
 :root {
-  --color-primary: #046ca9;
-  --color-primary-dark: #034d79;
-  --color-primary-900: #02374f;
-  --color-primary-light: #035b8e;
-  --color-primary-200: #99c7e9;
-  --color-primary-100: #e6f3fa;
-  --color-cta: #f97316;
-  --color-cta-hover: #ea6c0a;
-  --color-cta-dark: #c2560a;
+  --color-primary: #2C5F8A;
+  --color-primary-dark: #1E4060;
+  --color-primary-900: #132D45;
+  --color-primary-light: #3D7AAF;
+  --color-primary-200: #B0CCDE;
+  --color-primary-100: #E1EBF3;
+  --color-cta: #9A5A00;
+  --color-cta-hover: #7C4700;
+  --color-cta-dark: #5F3600;
   --color-dark: #111111;
   --color-bg: #FFFFFF;
   --color-border: #E5E5E5;
