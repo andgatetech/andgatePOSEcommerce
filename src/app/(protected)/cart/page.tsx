@@ -41,7 +41,7 @@ function ProductImage({ images, name }: { images: { id: number; url: string }[];
   return (
     <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-[20px] bg-[#f7f7f9] sm:h-[108px] sm:w-[108px]">
       {src ? (
-        <Image src={src} alt={name} fill className="object-cover" sizes="108px" />
+        <Image src={src} alt={name} fill className="object-contain p-2" sizes="108px" />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-2xl font-bold text-(--color-text-muted)">
           {name.charAt(0).toUpperCase()}

@@ -325,9 +325,9 @@ export default function OrdersListView({
                                 <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-text-muted) lg:hidden">
                                   Image
                                 </p>
-                                <div className="relative mt-1 flex h-14 w-14 items-center justify-center overflow-hidden rounded-[14px] border border-(--color-border) bg-white text-(--color-primary) lg:mt-0">
+                                <div className="relative mt-1 flex h-14 w-14 items-center justify-center overflow-hidden rounded-[14px] border border-(--color-border) bg-[#f7f8fa] text-(--color-primary) lg:mt-0">
                                   {imageUrl ? (
-                                    <Image src={imageUrl} alt={item?.product_name ?? "Order item"} fill className="object-cover" sizes="56px" />
+                                    <Image src={imageUrl} alt={item?.product_name ?? "Order item"} fill className="object-contain p-2" sizes="56px" />
                                   ) : (
                                     <FiPackage className="text-[20px]" />
                                   )}

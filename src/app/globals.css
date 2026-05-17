@@ -6,15 +6,26 @@
    ============================================================ */
 
 :root {
-  --color-primary: #2C5F8A;
-  --color-primary-dark: #1E4060;
-  --color-primary-900: #132D45;
-  --color-primary-light: #3D7AAF;
-  --color-primary-200: #B0CCDE;
-  --color-primary-100: #E1EBF3;
-  --color-cta: #9A5A00;
-  --color-cta-hover: #7C4700;
-  --color-cta-dark: #5F3600;
+  /* Primary — Orange brand */
+  --color-primary: #e79237;
+  --color-primary-dark: #c97a25;
+  --color-primary-900: #023a5c;
+  --color-primary-light: #eca84d;
+  --color-primary-200: #f5d09a;
+  --color-primary-100: #fef3e2;
+
+  /* Secondary / CTA — Blue */
+  --color-secondary: #046ca9;
+  --color-secondary-dark: #034d79;
+  --color-secondary-light: #035b8e;
+  --color-secondary-200: #99c7e9;
+  --color-secondary-100: #e6f3fa;
+
+  /* CTA buttons → blue */
+  --color-cta: #046ca9;
+  --color-cta-hover: #035b8e;
+  --color-cta-dark: #034d79;
+
   --color-dark: #111111;
   --color-bg: #FFFFFF;
   --color-border: #E5E5E5;

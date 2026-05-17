@@ -348,9 +348,9 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
                                   </Link>
                                 </div>
                                 <div>
-                                  <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden border border-[#d9dde4] bg-[#f8fafc]">
+                                  <div className="relative flex h-[56px] w-[56px] items-center justify-center overflow-hidden rounded-[8px] border border-[#d9dde4] bg-[#f7f8fa]">
                                     {imageUrl ? (
-                                      <Image src={imageUrl} alt={item.product_name} fill className="object-cover" sizes="56px" />
+                                      <Image src={imageUrl} alt={item.product_name} fill className="object-contain p-1.5" sizes="56px" />
                                     ) : (
                                       <FiPackage className="text-[22px] text-(--color-primary)" />
                                     )}

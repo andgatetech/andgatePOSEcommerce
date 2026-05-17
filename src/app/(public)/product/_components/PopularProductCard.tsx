@@ -66,13 +66,13 @@ export default function PopularProductCard({
 
   return (
     <div className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-(--color-border) bg-white shadow-[0_10px_35px_rgba(19,45,69,0.06)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_48px_rgba(19,45,69,0.12)]">
-      <div className="relative p-4 pb-3">
+      <div className="relative">
         <button
           type="button"
           aria-label={`Save ${product.product_name} to wishlist`}
           onClick={handleToggleWishlist}
           disabled={isTogglingWishlist}
-          className={`absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-50 ${
+          className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full border border-(--color-border) bg-white/95 shadow-[0_8px_22px_rgba(19,45,69,0.08)] transition hover:border-(--color-primary-200) hover:text-(--color-primary) disabled:opacity-50 ${
             isWishlisted
               ? "text-(--color-primary)"
               : "text-(--color-primary-900)"
@@ -83,17 +83,17 @@ export default function PopularProductCard({
         </button>
 
         <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
-          <div className="relative flex h-[176px] items-center justify-center overflow-hidden rounded-[18px] bg-[linear-gradient(180deg,var(--color-primary-100),#ffffff)]">
+          <div className="relative aspect-square overflow-hidden rounded-[18px] bg-[#f7f8fa]">
             {primaryImage ? (
               <>
-                <div className="absolute inset-x-10 bottom-2 h-8 rounded-full bg-(--color-primary-100) blur-2xl" />
                 <Image
                   src={primaryImage}
                   alt={product.product_name}
                   fill
-                  sizes="(max-width: 639px) 100vw, (max-width: 1279px) 50vw, 17vw"
-                  className="object-contain p-9 transition duration-300 group-hover:scale-[1.05]"
+                  sizes="(max-width: 639px) 50vw, (max-width: 1279px) 33vw, 20vw"
+                  className="object-contain p-4 transition duration-300 group-hover:scale-[1.06]"
                 />
+                <div className="pointer-events-none absolute inset-x-8 bottom-3 h-5 rounded-full bg-black/[0.06] blur-xl" />
               </>
             ) : (
               <GeneratedImageFallback
@@ -110,7 +110,7 @@ export default function PopularProductCard({
       </div>
 
       <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col px-4 pb-2">
+        <div className="flex flex-1 flex-col px-4 pb-2 pt-3">
           {product.category && (
             <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-(--color-text-muted)">
               {product.category.name}

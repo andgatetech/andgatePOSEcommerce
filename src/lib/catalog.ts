@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type { Brand, Category, PaginatedResponse } from "@/types";
+import type { Brand, Category, Store, PaginatedResponse } from "@/types";
 
 export const getSharedCategories = cache(async (): Promise<Category[]> => {
   try {
@@ -28,6 +28,21 @@ export const getSharedBrands = cache(async (): Promise<Brand[]> => {
     return response.data.items;
   } catch (err) {
     console.error("[Catalog] Failed to fetch brands:", err);
+    return [];
+  }
+});
+
+export const getSharedStores = cache(async (): Promise<Store[]> => {
+  try {
+    const response = await serverFetchJson<PaginatedResponse<Store>>(
+      "/stores",
+      { page: 1, per_page: 12, sort_field: "store_name", sort_direction: "asc" },
+      { revalidate: 30 },
+    );
+
+    return response.data.items;
+  } catch (err) {
+    console.error("[Catalog] Failed to fetch stores:", err);
     return [];
   }
 });

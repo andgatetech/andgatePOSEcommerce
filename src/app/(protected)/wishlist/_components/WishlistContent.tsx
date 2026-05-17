@@ -39,10 +39,10 @@ function WishlistProductImage({
   return (
     <div
       style={{ width: size, height: size }}
-      className="relative shrink-0 overflow-hidden rounded-[20px] bg-[#f5f7fa]"
+      className="relative shrink-0 overflow-hidden rounded-[20px] bg-[#f7f8fa]"
     >
       {src ? (
-        <Image src={src} alt={name} fill className="object-cover" sizes={`${size}px`} />
+        <Image src={src} alt={name} fill className="object-contain p-2" sizes={`${size}px`} />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-xl font-bold text-(--color-text-muted)">
           {name.charAt(0).toUpperCase()}

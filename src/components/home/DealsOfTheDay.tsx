@@ -160,14 +160,14 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
                 className="group relative block"
               >
                 <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
-                  <div className="relative h-[200px] overflow-hidden rounded-[18px]">
+                  <div className="relative h-[200px] overflow-hidden rounded-[18px] bg-[#f7f8fa]">
                     {image ? (
                       <Image
                         src={image}
                         alt={product.product_name}
                         fill
                         sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 25vw"
-                        className="object-cover transition duration-500 group-hover:scale-[1.04]"
+                        className="object-contain p-4 transition duration-500 group-hover:scale-[1.04]"
                       />
                     ) : (
                       <GeneratedImageFallback

@@ -82,7 +82,7 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "api.andgatepos.com",
-        pathname: "/storage/**",
+        pathname: "/**",
       },
     ],
   },

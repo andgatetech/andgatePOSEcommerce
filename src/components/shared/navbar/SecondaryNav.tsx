@@ -15,45 +15,41 @@ import {
   FaFireAlt,
   FaWineBottle,
 } from "react-icons/fa";
-import { FiArrowRight, FiGrid } from "react-icons/fi";
+import { FiArrowRight, FiGrid, FiMapPin } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
-import type { Brand, Category } from "@/types";
+import type { Brand, Category, Store } from "@/types";
 
 const navLinks = [
   { label: "Home", href: ROUTES.HOME, hasDropdown: false, icon: FaHome },
   { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY, hasDropdown: false, icon: FaFireAlt },
-  {
-    label: "Popular Picks",
-    href: ROUTES.POPULAR_PRODUCT,
-    hasDropdown: false,
-    icon: FaHeart,
-  },
-  {
-    label: "Fresh Finds",
-    href: ROUTES.PRODUCT,
-    hasDropdown: false,
-    icon: FaShoppingBag,
-  },
-
-  { label: "Store", href: ROUTES.STORE, hasDropdown: false, icon: FaStore },
+  { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT, hasDropdown: false, icon: FaHeart },
+  { label: "Fresh Finds", href: ROUTES.PRODUCT, hasDropdown: false, icon: FaShoppingBag },
+  { label: "Store", href: ROUTES.STORE, hasDropdown: true, icon: FaStore },
   { label: "Brands", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
 ];
 
 interface SecondaryNavProps {
   categories: Category[];
   brands: Brand[];
+  stores: Store[];
 }
 
-export default function SecondaryNav({ categories, brands }: SecondaryNavProps) {
+export default function SecondaryNav({ categories, brands, stores }: SecondaryNavProps) {
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
   const brandColumns = useMemo(() => {
-    const col: typeof brands[] = [[], [], []];
-    brands.forEach((brand, i) => col[i % 3].push(brand));
+    const col: typeof brands[] = [[], []];
+    brands.forEach((brand, i) => col[i % 2].push(brand));
     return col;
   }, [brands]);
+
+  const storeColumns = useMemo(() => {
+    const col: typeof stores[] = [[], []];
+    stores.forEach((store, i) => col[i % 2].push(store));
+    return col;
+  }, [stores]);
 
   useEffect(() => {
     function handlePointerDown(event: MouseEvent) {
@@ -91,7 +87,7 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
               {navLinks.map((link) => (
                 <li
                   key={link.label}
-                  className={link.label === "Brands" ? "group static" : "relative group"}
+                  className={link.hasDropdown ? "group static" : "relative group"}
                 >
                   <Link
                     href={link.href}
@@ -110,24 +106,113 @@ export default function SecondaryNav({ categories, brands }: SecondaryNavProps) 
                     ) : null}
                   </Link>
 
+                  {/* ── Store mega-menu ── */}
+                  {link.label === "Store" ? (
+                    <div className="invisible absolute left-0 top-full z-50 w-full translate-y-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                      <div className="mt-1 flex w-full rounded-[18px] border border-(--color-border) bg-(--color-bg) p-7 shadow-[0_30px_70px_rgba(17,17,17,0.08)]">
+                        <div className="grid flex-1 grid-cols-2 gap-6 pr-8">
+                          {stores.length === 0 ? (
+                            <p className="col-span-2 py-4 text-sm text-(--color-text-muted)">No stores available.</p>
+                          ) : storeColumns.map((column, index) => (
+                            <div key={index}>
+                              <ul className="flex flex-col gap-y-4">
+                                {column.map((store) => (
+                                  <li key={store.id}>
+                                    <Link
+                                      href={ROUTE_BUILDERS.storeDetail(store.slug)}
+                                      className="group/item flex items-start gap-3 rounded-[10px] p-2 transition-colors hover:bg-(--color-secondary-100)"
+                                    >
+                                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-(--color-secondary-100) text-(--color-secondary) group-hover/item:bg-(--color-bg)">
+                                        <FaStore className="text-base" />
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className="text-[14px] font-semibold text-(--color-dark) transition-colors group-hover/item:text-(--color-secondary)">
+                                          {store.store_name}
+                                        </span>
+                                        {store.store_location && (
+                                          <span className="mt-0.5 flex items-center gap-1 text-[12px] text-(--color-text-muted)">
+                                            <FiMapPin className="text-[11px]" />
+                                            {store.store_location}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+
+                        <div className="relative w-[280px] overflow-hidden rounded-[18px] border border-(--color-secondary-200) bg-(--color-secondary-100) p-7">
+                          <div className="relative z-10 flex h-full flex-col items-start">
+                            <span className="mb-2 text-[12px] font-semibold uppercase tracking-[0.2em] text-(--color-secondary)">
+                              Our Stores
+                            </span>
+                            <h3 className="mb-3 text-[26px] font-semibold leading-[1.1] tracking-[-0.03em] text-(--color-primary-900)">
+                              Shop
+                              <br />
+                              Nearby
+                            </h3>
+                            <p className="mb-7 max-w-[170px] text-sm leading-6 text-(--color-text-muted)">
+                              Find stores near you with the best local deals.
+                            </p>
+                            <Link
+                              href={ROUTES.STORE}
+                              className="mt-auto inline-flex items-center justify-center rounded-full bg-(--color-secondary) px-5 py-2.5 text-sm font-semibold text-(--color-bg) transition-colors hover:bg-(--color-secondary-light)"
+                            >
+                              View All Stores
+                            </Link>
+                          </div>
+                          <div className="absolute -bottom-10 -right-6 h-[160px] w-[160px] rounded-full bg-[color-mix(in_srgb,var(--color-secondary)_18%,white)] blur-2xl" />
+                          <div className="absolute right-5 top-5 flex h-14 w-14 items-center justify-center rounded-full bg-(--color-bg) text-(--color-secondary) shadow-[0_10px_30px_rgba(17,17,17,0.08)]">
+                            <FaStore className="text-[24px]" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+
                   {/* ── Brand mega-menu ── */}
                   {link.label === "Brands" ? (
                     <div className="invisible absolute left-0 top-full z-50 w-full translate-y-4 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                       <div className="mt-1 flex w-full rounded-[18px] border border-(--color-border) bg-(--color-bg) p-7 shadow-[0_30px_70px_rgba(17,17,17,0.08)]">
-                        <div className="grid flex-1 grid-cols-3 gap-8 pr-8">
-                          {brandColumns.map((column, index) => (
+                        <div className="grid flex-1 grid-cols-2 gap-6 pr-8">
+                          {brands.length === 0 ? (
+                            <p className="col-span-2 py-4 text-sm text-(--color-text-muted)">No brands available.</p>
+                          ) : brandColumns.map((column, index) => (
                             <div key={index}>
-                              <ul className="flex flex-col gap-y-3.5">
-                                {column.map((brand) => (
-                                  <li key={brand.id}>
-                                    <Link
-                                      href={ROUTE_BUILDERS.brandDetail(brand.slug)}
-                                      className="text-[14px] font-medium text-(--color-text-muted) transition-colors hover:text-(--color-primary)"
-                                    >
-                                      {brand.name}
-                                    </Link>
-                                  </li>
-                                ))}
+                              <ul className="flex flex-col gap-y-4">
+                                {column.map((brand) => {
+                                  const logo = resolveImageUrl(brand.image_url);
+                                  return (
+                                    <li key={brand.id}>
+                                      <Link
+                                        href={ROUTE_BUILDERS.brandDetail(brand.slug)}
+                                        className="group/item flex items-start gap-3 rounded-[10px] p-2 transition-colors hover:bg-(--color-primary-100)"
+                                      >
+                                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-(--color-primary-100) text-(--color-primary) group-hover/item:bg-(--color-bg)">
+                                          {logo ? (
+                                            <Image
+                                              src={logo}
+                                              alt={brand.name}
+                                              width={40}
+                                              height={40}
+                                              className="h-auto w-auto max-h-[32px] max-w-[32px] object-contain"
+                                            />
+                                          ) : (
+                                            <FaWineBottle className="text-base" />
+                                          )}
+                                        </div>
+                                        <div className="flex flex-col justify-center">
+                                          <span className="text-[14px] font-semibold text-(--color-dark) transition-colors group-hover/item:text-(--color-primary)">
+                                            {brand.name}
+                                          </span>
+                                        </div>
+                                      </Link>
+                                    </li>
+                                  );
+                                })}
                               </ul>
                             </div>
                           ))}

@@ -75,12 +75,18 @@ async function getDealsOfTheDay(): Promise<EcommerceProduct[]> {
 }
 
 export default async function HomePage() {
-  const [products, featuredCategories, popularProducts, dealProducts] = await Promise.all([
+  const dedup = <T extends { id: number }>(arr: T[]) =>
+    Array.from(new Map(arr.map((x) => [x.id, x])).values());
+
+  const [rawProducts, featuredCategories, rawPopular, rawDeals] = await Promise.all([
     getHomeProducts(),
     getFeaturedCategories(),
     getPopularProducts(),
     getDealsOfTheDay(),
   ]);
+  const products = dedup(rawProducts);
+  const popularProducts = dedup(rawPopular);
+  const dealProducts = dedup(rawDeals);
   const topProducts = products.slice(16, 28).length >= 4
     ? products.slice(16, 28)
     : products.slice(0, 12);

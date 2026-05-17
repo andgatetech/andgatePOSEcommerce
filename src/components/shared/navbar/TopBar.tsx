@@ -11,7 +11,7 @@ const topRightLinks = [
 
 export default function TopBar() {
   return (
-    <div className="bg-(--color-primary-dark)">
+    <div className="bg-(--color-secondary-dark)">
       <div className="mx-auto px-4">
         <div className="flex items-center xl:justify-between justify-center">
 
@@ -19,7 +19,7 @@ export default function TopBar() {
           <div className="xl:flex items-center gap-x-6 hidden">
             <p className="flex items-center gap-x-2 text-white text-sm leading-[22px]">
               <span>
-                <FaHeadset className="text-lg text-(--color-primary-200)" />
+                <FaHeadset className="text-lg text-(--color-secondary-200)" />
               </span>
               Need Support ?
               <span>Call Us</span>
@@ -50,9 +50,9 @@ export default function TopBar() {
               <Link
                 key={link.label}
                 href={link.href}
-                className={`text-sm leading-[22px] text-(--color-primary-200) hover:text-white transition-colors py-3.5 ${
+                className={`text-sm leading-[22px] text-(--color-secondary-200) hover:text-white transition-colors py-3.5 ${
                   index < topRightLinks.length - 1
-                    ? "pr-[19px] mr-[19px] relative after:absolute after:h-[30px] after:w-px after:bg-(--color-primary) after:right-0 after:top-1/2 after:-translate-y-1/2"
+                    ? "pr-[19px] mr-[19px] relative after:absolute after:h-[30px] after:w-px after:bg-(--color-secondary) after:right-0 after:top-1/2 after:-translate-y-1/2"
                     : ""
                 }`}
               >

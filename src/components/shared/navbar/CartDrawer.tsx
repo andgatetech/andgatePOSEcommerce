@@ -124,7 +124,7 @@ function DrawerItemRow({ item, isAuthenticated }: { item: CartItemData; isAuthen
       <div className="flex gap-3">
         <div className="relative h-[82px] w-[82px] shrink-0 overflow-hidden rounded-[16px] bg-[#f7f7f9] max-sm:h-[76px] max-sm:w-[76px]">
           {imageSrc ? (
-            <Image src={imageSrc} alt={item.stock.product_name} fill className="object-cover" sizes="82px" />
+            <Image src={imageSrc} alt={item.stock.product_name} fill className="object-contain p-2" sizes="82px" />
           ) : (
             <div className="flex h-full w-full items-center justify-center text-xl font-bold text-(--color-text-muted)">
               {item.stock.product_name.charAt(0).toUpperCase()}

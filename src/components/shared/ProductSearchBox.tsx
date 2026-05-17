@@ -138,7 +138,7 @@ export default function ProductSearchBox({
                       href={ROUTE_BUILDERS.productDetail(product.slug)}
                       onClick={() => setIsOpen(false)}
                       className="flex items-center gap-3 rounded-[18px] px-3 py-3 transition hover:bg-(--color-primary-100)">
-                      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[linear-gradient(180deg,var(--color-primary-100),#ffffff)]">
+                      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-[14px] bg-[#f7f8fa]">
                         {image ? (
                           <Image
                             src={image}

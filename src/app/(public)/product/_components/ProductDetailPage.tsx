@@ -575,7 +575,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                         key={i}
                         onClick={() => setActiveImage(i)}
                         aria-label={`View image ${i + 1}`}
-                        className={`relative h-[64px] w-[64px] shrink-0 overflow-hidden rounded-[10px] border-2 bg-white transition sm:h-[72px] sm:w-[72px] ${
+                        className={`relative h-[64px] w-[64px] shrink-0 overflow-hidden rounded-[10px] border-2 bg-[#f7f8fa] transition sm:h-[72px] sm:w-[72px] ${
                           activeImage === i
                             ? "border-(--color-primary) shadow-[0_4px_12px_rgba(44,95,138,0.18)]"
                             : "border-(--color-border) hover:border-(--color-primary-200)"
@@ -586,7 +586,7 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
                           alt={`${product.product_name} thumbnail ${i + 1}`}
                           fill
                           sizes="72px"
-                          className="object-cover"
+                          className="object-contain p-2"
                         />
                       </button>
                     ))}

@@ -15,14 +15,14 @@ interface TopProductsGridProps {
 }
 
 export default function TopProductsGrid({ products }: TopProductsGridProps) {
-  if (products.length === 0) return null;
+  const unique = Array.from(new Map(products.map((p) => [p.id, p])).values());
+  if (unique.length === 0) return null;
 
-  // Split products evenly into 4 columns (3 per column ideally)
-  const perColumn = Math.max(1, Math.ceil(products.length / 4));
+  const perColumn = Math.max(1, Math.ceil(unique.length / 4));
   const columns = columnLabels.map((label, i) => ({
     id: label.toLowerCase().replace(/\s+/g, "-"),
     label,
-    products: products.slice(i * perColumn, (i + 1) * perColumn),
+    products: unique.slice(i * perColumn, (i + 1) * perColumn),
   })).filter((col) => col.products.length > 0);
 
   return (
@@ -79,8 +79,7 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
                       <div className="flex items-center gap-4 py-4">
                         <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="shrink-0">
                           <div
-                            className="relative h-[80px] w-[80px] overflow-hidden rounded-[12px]"
-                            style={{ backgroundColor: "var(--color-primary-100)" }}
+                            className="relative h-[80px] w-[80px] overflow-hidden rounded-[12px] bg-[#f7f8fa]"
                           >
                             {image ? (
                               <Image
@@ -88,7 +87,7 @@ export default function TopProductsGrid({ products }: TopProductsGridProps) {
                                 alt={product.product_name}
                                 fill
                                 sizes="80px"
-                                className="object-cover transition duration-300 group-hover:scale-[1.05]"
+                                className="object-contain p-2 transition duration-300 group-hover:scale-[1.05]"
                               />
                             ) : (
                               <GeneratedImageFallback
