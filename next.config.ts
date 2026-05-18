@@ -72,26 +72,9 @@ const nextConfig: NextConfig = {
             key: "Cross-Origin-Opener-Policy",
             value: "same-origin-allow-popups",
           },
-          {
-            // 'unsafe-inline' remains in script-src/style-src until nonce-based CSP
-            // is implemented via middleware.ts (Next.js App Router nonce pattern).
-            // 'unsafe-eval' removed — no usage in production code.
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "base-uri 'self'",
-              "frame-ancestors 'none'",
-              "object-src 'none'",
-              "img-src 'self' data: blob: https://api.andgatepos.com",
-              "font-src 'self' data:",
-              "connect-src 'self' https://api.andgatepos.com https://accounts.google.com",
-              "script-src 'self' 'unsafe-inline' https://accounts.google.com",
-              "style-src 'self' 'unsafe-inline'",
-              "worker-src 'self'",
-              "manifest-src 'self'",
-              "media-src 'self'",
-            ].join("; "),
-          },
+          // CSP is set per-request in middleware.ts with a nonce.
+          // A static header here would have no nonce, and the middleware
+          // header takes precedence for page routes anyway.
         ],
       },
     ];
