@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+export const runtime = "edge";
+
 const isDev = process.env.NODE_ENV === "development";
 
 export function middleware(request: NextRequest) {
