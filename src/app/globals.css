@@ -6,34 +6,45 @@
    ============================================================ */
 
 :root {
-  /* Primary — Orange brand */
-  --color-primary: #e79237;
-  --color-primary-dark: #c97a25;
-  --color-primary-900: #023a5c;
-  --color-primary-light: #eca84d;
-  --color-primary-200: #f5d09a;
-  --color-primary-100: #fef3e2;
+  /* ── Primary Brand — Blue #046ca9 ── */
+  --color-primary:       #046ca9;   /* nav, links, focus ring, trust signals   */
+  --color-primary-dark:  #034d79;   /* hover / pressed                         */
+  --color-primary-light: #035b8e;   /* lighter shade                           */
+  --color-primary-200:   #99c7e9;   /* soft blue tint                          */
+  --color-primary-100:   #dbeeff;   /* very light blue background              */
+  --color-primary-50:    #f0f7ff;   /* near-white blue — hover bg              */
+  --color-primary-900:   #023a5c;   /* dark navy — hero / gradient backgrounds */
 
-  /* Secondary / CTA — Blue */
-  --color-secondary: #046ca9;
-  --color-secondary-dark: #034d79;
-  --color-secondary-light: #035b8e;
-  --color-secondary-200: #99c7e9;
-  --color-secondary-100: #e6f3fa;
+  /* ── CTA / Accent — Orange #e79137 ── */
+  --color-cta:           #e79137;   /* ATC, checkout, deals, urgency actions   */
+  --color-cta-hover:     #c97a25;   /* CTA hover                               */
+  --color-cta-dark:      #8a5620;   /* CTA pressed / dark                      */
+  --color-cta-light:     #eca84d;   /* lighter orange                          */
+  --color-cta-200:       #f5ce8c;   /* soft orange tint                        */
+  --color-cta-100:       #fdf0d5;   /* very light orange background            */
 
-  /* CTA buttons → blue */
-  --color-cta: #046ca9;
-  --color-cta-hover: #035b8e;
-  --color-cta-dark: #034d79;
+  /* ── Brand Neutral — Gray #98999d ── */
+  --color-neutral:       #98999d;   /* brand gray                              */
+  --color-neutral-dark:  #6b6c70;   /* darker gray                             */
+  --color-neutral-light: #b8b9bc;   /* lighter gray                            */
+  --color-neutral-200:   #d3d4d7;   /* border-level gray                       */
+  --color-neutral-100:   #f4f4f5;   /* subtle gray background                  */
 
-  --color-dark: #111111;
-  --color-bg: #FFFFFF;
-  --color-border: #E5E5E5;
-  --color-text: #111111;
-  --color-text-muted: #6B7280;
-  --color-success: #166534;
-  --color-danger: #D93025;
-  --color-warning: #E8A317;
+  /* ── Base ── */
+  --color-dark:          #111827;
+  --color-bg:            #ffffff;
+  --color-bg-subtle:     #f8fafc;
+  --color-border:        #e2e8f0;
+  --color-text:          #111827;
+  --color-text-muted:    #98999d;   /* brand gray for secondary text           */
+
+  /* ── Status ── */
+  --color-success:       #166534;
+  --color-success-bg:    #dcfce7;
+  --color-danger:        #dc2626;
+  --color-danger-bg:     #fee2e2;
+  --color-warning:       #d97706;
+  --color-warning-bg:    #fef3c7;
 }
 
 body {
@@ -142,7 +153,7 @@ html { scroll-behavior: smooth; }
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--color-cta);
+  background: var(--color-primary);
   color: #ffffff;
   font-size: 0.63rem;
   font-weight: 800;
@@ -209,7 +220,7 @@ html { scroll-behavior: smooth; }
   flex: 1;
   padding: 0 24px;
   border-radius: 10px;
-  background-color: var(--color-primary);
+  background-color: var(--color-cta);
   color: #fff;
   font-size: 15px;
   font-weight: 600;
@@ -219,7 +230,7 @@ html { scroll-behavior: smooth; }
   overflow: hidden;
   white-space: nowrap;
 }
-.atc-btn:hover:not(:disabled) { background-color: var(--color-primary-dark); }
+.atc-btn:hover:not(:disabled) { background-color: var(--color-cta-hover); }
 .atc-btn--disabled { opacity: .5; cursor: not-allowed; }
 
 /* ── Layer 1: idle label ── */

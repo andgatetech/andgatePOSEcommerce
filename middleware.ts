@@ -1,16 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const isDev = process.env.NODE_ENV === "development";
+
 export function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+
+  // React requires 'unsafe-eval' in dev mode for stack trace reconstruction.
+  // It is never used in production — safe to gate on NODE_ENV.
+  const scriptSrc = isDev
+    ? `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://accounts.google.com`
+    : `script-src 'self' 'nonce-${nonce}' https://accounts.google.com`;
 
   const csp = [
     "default-src 'self'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    // 'unsafe-inline' removed — nonce covers Next.js inline scripts and explicit <Script> tags
-    `script-src 'self' 'nonce-${nonce}' https://accounts.google.com`,
+    scriptSrc,
     // 'unsafe-inline' kept — React style={{}} props produce HTML style="" attributes which cannot be nonced
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://api.andgatepos.com",
