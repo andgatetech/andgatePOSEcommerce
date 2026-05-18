@@ -109,15 +109,24 @@ export default function HeroBanner() {
                           {slide.description}
                         </p>
 
-                        <Link
-                          href={ROUTES.LOGIN}
-                          className="group inline-flex items-center gap-2.5 rounded-full bg-[#facc15] px-6 py-3 text-[14px] font-semibold text-[#1a1a2e] transition-all duration-300 hover:bg-[#eab308]"
-                        >
-                          Shop Now
-                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                            <GoArrowUpRight className="text-xs text-[#1a1a2e]" />
-                          </span>
-                        </Link>
+                        <div className="flex flex-wrap items-center gap-3">
+                          <Link
+                            href={ROUTES.PRODUCT}
+                            className="group inline-flex items-center gap-2.5 rounded-full bg-[#facc15] px-6 py-3 text-[14px] font-semibold text-[#1a1a2e] transition-all duration-300 hover:bg-[#eab308]"
+                          >
+                            Shop Now
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                              <GoArrowUpRight className="text-xs text-[#1a1a2e]" />
+                            </span>
+                          </Link>
+
+                          <Link
+                            href={ROUTES.CATEGORY}
+                            className="inline-flex items-center rounded-full border border-[#1a1a2e]/20 bg-white/30 px-5 py-3 text-[14px] font-semibold text-[#1a1a2e] backdrop-blur-sm transition-all duration-300 hover:bg-white/55"
+                          >
+                            Browse Categories
+                          </Link>
+                        </div>
                       </div>
 
                       <div className="relative flex w-full items-end justify-center self-end md:w-[52%] md:justify-end">

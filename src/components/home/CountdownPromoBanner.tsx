@@ -120,7 +120,7 @@ export default function CountdownPromoBanner() {
 
               <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Link
-                  href={ROUTES.SHOP}
+                  href={ROUTES.DEAL_OF_DAY}
                   className="inline-flex items-center gap-3 rounded-full bg-(--color-bg) px-6 py-3 text-[16px] font-semibold text-(--color-primary-900) shadow-[0_18px_36px_rgba(15,23,42,0.22)] transition hover:bg-(--color-primary-100)">
                   Shop Flash Sale
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-(--color-primary-900) text-(--color-bg)">

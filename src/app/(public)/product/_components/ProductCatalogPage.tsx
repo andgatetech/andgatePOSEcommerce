@@ -5,14 +5,16 @@ import { FiSliders, FiX } from "react-icons/fi";
 import { useGetBrandsQuery } from "@/features/catalog/brandApi";
 import { useGetCategoriesQuery } from "@/features/catalog/categoryApi";
 import { useGetProductsQuery } from "@/features/catalog/productApi";
-import {
-  buildInfiniteQueryKey,
-  useInfinitePage,
-  useInfinitePaginatedItems,
-} from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import Container from "@/components/shared/Container";
+import Pagination from "@/components/shared/Pagination";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
+import {
+  countSelectedFacets,
+  encodeSelectedFacets,
+  parseSelectedFacets,
+  toggleSelectedFacet,
+} from "@/lib/productFacets";
 import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
 import PopularProductCard from "./PopularProductCard";
@@ -33,6 +35,9 @@ type ProductExtraParams = {
   brand?: string;
   min_price?: number;
   max_price?: number;
+  stock_status?: "in_stock" | "out_of_stock";
+  has_options?: "yes" | "no";
+  facets?: string;
 };
 
 const DEFAULT_PER_PAGE = 12;
@@ -47,6 +52,7 @@ export default function ProductCatalogPage() {
     search,
     setSearch,
     setSort,
+    setPage,
     setPerPage,
     extraParams,
     setExtraParams,
@@ -60,8 +66,16 @@ export default function ProductCatalogPage() {
       { key: "brand" },
       { key: "min_price", type: "number" },
       { key: "max_price", type: "number" },
+      { key: "stock_status" },
+      { key: "has_options" },
+      { key: "facets" },
     ],
   });
+
+  const selectedFacets = useMemo(
+    () => parseSelectedFacets(extraParams.facets),
+    [extraParams.facets],
+  );
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
@@ -71,6 +85,7 @@ export default function ProductCatalogPage() {
   const baseQueryParams = useMemo<ProductListParams>(
     () => ({
       search: params.search,
+      page: params.page,
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,
@@ -78,9 +93,13 @@ export default function ProductCatalogPage() {
       brand: extraParams.brand,
       min_price: extraParams.min_price,
       max_price: extraParams.max_price,
+      stock_status: extraParams.stock_status,
+      has_options: extraParams.has_options,
+      facets: extraParams.facets,
     }),
     [
       params.search,
+      params.page,
       params.per_page,
       params.sort_field,
       params.sort_direction,
@@ -88,20 +107,13 @@ export default function ProductCatalogPage() {
       extraParams.brand,
       extraParams.min_price,
       extraParams.max_price,
+      extraParams.stock_status,
+      extraParams.has_options,
+      extraParams.facets,
     ],
   );
 
-  const queryKey = useMemo(
-    () => buildInfiniteQueryKey(baseQueryParams),
-    [baseQueryParams],
-  );
-  const [page, setInfinitePage] = useInfinitePage(queryKey);
-  const queryParams = useMemo<ProductListParams>(
-    () => ({ ...baseQueryParams, page }),
-    [baseQueryParams, page],
-  );
-
-  const { currentData, isFetching, isError } = useGetProductsQuery(queryParams);
+  const { currentData, isFetching, isError } = useGetProductsQuery(baseQueryParams);
   const { data: categoriesData } = useGetCategoriesQuery({
     per_page: 100,
     sort_field: "name",
@@ -113,26 +125,22 @@ export default function ProductCatalogPage() {
     sort_direction: "asc",
   });
 
-  const {
-    items: products,
-    pagination,
-    sentinelRef,
-    isLoadingMore,
-  } = useInfinitePaginatedItems({
-    payload: currentData ?? null,
-    queryKey,
-    isFetching,
-    setPage: setInfinitePage,
-  });
+  const products = currentData?.items ?? [];
+  const pagination = currentData?.pagination ?? null;
+  const facetGroups = currentData?.facets ?? [];
 
   const total = pagination?.total ?? 0;
+  const from = pagination?.from ?? 0;
+  const to = pagination?.to ?? products.length;
 
   const activeFilterCount = [
     extraParams.category,
     extraParams.brand,
     extraParams.min_price,
     extraParams.max_price,
-  ].filter((v) => v !== undefined && v !== "").length;
+    extraParams.stock_status,
+    extraParams.has_options,
+  ].filter((v) => v !== undefined && v !== "").length + countSelectedFacets(selectedFacets);
 
   const sortValue = {
     field: params.sort_field ?? DEFAULT_SORT_FIELD,
@@ -171,8 +179,39 @@ export default function ProductCatalogPage() {
         onRemove: () => setExtraParams({ max_price: undefined }),
       });
     }
+    if (extraParams.stock_status) {
+      chips.push({
+        key: "stock_status",
+        label: extraParams.stock_status === "in_stock" ? "In stock" : "Out of stock",
+        onRemove: () => setExtraParams({ stock_status: undefined }),
+      });
+    }
+    if (extraParams.has_options) {
+      chips.push({
+        key: "has_options",
+        label: extraParams.has_options === "yes" ? "Has options" : "Single option",
+        onRemove: () => setExtraParams({ has_options: undefined }),
+      });
+    }
+    Object.entries(selectedFacets).forEach(([name, values]) => {
+      values.forEach((value) => {
+        chips.push({
+          key: `facet-${name}-${value}`,
+          label: `${name}: ${value}`,
+          onRemove: () => {
+            const next = toggleSelectedFacet(selectedFacets, name, value);
+            setExtraParams({ facets: encodeSelectedFacets(next) });
+          },
+        });
+      });
+    });
     return chips;
-  }, [extraParams, categoriesData, brandsData, setExtraParams]);
+  }, [extraParams, categoriesData, brandsData, selectedFacets, setExtraParams]);
+
+  function handleFacetToggle(name: string, value: string) {
+    const next = toggleSelectedFacet(selectedFacets, name, value);
+    setExtraParams({ facets: encodeSelectedFacets(next) });
+  }
 
   const filterProps = {
     categories: categoriesData?.items ?? [],
@@ -181,11 +220,18 @@ export default function ProductCatalogPage() {
     selectedBrand: extraParams.brand,
     minPrice: extraParams.min_price,
     maxPrice: extraParams.max_price,
+    selectedStockStatus: extraParams.stock_status,
+    selectedHasOptions: extraParams.has_options,
+    facetGroups,
+    selectedFacets,
     activeFilterCount,
     onCategoryChange: (value?: string) => setExtraParams({ category: value }),
     onBrandChange: (value?: string) => setExtraParams({ brand: value }),
     onMinPriceChange: (value?: number) => setExtraParams({ min_price: value }),
     onMaxPriceChange: (value?: number) => setExtraParams({ max_price: value }),
+    onStockStatusChange: (value?: "in_stock" | "out_of_stock") => setExtraParams({ stock_status: value }),
+    onHasOptionsChange: (value?: "yes" | "no") => setExtraParams({ has_options: value }),
+    onFacetToggle: handleFacetToggle,
     onClear: resetExtraParams,
   };
 
@@ -253,7 +299,14 @@ export default function ProductCatalogPage() {
                 </select>
 
                 <span className="ml-auto whitespace-nowrap text-sm text-(--color-text-muted)">
-                  {total} product{total !== 1 ? "s" : ""}
+                  {total > 0 ? (
+                    <>
+                      Showing <span className="font-semibold text-(--color-dark)">{from}-{to}</span> of{" "}
+                      <span className="font-semibold text-(--color-dark)">{total}</span>
+                    </>
+                  ) : (
+                    <>0 products</>
+                  )}
                 </span>
               </div>
 
@@ -319,13 +372,11 @@ export default function ProductCatalogPage() {
             )}
 
             {products.length > 0 && (
-              <div ref={sentinelRef} className="h-8" aria-hidden />
-            )}
-
-            {isLoadingMore && (
-              <div className="mt-6 flex justify-center">
-                <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-              </div>
+              <Pagination
+                pagination={pagination!}
+                onPageChange={setPage}
+                className="mt-8 rounded-[24px] border border-(--color-border) bg-white px-4 py-4 shadow-[0_18px_50px_rgba(19,45,69,0.05)]"
+              />
             )}
           </div>
         </div>

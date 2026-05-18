@@ -67,11 +67,18 @@ export const productApi = baseApi.injectEndpoints({
           collection === "all"
             ? cleanParams(params)
             : cleanParams({
+                search: params.search,
                 store: params.store,
                 category: params.category,
                 brand: params.brand,
+                min_price: params.min_price,
+                max_price: params.max_price,
+                stock_status: params.stock_status,
+                has_options: params.has_options,
                 page: params.page,
                 limit: params.per_page ?? params.limit,
+                sort_field: params.sort_field,
+                sort_direction: params.sort_direction,
               });
 
         return {

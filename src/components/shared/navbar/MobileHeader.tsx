@@ -11,7 +11,6 @@ import {
   FaHome,
   FaFireAlt,
   FaHeart,
-  FaShoppingBag,
   FaStore,
   FaThLarge,
   FaWineBottle,
@@ -28,18 +27,16 @@ const mobileQuickLinks = [
   { label: "Deals", href: ROUTES.DEAL_OF_DAY, icon: FaFireAlt },
   { label: "Categories", href: ROUTES.CATEGORY, icon: FaThLarge },
   { label: "Popular", href: ROUTES.POPULAR_PRODUCT, icon: FaHeart },
-  { label: "Store", href: ROUTES.STORE, icon: FaStore },
-  { label: "All Products", href: ROUTES.PRODUCT, icon: FaShoppingBag },
+  { label: "Stores", href: ROUTES.STORE, icon: FaStore },
   { label: "Brands", href: ROUTES.BRAND, icon: FaWineBottle },
 ];
 
 const mobileNavLinks = [
   { label: "Home", href: ROUTES.HOME },
+  { label: "Categories", href: ROUTES.CATEGORY },
   { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY },
   { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT },
-  { label: "All Products", href: ROUTES.PRODUCT },
-  { label: "Explore All Categories", href: ROUTES.CATEGORY },
-  { label: "Store", href: ROUTES.STORE },
+  { label: "Stores", href: ROUTES.STORE },
   { label: "Brands", href: ROUTES.BRAND },
   { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
 ];
@@ -121,10 +118,34 @@ export default function MobileHeader({ cartCount, isCartOpen, onCartClick }: Mob
             className="mb-4 flex items-center justify-center rounded-[10px] bg-(--color-primary) px-4 py-3 text-sm font-semibold text-(--color-bg) transition-colors hover:bg-(--color-primary-dark)"
             onClick={() => setMobileMenuOpen(false)}
           >
-            Explore All Categories
+            Browse Categories
           </Link>
+          <div className="mb-4 grid grid-cols-2 gap-3">
+            <Link
+              href={ROUTES.STORE}
+              className="rounded-lg border border-(--color-primary-200) bg-(--color-primary-50) p-3 text-(--color-primary-900) transition hover:border-(--color-primary)"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-(--color-primary)">
+                <FaStore className="text-base" />
+              </span>
+              <span className="mt-3 block text-sm font-bold">Stores</span>
+              <span className="mt-1 block text-xs leading-5 text-(--color-text-muted)">Browse sellers</span>
+            </Link>
+            <Link
+              href={ROUTES.BRAND}
+              className="rounded-lg border border-(--color-cta-200) bg-(--color-cta-100) p-3 text-(--color-cta-dark) transition hover:border-(--color-cta)"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white text-(--color-cta-dark)">
+                <FaWineBottle className="text-base" />
+              </span>
+              <span className="mt-3 block text-sm font-bold">Brands</span>
+              <span className="mt-1 block text-xs leading-5 text-(--color-text-muted)">Shop names</span>
+            </Link>
+          </div>
           <ul className="flex flex-col gap-y-3">
-            {mobileNavLinks.map((link) => (
+            {mobileNavLinks.filter((link) => link.href !== ROUTES.STORE && link.href !== ROUTES.BRAND).map((link) => (
               <li key={link.label}>
                 <Link
                   href={link.href}

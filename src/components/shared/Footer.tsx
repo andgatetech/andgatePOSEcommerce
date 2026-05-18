@@ -3,15 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  FaAppStoreIos,
   FaChevronRight,
   FaChevronUp,
-  FaFacebookF,
-  FaGooglePlay,
-  FaInstagram,
-  FaLinkedinIn,
-  FaPinterestP,
-  FaBehance,
 } from "react-icons/fa";
 import {
   HiOutlineLocationMarker,
@@ -36,23 +29,6 @@ const accountLinks = [
   { label: "Wishlist", href: ROUTES.WISHLIST },
   { label: "Affiliate Program", href: ROUTES.AFFILIATE },
   { label: "FAQs", href: ROUTES.FAQS },
-];
-
-const shopLinks = [
-  { label: "All Products", href: ROUTES.PRODUCT },
-  { label: "Popular Products", href: ROUTES.POPULAR_PRODUCT },
-  { label: "Deal of the Day", href: ROUTES.DEAL_OF_DAY },
-  { label: "All Categories", href: ROUTES.CATEGORY },
-  { label: "All Brands", href: ROUTES.BRAND },
-  { label: "All Stores", href: ROUTES.STORE },
-];
-
-const socialLinks = [
-  { label: "Facebook", icon: FaFacebookF, href: "#facebook" },
-  { label: "Instagram", icon: FaInstagram, href: "#instagram" },
-  { label: "LinkedIn", icon: FaLinkedinIn, href: "#linkedin" },
-  { label: "Pinterest", icon: FaPinterestP, href: "#pinterest" },
-  { label: "Behance", icon: FaBehance, href: "#behance" },
 ];
 
 export default function Footer() {
@@ -157,7 +133,7 @@ export default function Footer() {
           <div className="grid grid-cols-12 gap-8 border-b border-white/10 pb-10">
 
             {/* Brand column */}
-            <div className="col-span-12 xl:col-span-4 flex flex-col gap-5">
+            <div className="col-span-12 flex flex-col gap-5 lg:col-span-5">
               <div className="inline-flex w-fit items-center rounded-xl bg-white px-3 pb-4 pt-2">
                 <Logo
                   width={120}
@@ -171,62 +147,33 @@ export default function Footer() {
                 Hawkeri is your trusted destination for seamless online shopping
                 and modern ecommerce experiences across Bangladesh.
               </p>
-
-              {/* Social */}
-              <div className="flex flex-wrap gap-2.5">
-                {socialLinks.map((social) => (
-                  <Link
-                    key={social.label}
-                    href={social.href}
-                    aria-label={`Visit Hawkeri on ${social.label}`}
-                    className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-(--color-primary)"
-                  >
-                    <social.icon size={15} />
-                  </Link>
-                ))}
-              </div>
-
-              {/* App badges */}
-              <div>
-                <p className="mb-3 text-sm font-semibold text-white/70 uppercase tracking-wider">Download Our App</p>
-                <div className="flex flex-wrap gap-2.5">
-                  <Link
-                    href="#google-play"
-                    aria-label="Get Hawkeri on Google Play"
-                    className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 transition hover:bg-white/20"
-                  >
-                    <FaGooglePlay size={18} className="text-white" />
-                    <div className="leading-tight text-white">
-                      <span className="block text-[10px] text-white/60 uppercase tracking-wide">GET IT ON</span>
-                      <span className="block text-sm font-semibold">Google Play</span>
-                    </div>
-                  </Link>
-                  <Link
-                    href="#app-store"
-                    aria-label="Download Hawkeri on App Store"
-                    className="flex items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 transition hover:bg-white/20"
-                  >
-                    <FaAppStoreIos size={18} className="text-white" />
-                    <div className="leading-tight text-white">
-                      <span className="block text-[10px] text-white/60 uppercase tracking-wide">DOWNLOAD ON</span>
-                      <span className="block text-sm font-semibold">App Store</span>
-                    </div>
-                  </Link>
-                </div>
+              <div className="grid max-w-[430px] grid-cols-2 gap-3">
+                <Link
+                  href={ROUTES.STORE}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-(--color-primary) hover:bg-white/10"
+                >
+                  Browse Stores
+                </Link>
+                <Link
+                  href={ROUTES.BRAND}
+                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-(--color-primary) hover:bg-white/10"
+                >
+                  Browse Brands
+                </Link>
               </div>
             </div>
 
             {/* Links columns */}
-            <div className="col-span-6 sm:col-span-4 xl:col-span-2">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-white/50">Company</h3>
-              <ul className="flex flex-col gap-2.5">
+            <div className="col-span-6 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-4 lg:col-span-2">
+              <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Company</h3>
+              <ul className="flex flex-col gap-3">
                 {companyLinks.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="flex items-center gap-2 text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)"
+                      className="group flex items-center gap-2 text-sm text-(--color-secondary-200) transition hover:text-white"
                     >
-                      <FaChevronRight size={9} className="shrink-0 text-white/30" />
+                      <FaChevronRight size={9} className="shrink-0 text-white/30 transition group-hover:text-(--color-primary)" />
                       {link.label}
                     </Link>
                   </li>
@@ -234,33 +181,16 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="col-span-6 sm:col-span-4 xl:col-span-2">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-white/50">Customer</h3>
-              <ul className="flex flex-col gap-2.5">
+            <div className="col-span-6 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-4 lg:col-span-2">
+              <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Customer</h3>
+              <ul className="flex flex-col gap-3">
                 {accountLinks.map((link) => (
                   <li key={link.label}>
                     <Link
                       href={link.href}
-                      className="flex items-center gap-2 text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)"
+                      className="group flex items-center gap-2 text-sm text-(--color-secondary-200) transition hover:text-white"
                     >
-                      <FaChevronRight size={9} className="shrink-0 text-white/30" />
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-span-6 sm:col-span-4 xl:col-span-2">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-white/50">Shop</h3>
-              <ul className="flex flex-col gap-2.5">
-                {shopLinks.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="flex items-center gap-2 text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)"
-                    >
-                      <FaChevronRight size={9} className="shrink-0 text-white/30" />
+                      <FaChevronRight size={9} className="shrink-0 text-white/30 transition group-hover:text-(--color-primary)" />
                       {link.label}
                     </Link>
                   </li>
@@ -269,8 +199,8 @@ export default function Footer() {
             </div>
 
             {/* Contact column */}
-            <div className="col-span-12 sm:col-span-6 xl:col-span-2">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-widest text-white/50">Contact</h3>
+            <div className="col-span-12 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-6 lg:col-span-3">
+              <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Contact</h3>
               <ul className="flex flex-col gap-4">
                 <li className="flex items-start gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">

@@ -6,7 +6,6 @@ import DealsOfTheDay from "@/components/home/DealsOfTheDay";
 import EditorialPromoGrid from "@/components/home/EditorialPromoGrid";
 import TopProductsGrid from "@/components/home/TopProductsGrid";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
-import CountdownPromoBanner from "@/components/home/CountdownPromoBanner";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
@@ -66,7 +65,7 @@ async function getDealsOfTheDay(): Promise<EcommerceProduct[]> {
   try {
     return await getPageItems<EcommerceProduct>(
       API_ROUTES.ECOMMERCE_CATALOG.DEALS_OF_DAY,
-      { limit: 4 },
+      { limit: 10 },
     );
   } catch (err) {
     console.error("[HomePage] Failed to fetch deals of the day:", err);
@@ -95,14 +94,13 @@ export default async function HomePage() {
     <main>
       <HeroBanner />
       <FeaturedCategories categories={featuredCategories} />
+      <DealsOfTheDay products={dealProducts} />
       <PopularProductsSection products={popularProducts} />
       <ProductPromoBanners />
-      <DealsOfTheDay products={dealProducts} />
       <EditorialPromoGrid />
       <TopProductsGrid products={topProducts} />
       <RecentlyViewedSection />
       <ServiceHighlights />
-      <CountdownPromoBanner />
     </main>
   );
 }

@@ -12,10 +12,21 @@ export interface Pagination {
   has_more_pages: boolean;
 }
 
+export interface FacetValue {
+  value: string;
+  count: number;
+}
+
+export interface FacetGroup {
+  name: string;
+  values: FacetValue[];
+}
+
 export interface PaginatedPayload<T> {
   items: T[];
   pagination: Pagination;
-  filters_applied: Record<string, string | number | null | undefined>;
+  filters_applied: Record<string, string | number | string[] | Record<string, string[]> | null | undefined>;
+  facets?: FacetGroup[];
 }
 
 export type PaginatedResponse<T> = ApiResponse<PaginatedPayload<T>>;

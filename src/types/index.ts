@@ -98,6 +98,8 @@ export interface Store {
 
 export type {
   Pagination,
+  FacetGroup,
+  FacetValue,
   PaginatedPayload,
   PaginatedResponse,
   ListQueryParams,
@@ -468,6 +470,9 @@ export interface ProductListParams {
   store?: string;
   min_price?: number;
   max_price?: number;
+  stock_status?: "in_stock" | "out_of_stock";
+  has_options?: "yes" | "no";
+  facets?: string;
   sort_field?: "product_name" | "price" | "quantity" | "created_at";
   sort_direction?: "asc" | "desc";
   page?: number;

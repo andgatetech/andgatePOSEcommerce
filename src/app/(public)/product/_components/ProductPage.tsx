@@ -1,19 +1,21 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { FiSliders, FiX } from "react-icons/fi";
+import { FiClock, FiSliders, FiTag, FiTrendingUp, FiX } from "react-icons/fi";
 import {
   type ProductCollection,
   useGetProductCollectionQuery,
 } from "@/features/catalog/productApi";
-import {
-  buildInfiniteQueryKey,
-  useInfinitePage,
-  useInfinitePaginatedItems,
-} from "@/hooks/useInfinitePaginatedItems";
 import { useListQuery } from "@/hooks/useListQuery";
 import Container from "@/components/shared/Container";
+import Pagination from "@/components/shared/Pagination";
 import ProductFiltersSidebar from "@/components/shared/ProductFiltersSidebar";
+import {
+  countSelectedFacets,
+  encodeSelectedFacets,
+  parseSelectedFacets,
+  toggleSelectedFacet,
+} from "@/lib/productFacets";
 import SearchInput from "@/components/shared/SearchInput";
 import SortSelect, { type SortOption } from "@/components/shared/SortSelect";
 import PopularProductCard from "./PopularProductCard";
@@ -35,11 +37,41 @@ type ProductExtraParams = {
   brand?: string;
   min_price?: number;
   max_price?: number;
+  stock_status?: "in_stock" | "out_of_stock";
+  has_options?: "yes" | "no";
+  facets?: string;
 };
 
 const DEFAULT_PER_PAGE = 12;
 const DEFAULT_SORT_FIELD = "created_at";
 const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "desc";
+
+const COLLECTION_META = {
+  all: {
+    eyebrow: "All Products",
+    title: "Browse Our Collection",
+    description: "Filter by category, brand, price, and product attributes to find exactly what you need.",
+    icon: FiTag,
+    tone: "primary",
+    searchPlaceholder: "Search products...",
+  },
+  popular: {
+    eyebrow: "Popular Picks",
+    title: "Products Customers Are Browsing",
+    description: "Explore high-interest products across stores, brands, and categories.",
+    icon: FiTrendingUp,
+    tone: "primary",
+    searchPlaceholder: "Search popular products...",
+  },
+  "deals-of-day": {
+    eyebrow: "Limited-Time Offers",
+    title: "Deals Of The Day",
+    description: "Find active promotions with clear savings. Use filters and search to narrow deals fast.",
+    icon: FiClock,
+    tone: "deal",
+    searchPlaceholder: "Search deals...",
+  },
+} as const;
 
 interface ProductPageContentProps {
   categories: Category[];
@@ -59,18 +91,22 @@ export default function ProductPageContent({
   collection = "all",
 }: ProductPageContentProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const collectionMeta = COLLECTION_META[collection];
+  const defaultPerPage = collection === "deals-of-day" ? 20 : DEFAULT_PER_PAGE;
+  const perPageOptions = collection === "deals-of-day" ? [20, 40, 50] : [12, 24, 36, 48];
 
   const {
     params,
     search,
     setSearch,
     setSort,
+    setPage,
     setPerPage,
     extraParams,
     setExtraParams,
     resetExtraParams,
   } = useListQuery<ProductExtraParams>({
-    defaultPerPage: DEFAULT_PER_PAGE,
+    defaultPerPage,
     defaultSortField: DEFAULT_SORT_FIELD,
     defaultSortDirection: DEFAULT_SORT_DIRECTION,
     extraParams: [
@@ -78,8 +114,16 @@ export default function ProductPageContent({
       { key: "brand", defaultValue: initialBrand },
       { key: "min_price", type: "number" },
       { key: "max_price", type: "number" },
+      { key: "stock_status" },
+      { key: "has_options" },
+      { key: "facets" },
     ],
   });
+
+  const selectedFacets = useMemo(
+    () => parseSelectedFacets(extraParams.facets),
+    [extraParams.facets],
+  );
 
   useEffect(() => {
     document.body.style.overflow = drawerOpen ? "hidden" : "";
@@ -89,6 +133,7 @@ export default function ProductPageContent({
   const baseQueryParams = useMemo<ProductListParams>(
     () => ({
       search: params.search,
+      page: params.page,
       per_page: params.per_page,
       sort_field: params.sort_field as ProductListParams["sort_field"],
       sort_direction: params.sort_direction,
@@ -97,9 +142,13 @@ export default function ProductPageContent({
       brand: extraParams.brand,
       min_price: extraParams.min_price,
       max_price: extraParams.max_price,
+      stock_status: extraParams.stock_status,
+      has_options: extraParams.has_options,
+      facets: extraParams.facets,
     }),
     [
       params.search,
+      params.page,
       params.per_page,
       params.sort_field,
       params.sort_direction,
@@ -107,44 +156,32 @@ export default function ProductPageContent({
       extraParams.brand,
       extraParams.min_price,
       extraParams.max_price,
+      extraParams.stock_status,
+      extraParams.has_options,
+      extraParams.facets,
       initialStore,
     ],
   );
 
-  const queryKey = useMemo(
-    () => buildInfiniteQueryKey(baseQueryParams),
-    [baseQueryParams],
-  );
-  const [page, setInfinitePage] = useInfinitePage(queryKey);
-
-  const queryParams = useMemo<ProductListParams>(
-    () => ({ ...baseQueryParams, page }),
-    [baseQueryParams, page],
-  );
-
   const { currentData, isFetching, isError } =
-    useGetProductCollectionQuery({ collection, params: queryParams });
+    useGetProductCollectionQuery({ collection, params: baseQueryParams });
 
-  const {
-    items: products,
-    pagination,
-    sentinelRef,
-    isLoadingMore,
-  } = useInfinitePaginatedItems({
-    payload: currentData ?? null,
-    queryKey,
-    isFetching,
-    setPage: setInfinitePage,
-  });
+  const products = currentData?.items ?? [];
+  const pagination = currentData?.pagination ?? null;
+  const facetGroups = currentData?.facets ?? [];
 
   const total = pagination?.total ?? 0;
+  const from = pagination?.from ?? 0;
+  const to = pagination?.to ?? products.length;
 
   const activeFilterCount = [
     extraParams.category,
     extraParams.brand,
     extraParams.min_price,
     extraParams.max_price,
-  ].filter((v) => v !== undefined && v !== "").length;
+    extraParams.stock_status,
+    extraParams.has_options,
+  ].filter((v) => v !== undefined && v !== "").length + countSelectedFacets(selectedFacets);
 
   const sortValue = {
     field: params.sort_field ?? DEFAULT_SORT_FIELD,
@@ -183,8 +220,39 @@ export default function ProductPageContent({
         onRemove: () => setExtraParams({ max_price: undefined }),
       });
     }
+    if (extraParams.stock_status) {
+      chips.push({
+        key: "stock_status",
+        label: extraParams.stock_status === "in_stock" ? "In stock" : "Out of stock",
+        onRemove: () => setExtraParams({ stock_status: undefined }),
+      });
+    }
+    if (extraParams.has_options) {
+      chips.push({
+        key: "has_options",
+        label: extraParams.has_options === "yes" ? "Has options" : "Single option",
+        onRemove: () => setExtraParams({ has_options: undefined }),
+      });
+    }
+    Object.entries(selectedFacets).forEach(([name, values]) => {
+      values.forEach((value) => {
+        chips.push({
+          key: `facet-${name}-${value}`,
+          label: `${name}: ${value}`,
+          onRemove: () => {
+            const next = toggleSelectedFacet(selectedFacets, name, value);
+            setExtraParams({ facets: encodeSelectedFacets(next) });
+          },
+        });
+      });
+    });
     return chips;
-  }, [extraParams, categories, brands, setExtraParams]);
+  }, [extraParams, categories, brands, selectedFacets, setExtraParams]);
+
+  function handleFacetToggle(name: string, value: string) {
+    const next = toggleSelectedFacet(selectedFacets, name, value);
+    setExtraParams({ facets: encodeSelectedFacets(next) });
+  }
 
   const filterProps = {
     categories,
@@ -193,17 +261,78 @@ export default function ProductPageContent({
     selectedBrand: extraParams.brand,
     minPrice: extraParams.min_price,
     maxPrice: extraParams.max_price,
+    selectedStockStatus: extraParams.stock_status,
+    selectedHasOptions: extraParams.has_options,
+    facetGroups,
+    selectedFacets,
     activeFilterCount,
     onCategoryChange: (value?: string) => setExtraParams({ category: value }),
     onBrandChange: (value?: string) => setExtraParams({ brand: value }),
     onMinPriceChange: (value?: number) => setExtraParams({ min_price: value }),
     onMaxPriceChange: (value?: number) => setExtraParams({ max_price: value }),
+    onStockStatusChange: (value?: "in_stock" | "out_of_stock") => setExtraParams({ stock_status: value }),
+    onHasOptionsChange: (value?: "yes" | "no") => setExtraParams({ has_options: value }),
+    onFacetToggle: handleFacetToggle,
     onClear: resetExtraParams,
   };
 
   return (
     <section className="bg-(--color-bg) pb-10 pt-6 md:pb-12 md:pt-8 lg:pb-16 lg:pt-10">
       <Container>
+        {collection !== "all" && (
+          <div className="mb-6 overflow-hidden rounded-[24px] border border-(--color-border) bg-white shadow-[0_18px_50px_rgba(19,45,69,0.05)]">
+            <div className={`grid gap-5 p-5 md:grid-cols-[1fr_auto] md:items-center md:p-7 ${
+              collectionMeta.tone === "deal"
+                ? "bg-[linear-gradient(135deg,#fff7ed_0%,#ffffff_55%,#ecfeff_100%)]"
+                : "bg-[linear-gradient(135deg,#ffffff_0%,#f6fbff_100%)]"
+            }`}>
+              <div>
+                <span className={`inline-flex items-center gap-2 rounded-full border bg-white px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.16em] ${
+                  collectionMeta.tone === "deal"
+                    ? "border-(--color-cta)/20 text-(--color-cta)"
+                    : "border-(--color-primary-200) text-(--color-primary)"
+                }`}>
+                  <collectionMeta.icon className="text-[15px]" />
+                  {collectionMeta.eyebrow}
+                </span>
+                <h1 className="mt-3 text-[30px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[42px]">
+                  {collectionMeta.title}
+                </h1>
+                <p className="mt-2 max-w-[680px] text-sm leading-7 text-(--color-text-muted)">
+                  {collectionMeta.description}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:min-w-[360px]">
+                <div className="rounded-[16px] border border-white/70 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-(--color-text-muted)">
+                    Active
+                  </p>
+                  <p className="mt-1 text-[24px] font-semibold text-(--color-primary-900)">
+                    {total}
+                  </p>
+                </div>
+                <div className="rounded-[16px] border border-white/70 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-(--color-text-muted)">
+                    Showing
+                  </p>
+                  <p className="mt-1 text-[24px] font-semibold text-(--color-primary-900)">
+                    {products.length}
+                  </p>
+                </div>
+                <div className="col-span-2 rounded-[16px] border border-white/70 bg-white/80 p-4 shadow-[0_12px_28px_rgba(15,23,42,0.05)] sm:col-span-1">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-(--color-text-muted)">
+                    Page
+                  </p>
+                  <p className="mt-1 text-[24px] font-semibold text-(--color-primary-900)">
+                    {pagination?.current_page ?? 1}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="grid gap-6 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
           {/* Desktop sticky sidebar — hidden on mobile */}
           <div className="filter-scrollbar-none hidden overscroll-contain lg:sticky lg:top-[154px] lg:block lg:max-h-[calc(100vh-178px)] lg:self-start lg:overflow-y-auto xl:top-[176px] xl:max-h-[calc(100vh-200px)]">
@@ -233,19 +362,19 @@ export default function ProductPageContent({
                 <SearchInput
                   value={search}
                   onChange={setSearch}
-                  placeholder={initialStore ? "Search store products..." : "Search products..."}
+                  placeholder={initialStore ? "Search store products..." : collectionMeta.searchPlaceholder}
                   className="min-w-0 flex-1"
                 />
 
                 <SortSelect options={SORT_OPTIONS} value={sortValue} onChange={setSort} />
 
                 <select
-                  value={String(params.per_page ?? DEFAULT_PER_PAGE)}
+                  value={String(params.per_page ?? defaultPerPage)}
                   onChange={(e) => setPerPage(Number(e.target.value))}
                   className="h-11 rounded-full border border-(--color-border) bg-(--color-bg) px-4 text-sm text-(--color-dark) outline-none focus:border-(--color-primary-200)"
                   aria-label="Products per page"
                 >
-                  {[12, 24, 36, 48].map((n) => (
+                  {perPageOptions.map((n) => (
                     <option key={n} value={n}>
                       Show {n}
                     </option>
@@ -253,7 +382,14 @@ export default function ProductPageContent({
                 </select>
 
                 <span className="ml-auto whitespace-nowrap text-sm text-(--color-text-muted)">
-                  {total} product{total !== 1 ? "s" : ""}
+                  {total > 0 ? (
+                    <>
+                      Showing <span className="font-semibold text-(--color-dark)">{from}-{to}</span> of{" "}
+                      <span className="font-semibold text-(--color-dark)">{total}</span>
+                    </>
+                  ) : (
+                    <>0 products</>
+                  )}
                 </span>
               </div>
 
@@ -311,7 +447,11 @@ export default function ProductPageContent({
                 </button>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5">
+              <div className={`grid gap-4 sm:grid-cols-2 ${
+                collection === "deals-of-day"
+                  ? "lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5"
+                  : "xl:grid-cols-3 2xl:grid-cols-5"
+              }`}>
                 {products.map((product) => (
                   <PopularProductCard key={product.id} product={product} />
                 ))}
@@ -319,13 +459,11 @@ export default function ProductPageContent({
             )}
 
             {products.length > 0 && (
-              <div ref={sentinelRef} className="h-8" aria-hidden />
-            )}
-
-            {isLoadingMore && (
-              <div className="mt-6 flex justify-center">
-                <div className="h-9 w-9 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-              </div>
+              <Pagination
+                pagination={pagination!}
+                onPageChange={setPage}
+                className="mt-8 rounded-[24px] border border-(--color-border) bg-white px-4 py-4 shadow-[0_18px_50px_rgba(19,45,69,0.05)]"
+              />
             )}
           </div>
         </div>

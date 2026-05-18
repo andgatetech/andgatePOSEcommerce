@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-import type { Brand, Category } from "@/types";
+import type { Brand, Category, FacetGroup } from "@/types";
+import type { SelectedFacets } from "@/lib/productFacets";
 
 interface ProductFiltersSidebarProps {
   categories: Category[];
@@ -11,11 +12,18 @@ interface ProductFiltersSidebarProps {
   selectedBrand?: string;
   minPrice?: number;
   maxPrice?: number;
+  selectedStockStatus?: "in_stock" | "out_of_stock";
+  selectedHasOptions?: "yes" | "no";
+  facetGroups?: FacetGroup[];
+  selectedFacets?: SelectedFacets;
   activeFilterCount: number;
   onCategoryChange: (value?: string) => void;
   onBrandChange: (value?: string) => void;
   onMinPriceChange: (value?: number) => void;
   onMaxPriceChange: (value?: number) => void;
+  onStockStatusChange: (value?: "in_stock" | "out_of_stock") => void;
+  onHasOptionsChange: (value?: "yes" | "no") => void;
+  onFacetToggle?: (name: string, value: string) => void;
   onClear: () => void;
   className?: string;
   hideHeader?: boolean;
@@ -65,11 +73,18 @@ export default function ProductFiltersSidebar({
   selectedBrand,
   minPrice,
   maxPrice,
+  selectedStockStatus,
+  selectedHasOptions,
+  facetGroups = [],
+  selectedFacets = {},
   activeFilterCount,
   onCategoryChange,
   onBrandChange,
   onMinPriceChange,
   onMaxPriceChange,
+  onStockStatusChange,
+  onHasOptionsChange,
+  onFacetToggle,
   onClear,
   className = "",
   hideHeader = false,
@@ -172,6 +187,37 @@ export default function ProductFiltersSidebar({
         </div>
       </FilterSection>
 
+      {facetGroups.map((facet) => (
+        <FilterSection key={facet.name} title={facet.name} defaultOpen={false}>
+          <div className="filter-scrollbar-none max-h-[220px] space-y-0.5 overflow-y-auto">
+            {facet.values.map((option) => {
+              const checked = selectedFacets[facet.name]?.includes(option.value) ?? false;
+              return (
+                <label
+                  key={`${facet.name}-${option.value}`}
+                  className={`flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2 transition-colors ${
+                    checked ? "bg-(--color-primary-100)" : "hover:bg-(--color-primary-50)"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => onFacetToggle?.(facet.name, option.value)}
+                    className="h-4 w-4 flex-shrink-0 rounded accent-(--color-primary)"
+                  />
+                  <span className={`min-w-0 flex-1 text-sm leading-tight ${checked ? "font-semibold text-(--color-primary)" : "text-(--color-dark)"}`}>
+                    {option.value}
+                  </span>
+                  <span className="rounded-full bg-(--color-neutral-100) px-2 py-0.5 text-[11px] font-semibold text-(--color-text-muted)">
+                    {option.count}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+        </FilterSection>
+      ))}
+
       <FilterSection title="Price Range" defaultOpen>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -200,6 +246,68 @@ export default function ProductFiltersSidebar({
               className="h-10 w-full rounded-[12px] border border-(--color-border) bg-(--color-bg-subtle) px-3 text-sm text-(--color-dark) outline-none transition focus:border-(--color-primary) focus:bg-white"
             />
           </div>
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Availability" defaultOpen>
+        <div className="space-y-0.5">
+          {[
+            { label: "In stock", value: "in_stock" as const },
+            { label: "Out of stock", value: "out_of_stock" as const },
+          ].map((option) => {
+            const checked = selectedStockStatus === option.value;
+            return (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2 transition-colors ${
+                  checked ? "bg-(--color-primary-100)" : "hover:bg-(--color-primary-50)"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="product-stock-status"
+                  checked={checked}
+                  onChange={() => onStockStatusChange(option.value)}
+                  onClick={() => { if (checked) onStockStatusChange(undefined); }}
+                  className="h-4 w-4 flex-shrink-0 accent-(--color-primary)"
+                />
+                <span className={`text-sm leading-tight ${checked ? "font-semibold text-(--color-primary)" : "text-(--color-dark)"}`}>
+                  {option.label}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </FilterSection>
+
+      <FilterSection title="Product Options" defaultOpen={false}>
+        <div className="space-y-0.5">
+          {[
+            { label: "Has color/size/options", value: "yes" as const },
+            { label: "Single option", value: "no" as const },
+          ].map((option) => {
+            const checked = selectedHasOptions === option.value;
+            return (
+              <label
+                key={option.value}
+                className={`flex cursor-pointer items-center gap-3 rounded-[10px] px-3 py-2 transition-colors ${
+                  checked ? "bg-(--color-primary-100)" : "hover:bg-(--color-primary-50)"
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="product-options"
+                  checked={checked}
+                  onChange={() => onHasOptionsChange(option.value)}
+                  onClick={() => { if (checked) onHasOptionsChange(undefined); }}
+                  className="h-4 w-4 flex-shrink-0 accent-(--color-primary)"
+                />
+                <span className={`text-sm leading-tight ${checked ? "font-semibold text-(--color-primary)" : "text-(--color-dark)"}`}>
+                  {option.label}
+                </span>
+              </label>
+            );
+          })}
         </div>
       </FilterSection>
     </aside>

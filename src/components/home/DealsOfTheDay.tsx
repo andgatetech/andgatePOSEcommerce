@@ -3,15 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FiArrowUpRight } from "react-icons/fi";
+import { FiArrowUpRight, FiClock, FiTag } from "react-icons/fi";
 import { ROUTES, ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
 import AddToCartButton from "@/app/(public)/product/_components/AddToCartButton";
 import Container from "@/components/shared/Container";
 import type { EcommerceProduct } from "@/types";
-
-const labels = ["Days", "Hours", "Mins", "Sec"];
 
 function getDealEndTime(dealId: number): number {
   const now = new Date();
@@ -78,12 +76,12 @@ function formatCountdown(totalSeconds: number) {
   const hours = Math.floor((totalSeconds % 86400) / 3600);
   const mins = Math.floor((totalSeconds % 3600) / 60);
   const secs = totalSeconds % 60;
-  return {
-    days: String(days).padStart(2, "0"),
-    hours: String(hours).padStart(2, "0"),
-    mins: String(mins).padStart(2, "0"),
-    secs: String(secs).padStart(2, "0"),
-  };
+
+  if (days > 0) {
+    return `${days}d ${String(hours).padStart(2, "0")}h`;
+  }
+
+  return `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
 }
 
 interface DealsOfTheDayProps {
@@ -120,107 +118,136 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
   if (products.length === 0) return null;
 
   return (
-    <section id="deals-of-the-day" className="pb-12 pt-2 md:pb-14 lg:pb-16">
+    <section id="deals-of-the-day" className="pb-10 pt-2 md:pb-12">
       <Container>
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div>
-            <h2 className="text-[28px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[38px]">
-              Deals Of The Day
-            </h2>
+        <div className="rounded-[20px] border border-(--color-primary-100) bg-[linear-gradient(135deg,#fffaf0_0%,#ffffff_54%,#f0fdfa_100%)] p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)] md:p-5">
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-[680px]">
+              <span className="inline-flex items-center gap-2 rounded-full border border-(--color-cta)/20 bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-cta)">
+                <FiTag className="text-[15px]" />
+                Limited Offers
+              </span>
+              <h2 className="mt-2 text-[25px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[32px]">
+                Deals Of The Day
+              </h2>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-(--color-border) bg-white px-3 py-2 text-[12px] font-semibold text-(--color-primary-900) shadow-[0_10px_22px_rgba(15,23,42,0.05)]">
+                <FiClock className="text-[16px] text-(--color-cta)" />
+                Live deal timers
+              </div>
+              <Link
+                href={ROUTES.DEAL_OF_DAY}
+                className="inline-flex items-center gap-2 rounded-full bg-(--color-primary) px-4 py-2 text-[13px] font-semibold text-white shadow-[0_12px_24px_rgba(44,95,138,0.2)] transition hover:bg-(--color-primary-dark)"
+              >
+                All Deals
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
+                  <FiArrowUpRight className="text-[15px]" />
+                </span>
+              </Link>
+            </div>
           </div>
 
-          <Link
-            href={ROUTES.DEAL_OF_DAY}
-            className="inline-flex items-center gap-3 self-start rounded-full bg-(--color-primary) px-5 py-3 text-[15px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.24)] transition hover:bg-(--color-primary-dark)"
-          >
-            All Deals
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-(--color-primary-900)">
-              <FiArrowUpRight className="text-[18px]" />
-            </span>
-          </Link>
-        </div>
-
-        <div className="grid gap-x-6 gap-y-10 md:grid-cols-2 xl:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5">
           {products.map((product) => {
             const remaining = countdowns[product.id] ?? 0;
-            const time = formatCountdown(remaining);
-            const timeValues = isMounted
-              ? [time.days, time.hours, time.mins, time.secs]
-              : ["00", "00", "00", "00"];
+            const timeText = isMounted ? formatCountdown(remaining) : "00:00:00";
             const image = resolveImageUrl(product.images[0]?.url ?? null);
             const displayPrice = product.promotion?.deal_price ?? product.price;
             const originalPrice = product.promotion?.original_price;
             const price = parseFloat(displayPrice);
             const originalPriceValue = originalPrice ? parseFloat(originalPrice) : null;
             const stockCount = parseFloat(product.quantity);
+            const hasDiscount = originalPriceValue !== null && originalPriceValue > price;
+            const discountPercent = hasDiscount
+              ? Math.round(((originalPriceValue - price) / originalPriceValue) * 100)
+              : null;
 
             return (
-              <div
+              <article
                 key={product.id}
-                className="group relative block"
+                className="group flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-(--color-border) bg-white shadow-[0_10px_26px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(15,23,42,0.09)]"
               >
-                <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
-                  <div className="relative h-[200px] overflow-hidden rounded-[18px] bg-[#f7f8fa]">
-                    {image ? (
-                      <Image
-                        src={image}
-                        alt={product.product_name}
-                        fill
-                        sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 25vw"
-                        className="object-contain p-4 transition duration-500 group-hover:scale-[1.04]"
-                      />
+                <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="block p-2 pb-0">
+                  <div className="relative aspect-[5/4] overflow-hidden rounded-[12px] bg-[#f7f8fa]">
+                    {discountPercent ? (
+                      <span className="absolute left-2 top-2 z-10 rounded-full bg-(--color-cta) px-2 py-1 text-[10px] font-bold text-white shadow-[0_10px_18px_rgba(216,137,31,0.24)]">
+                        {discountPercent}% OFF
+                      </span>
                     ) : (
-                      <GeneratedImageFallback
-                        name={product.product_name}
-                        kind="product"
-                        showLabel
-                        className="h-full w-full border-0"
-                        iconClassName="text-[24px]"
-                        textClassName="text-[30px]"
-                      />
+                      <span className="absolute left-2 top-2 z-10 rounded-full bg-(--color-primary) px-2 py-1 text-[10px] font-bold text-white shadow-[0_10px_18px_rgba(44,95,138,0.2)]">
+                        Hot Deal
+                      </span>
                     )}
+
+                    <span className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-[10px] font-semibold text-(--color-primary-900) shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+                      <FiClock className="text-[11px] text-(--color-cta)" />
+                      {timeText}
+                    </span>
+
+                    {image ? (
+                      <>
+                        <Image
+                          src={image}
+                          alt={product.product_name}
+                          fill
+                          sizes="(max-width: 639px) 50vw, (max-width: 1279px) 25vw, 18vw"
+                          className="object-contain p-3 transition duration-300 group-hover:scale-[1.05]"
+                        />
+                        <div className="pointer-events-none absolute inset-x-8 bottom-3 h-5 rounded-full bg-black/[0.06] blur-xl" />
+                      </>
+                    ) : (
+                        <GeneratedImageFallback
+                          name={product.product_name}
+                          kind="product"
+                          showLabel
+                          className="h-full w-full border-0"
+                          iconClassName="text-[24px]"
+                          textClassName="text-[30px]"
+                        />
+                      )}
                   </div>
                 </Link>
 
-                <div className="absolute left-1/2 z-20 flex -translate-x-1/2 items-center gap-[6px]" style={{ top: "calc(200px - 70px)" }}>
-                  {timeValues.map((value, index) => (
-                    <div
-                      key={`${product.id}-${labels[index]}`}
-                      className="flex min-w-[66px] flex-col items-center rounded-[8px] bg-white px-2 py-[9px] shadow-[0_4px_14px_rgba(15,23,42,0.14)]"
-                    >
-                      <span className="text-[17px] font-semibold leading-none text-(--color-primary)">
-                        {value}
-                      </span>
-                      <span className="mt-[6px] text-[12px] leading-none text-(--color-text-muted)">
-                        {labels[index]}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="relative z-10 mx-3 -mt-10 rounded-[12px] bg-white px-5 pb-5 pt-[44px] shadow-[0_8px_28px_rgba(15,23,42,0.09)]">
+                <div className="flex flex-1 flex-col px-3 pb-3 pt-2.5">
                   <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
-                    <h3 className="min-h-[48px] text-[16px] font-semibold leading-[1.3] text-(--color-primary-900) line-clamp-2">
+                    <h3 className="min-h-[34px] text-[13px] font-semibold leading-[1.28] text-(--color-primary-900) line-clamp-2">
                       {product.product_name}
                     </h3>
                   </Link>
 
-                  <p className="mt-2 text-[14px] text-(--color-text-muted)">
-                    By <span className="text-(--color-primary)">{product.sold_by.store_name}</span>
+                  <p className="mt-1 truncate text-[12px] text-(--color-text-muted)">
+                    By{" "}
+                    <Link
+                      href={ROUTE_BUILDERS.storeDetail(product.sold_by.store_slug)}
+                      className="font-medium text-(--color-primary) transition hover:text-(--color-primary-900)"
+                    >
+                      {product.sold_by.store_name}
+                    </Link>
                   </p>
 
-                  <div className="mt-4 flex items-center justify-between gap-3">
-                    <div className="min-w-0">
-                      <span className="block text-[18px] font-semibold text-(--color-primary)">
-                        ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
-                      </span>
-                      {originalPriceValue && originalPrice !== displayPrice ? (
-                        <span className="block text-[13px] text-(--color-text-muted) line-through">
-                          ৳{originalPriceValue.toLocaleString("en-BD", { minimumFractionDigits: 2 })}
+                  <div className="mt-2 flex flex-1 flex-col">
+                    <div className="flex items-end justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="block text-[16px] font-bold leading-none text-(--color-primary)">
+                          ৳{price.toLocaleString("en-BD", { minimumFractionDigits: 0 })}
+                        </span>
+                        {hasDiscount ? (
+                          <span className="mt-1 block text-[12px] text-(--color-text-muted) line-through">
+                            ৳{originalPriceValue.toLocaleString("en-BD", { maximumFractionDigits: 0 })}
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {hasDiscount ? (
+                        <span className="shrink-0 rounded-full bg-(--color-success)/10 px-2 py-1 text-[10px] font-semibold text-(--color-success)">
+                          Save ৳{(originalPriceValue - price).toLocaleString("en-BD", { maximumFractionDigits: 0 })}
                         </span>
                       ) : null}
                     </div>
 
+                    <div className="mt-3">
                     <AddToCartButton
                       stockId={product.id}
                       stockCount={stockCount}
@@ -240,13 +267,15 @@ export default function DealsOfTheDay({ products }: DealsOfTheDayProps) {
                           slug: product.sold_by.store_slug,
                         },
                       }}
-                      className="max-w-[132px]"
+                      className="w-full"
                     />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </article>
             );
           })}
+          </div>
         </div>
       </Container>
     </section>

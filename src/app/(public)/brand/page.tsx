@@ -39,7 +39,7 @@ export default async function BrandPage({ searchParams }: BrandPageProps) {
 
   const initialParams: ListQueryParams = {
     search: readString(sp.search) || undefined,
-    page: 1,
+    page: readNumber(sp.page, 1),
     per_page: readNumber(sp.per_page, DEFAULT_PER_PAGE),
     sort_field: readString(sp.sort_field) ?? DEFAULT_SORT_FIELD,
     sort_direction:

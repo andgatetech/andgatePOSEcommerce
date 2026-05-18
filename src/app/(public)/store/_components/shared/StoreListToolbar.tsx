@@ -18,20 +18,21 @@ export default function StoreListToolbar({
   onSortChange,
 }: StoreListToolbarProps) {
   return (
-    <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between w-full">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <div className="min-w-0 flex-1">
         <SearchInput
           value={search}
           onChange={onSearchChange}
           placeholder="Search stores..."
-          className="sm:max-w-sm"
-        />
-        <SortSelect
-          options={STORE_SORT_OPTIONS}
-          value={sortValue}
-          onChange={onSortChange}
+          className="w-full md:max-w-md"
         />
       </div>
+      <SortSelect
+        options={STORE_SORT_OPTIONS}
+        value={sortValue}
+        onChange={onSortChange}
+        className="w-full md:w-auto"
+      />
     </div>
   );
 }

@@ -10,9 +10,14 @@ type PromoBanner = {
   title: string;
   description: string;
   image: string;
+  href: string;
   badgeClassName: string;
   overlayClassName: string;
 };
+
+function productSearchHref(search: string) {
+  return `${ROUTES.PRODUCT}?search=${encodeURIComponent(search)}`;
+}
 
 const promoBanners: PromoBanner[] = [
   {
@@ -21,6 +26,7 @@ const promoBanners: PromoBanner[] = [
     title: "Audio Essentials",
     description: "Hear every beat, every time.",
     image: "/images/banner/promo-grid-1.jpg",
+    href: productSearchHref("audio"),
     badgeClassName: "bg-[rgba(176,204,222,0.92)] text-(--color-primary-900)",
     overlayClassName:
       "bg-[linear-gradient(90deg,rgba(82,37,161,0.76)_0%,rgba(53,24,109,0.34)_44%,rgba(0,0,0,0)_100%)]",
@@ -31,6 +37,7 @@ const promoBanners: PromoBanner[] = [
     title: "New Smart Watch",
     description: "Track your fitness, calls, and more.",
     image: "/images/banner/promo-grid-2.jpg",
+    href: productSearchHref("smart watch"),
     badgeClassName: "bg-[#ffd86a] text-(--color-primary-900)",
     overlayClassName:
       "bg-[linear-gradient(90deg,rgba(255,106,72,0.60)_0%,rgba(255,106,72,0.18)_46%,rgba(0,0,0,0)_100%)]",
@@ -41,6 +48,7 @@ const promoBanners: PromoBanner[] = [
     title: "Smart Mobile Devices",
     description: "Smart devices for every lifestyle.",
     image: "/images/banner/promo-grid-3.jpg",
+    href: productSearchHref("mobile"),
     badgeClassName: "bg-[#b8ef6f] text-(--color-primary-900)",
     overlayClassName:
       "bg-[linear-gradient(90deg,rgba(17,17,17,0.70)_0%,rgba(17,17,17,0.20)_44%,rgba(0,0,0,0)_100%)]",
@@ -86,7 +94,7 @@ export default function ProductPromoBanners() {
                   </p>
 
                   <Link
-                    href={ROUTES.CATEGORY}
+                    href={banner.href}
                     className="mt-6 inline-flex items-center gap-3 rounded-full bg-(--color-primary) px-5 py-3 text-[16px] font-semibold text-white shadow-[0_14px_28px_rgba(44,95,138,0.32)] transition hover:bg-(--color-primary-dark)"
                   >
                     Shop Now
