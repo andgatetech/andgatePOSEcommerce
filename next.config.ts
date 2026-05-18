@@ -1,4 +1,70 @@
 import type { NextConfig } from "next";
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  cacheOnFrontEndNav: true,
+  aggressiveFrontEndNavCaching: true,
+  reloadOnOnline: true,
+  fallbacks: {
+    document: "/offline",
+  },
+  workboxOptions: {
+    disableDevLogs: true,
+    runtimeCaching: [
+      {
+        // API calls — network first, 24h cache fallback
+        urlPattern: /^https:\/\/api\.andgatepos\.com\/.*/i,
+        handler: "NetworkFirst",
+        options: {
+          cacheName: "api-cache",
+          expiration: {
+            maxEntries: 64,
+            maxAgeSeconds: 24 * 60 * 60,
+          },
+          networkTimeoutSeconds: 10,
+        },
+      },
+      {
+        // Next.js static assets — cache first
+        urlPattern: /\/_next\/static\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "next-static",
+          expiration: {
+            maxEntries: 256,
+            maxAgeSeconds: 30 * 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        // Product images from API server — stale while revalidate
+        urlPattern: /^https:\/\/api\.andgatepos\.com\/storage\/.*/i,
+        handler: "StaleWhileRevalidate",
+        options: {
+          cacheName: "product-images",
+          expiration: {
+            maxEntries: 200,
+            maxAgeSeconds: 7 * 24 * 60 * 60,
+          },
+        },
+      },
+      {
+        // Google Fonts
+        urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+        handler: "CacheFirst",
+        options: {
+          cacheName: "google-fonts",
+          expiration: {
+            maxEntries: 16,
+            maxAgeSeconds: 365 * 24 * 60 * 60,
+          },
+        },
+      },
+    ],
+  },
+});
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -88,4 +154,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);

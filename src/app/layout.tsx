@@ -1,9 +1,16 @@
 import ReduxProvider from "@/lib/providers";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+
+export const viewport: Viewport = {
+  themeColor: "#e79237",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -11,6 +18,12 @@ export const metadata: Metadata = {
     template: "Hawkeri | %s",
   },
   description: "Hawkeri Ecommerce Platform",
+  applicationName: "Hawkeri",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Hawkeri",
+  },
   icons: {
     icon: [
       { url: "/images/favicon_io/favicon.ico" },
@@ -20,12 +33,7 @@ export const metadata: Metadata = {
     apple: [
       { url: "/images/favicon_io/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
-    other: [
-      { rel: "android-chrome-192x192", url: "/images/favicon_io/android-chrome-192x192.png" },
-      { rel: "android-chrome-512x512", url: "/images/favicon_io/android-chrome-512x512.png" },
-    ],
   },
-  manifest: "/images/favicon_io/site.webmanifest",
 };
 
 export default function RootLayout({
