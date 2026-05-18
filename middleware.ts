@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 const isDev = process.env.NODE_ENV === "development";
 
 export function middleware(request: NextRequest) {
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const nonce = btoa(crypto.randomUUID());
 
   // React requires 'unsafe-eval' in dev mode for stack trace reconstruction.
   // It is never used in production — safe to gate on NODE_ENV.
