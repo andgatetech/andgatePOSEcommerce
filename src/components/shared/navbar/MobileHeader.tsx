@@ -29,7 +29,7 @@ const mobileQuickLinks = [
   { label: "Categories", href: ROUTES.CATEGORY, icon: FaThLarge },
   { label: "Popular", href: ROUTES.POPULAR_PRODUCT, icon: FaHeart },
   { label: "Store", href: ROUTES.STORE, icon: FaStore },
-  { label: "Fresh", href: ROUTES.PRODUCT, icon: FaShoppingBag },
+  { label: "All Products", href: ROUTES.PRODUCT, icon: FaShoppingBag },
   { label: "Brands", href: ROUTES.BRAND, icon: FaWineBottle },
 ];
 
@@ -37,7 +37,7 @@ const mobileNavLinks = [
   { label: "Home", href: ROUTES.HOME },
   { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY },
   { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT },
-  { label: "Fresh Finds", href: ROUTES.PRODUCT },
+  { label: "All Products", href: ROUTES.PRODUCT },
   { label: "Explore All Categories", href: ROUTES.CATEGORY },
   { label: "Store", href: ROUTES.STORE },
   { label: "Brands", href: ROUTES.BRAND },

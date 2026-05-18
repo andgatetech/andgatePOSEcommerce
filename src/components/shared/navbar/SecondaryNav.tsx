@@ -24,7 +24,7 @@ const navLinks = [
   { label: "Home", href: ROUTES.HOME, hasDropdown: false, icon: FaHome },
   { label: "Daily Deals", href: ROUTES.DEAL_OF_DAY, hasDropdown: false, icon: FaFireAlt },
   { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT, hasDropdown: false, icon: FaHeart },
-  { label: "Fresh Finds", href: ROUTES.PRODUCT, hasDropdown: false, icon: FaShoppingBag },
+  { label: "All Products", href: ROUTES.PRODUCT, hasDropdown: false, icon: FaShoppingBag },
   { label: "Store", href: ROUTES.STORE, hasDropdown: true, icon: FaStore },
   { label: "Brands", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
 ];

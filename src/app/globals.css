@@ -194,9 +194,19 @@ html { scroll-behavior: smooth; }
   100% { transform: translateY(0) scale(1); }
 }
 
+@keyframes filter-drawer-slide-up {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}
+
+.filter-drawer {
+  animation: filter-drawer-slide-up 0.28s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nav-fire-icon,
-  .cart-lottie-animation__count {
+  .cart-lottie-animation__count,
+  .filter-drawer {
     animation: none;
   }
 }
