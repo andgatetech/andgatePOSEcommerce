@@ -73,9 +73,24 @@ const nextConfig: NextConfig = {
             value: "same-origin-allow-popups",
           },
           {
-            key: "Content-Security-Policy-Report-Only",
-            value:
-              "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data: blob: https://api.andgatepos.com; font-src 'self' data:; connect-src 'self' https://api.andgatepos.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'",
+            // 'unsafe-inline' remains in script-src/style-src until nonce-based CSP
+            // is implemented via middleware.ts (Next.js App Router nonce pattern).
+            // 'unsafe-eval' removed — no usage in production code.
+            key: "Content-Security-Policy",
+            value: [
+              "default-src 'self'",
+              "base-uri 'self'",
+              "frame-ancestors 'none'",
+              "object-src 'none'",
+              "img-src 'self' data: blob: https://api.andgatepos.com",
+              "font-src 'self' data:",
+              "connect-src 'self' https://api.andgatepos.com https://accounts.google.com",
+              "script-src 'self' 'unsafe-inline' https://accounts.google.com",
+              "style-src 'self' 'unsafe-inline'",
+              "worker-src 'self'",
+              "manifest-src 'self'",
+              "media-src 'self'",
+            ].join("; "),
           },
         ],
       },

@@ -59,6 +59,24 @@ export const cartApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: { quantity },
       }),
+      async onQueryStarted({ cart_id, quantity }, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          cartApi.util.updateQueryData("getCart", undefined, (draft) => {
+            const item = draft.items.find((i) => i.id === cart_id);
+            if (item) {
+              const unitPrice = item.quantity > 0 ? item.subtotal / item.quantity : 0;
+              draft.cart_total += unitPrice * (quantity - item.quantity);
+              item.subtotal = unitPrice * quantity;
+              item.quantity = quantity;
+            }
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
       invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
 
@@ -67,6 +85,23 @@ export const cartApi = baseApi.injectEndpoints({
         url: API_ROUTES.ECOMMERCE_CART.CART_ITEM(cart_id),
         method: "DELETE",
       }),
+      async onQueryStarted(cart_id, { dispatch, queryFulfilled }) {
+        const patch = dispatch(
+          cartApi.util.updateQueryData("getCart", undefined, (draft) => {
+            const idx = draft.items.findIndex((i) => i.id === cart_id);
+            if (idx !== -1) {
+              const [removed] = draft.items.splice(idx, 1);
+              draft.item_count -= removed.quantity;
+              draft.cart_total -= removed.subtotal;
+            }
+          }),
+        );
+        try {
+          await queryFulfilled;
+        } catch {
+          patch.undo();
+        }
+      },
       invalidatesTags: [{ type: "Cart", id: "LIST" }],
     }),
 

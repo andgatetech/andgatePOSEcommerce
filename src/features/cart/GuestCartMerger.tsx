@@ -49,7 +49,8 @@ export default function GuestCartMerger() {
     const serverCartSnapshot = serverCart;
 
     async function mergeGuestCart() {
-      let mergedCount = 0;
+      const mergedIds: number[] = [];
+      const totalItems = guestItems.length;
 
       try {
         for (const guestItem of guestItems) {
@@ -70,21 +71,26 @@ export default function GuestCartMerger() {
             throw new Error("Merged cart item did not return a cart id.");
           }
 
-          await updateCartItem({
-            cart_id: cartId,
-            quantity: desiredQuantity,
-          }).unwrap();
+          await updateCartItem({ cart_id: cartId, quantity: desiredQuantity }).unwrap();
 
-          dispatch(removeGuestCartItem(guestItem.id));
-          mergedCount += 1;
-        }
-
-        if (mergedCount > 0) {
-          toast.success("Guest cart merged with your account.");
+          // Track success before dispatching — dispatch happens in finally
+          mergedIds.push(guestItem.id);
         }
       } catch {
+        // Allow retry for unmerged items
         mergeStartedForUser.current = null;
-        toast.error("Some guest cart items could not be merged.");
+      } finally {
+        // Only remove items that were fully merged — failed items stay in guest cart
+        mergedIds.forEach((id) => dispatch(removeGuestCartItem(id)));
+      }
+
+      if (mergedIds.length === totalItems && totalItems > 0) {
+        toast.success("Guest cart merged with your account.");
+      } else if (mergedIds.length > 0) {
+        toast.success(`${mergedIds.length} of ${totalItems} cart items merged.`);
+        toast.error("Some items could not be merged. They remain in your cart.");
+      } else if (totalItems > 0) {
+        toast.error("Cart merge failed. Items kept — please try again.");
       }
     }
 

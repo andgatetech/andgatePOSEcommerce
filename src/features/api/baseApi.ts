@@ -1,6 +1,7 @@
 import {
   createApi,
   fetchBaseQuery,
+  retry,
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
@@ -37,17 +38,27 @@ const baseQueryWithAuth: BaseQueryFn<
 > = async (args, api, extraOptions) => {
   const result = await baseQuery(args, api, extraOptions);
 
-  if (result.error && result.error.status === 401) {
-    clearStoredAuth();
-    api.dispatch(logout());
+  if (result.error) {
+    if (result.error.status === 401) {
+      clearStoredAuth();
+      api.dispatch(logout());
+    }
+    // Stop retry loop for all client errors (4xx) — only 5xx and network errors are retryable
+    if (typeof result.error.status === "number" && result.error.status < 500) {
+      retry.fail(result.error);
+    }
   }
 
   return result;
 };
 
+// Retries up to 2 times on network errors and 5xx responses with exponential backoff.
+// 4xx errors bail immediately via retry.fail() above.
+const baseQueryWithRetry = retry(baseQueryWithAuth, { maxRetries: 2 });
+
 export const baseApi = createApi({
   reducerPath: "baseApi",
-  baseQuery: baseQueryWithAuth,
+  baseQuery: baseQueryWithRetry,
   tagTypes: ["Auth", "User", "Order", "Category", "Brand", "Store", "Product", "Cart", "Wishlist", "MyAddress"],
   endpoints: () => ({}),
 });

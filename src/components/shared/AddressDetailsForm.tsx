@@ -1,21 +1,26 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
+import { z } from "zod";
 import { FiMapPin } from "react-icons/fi";
 
-export type AddressFormValue = {
-  fullName: string;
-  phone: string;
-  districtId: string;
-  districtName: string;
-  zoneId: string;
-  zoneName: string;
-  areaId: string;
-  areaName: string;
-  addressLine: string;
-  note: string;
-  label: "home" | "office" | "other";
-};
+export const addressSchema = z.object({
+  fullName: z.string().min(2, "Full name must be at least 2 characters"),
+  phone: z
+    .string()
+    .regex(/^01[3-9]\d{8}$/, "Enter a valid BD mobile number (e.g. 01712345678)"),
+  districtId: z.string().min(1, "Please select a district"),
+  districtName: z.string(),
+  zoneId: z.string().min(1, "Please select a zone"),
+  zoneName: z.string(),
+  areaId: z.string().min(1, "Please select an area"),
+  areaName: z.string(),
+  addressLine: z.string().min(5, "Address line must be at least 5 characters"),
+  note: z.string(),
+  label: z.enum(["home", "office", "other"]),
+});
+
+export type AddressFormValue = z.infer<typeof addressSchema>;
 
 type City = {
   city_id: number;
@@ -71,6 +76,26 @@ export default function AddressDetailsForm({
   const [areasByZone, setAreasByZone] = useState<AreaMap | null>(null);
   const [loadingZones, startLoadingZones] = useTransition();
   const [loadingAreas, startLoadingAreas] = useTransition();
+  const [touched, setTouched] = useState<Partial<Record<keyof AddressFormValue, boolean>>>({});
+
+  const fieldErrors = useMemo<Partial<Record<keyof AddressFormValue, string>>>(() => {
+    const result = addressSchema.safeParse(value);
+    if (result.success) return {};
+    const errs: Partial<Record<keyof AddressFormValue, string>> = {};
+    for (const issue of result.error.issues) {
+      const key = issue.path[0] as keyof AddressFormValue;
+      if (!errs[key]) errs[key] = issue.message;
+    }
+    return errs;
+  }, [value]);
+
+  function touch(field: keyof AddressFormValue) {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  }
+
+  function fieldError(field: keyof AddressFormValue) {
+    return touched[field] ? fieldErrors[field] : undefined;
+  }
 
   useEffect(() => {
     let active = true;
@@ -236,9 +261,11 @@ export default function AddressDetailsForm({
             type="text"
             value={value.fullName}
             onChange={(event) => updateField("fullName", event.target.value)}
+            onBlur={() => touch("fullName")}
             placeholder="Enter customer name"
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary) ${fieldError("fullName") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           />
+          {fieldError("fullName") && <p className="text-xs text-[#d2435b]">{fieldError("fullName")}</p>}
         </label>
 
         <label className="space-y-2 text-sm">
@@ -247,9 +274,11 @@ export default function AddressDetailsForm({
             type="tel"
             value={value.phone}
             onChange={(event) => updateField("phone", event.target.value)}
-            placeholder="Enter phone number"
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
+            onBlur={() => touch("phone")}
+            placeholder="01712345678"
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary) ${fieldError("phone") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           />
+          {fieldError("phone") && <p className="text-xs text-[#d2435b]">{fieldError("phone")}</p>}
         </label>
 
         <label className="space-y-2 text-sm">
@@ -257,7 +286,8 @@ export default function AddressDetailsForm({
           <select
             value={value.districtId}
             onChange={(event) => handleDistrictChange(event.target.value)}
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
+            onBlur={() => touch("districtId")}
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary) ${fieldError("districtId") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           >
             <option value="">Select district</option>
             {cities.map((city) => (
@@ -266,6 +296,7 @@ export default function AddressDetailsForm({
               </option>
             ))}
           </select>
+          {fieldError("districtId") && <p className="text-xs text-[#d2435b]">{fieldError("districtId")}</p>}
         </label>
 
         <label className="space-y-2 text-sm">
@@ -273,8 +304,9 @@ export default function AddressDetailsForm({
           <select
             value={value.zoneId}
             onChange={(event) => handleZoneChange(event.target.value)}
+            onBlur={() => touch("zoneId")}
             disabled={!value.districtId || loadingZones}
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition disabled:cursor-not-allowed disabled:bg-[#f8fafc] disabled:text-(--color-text-muted) focus:border-(--color-primary)"
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition disabled:cursor-not-allowed disabled:bg-[#f8fafc] disabled:text-(--color-text-muted) focus:border-(--color-primary) ${fieldError("zoneId") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           >
             <option value="">
               {!value.districtId ? "Select district first" : loadingZones ? "Loading zones..." : "Select zone"}
@@ -285,6 +317,7 @@ export default function AddressDetailsForm({
               </option>
             ))}
           </select>
+          {fieldError("zoneId") && <p className="text-xs text-[#d2435b]">{fieldError("zoneId")}</p>}
         </label>
 
         <label className="space-y-2 text-sm">
@@ -294,15 +327,11 @@ export default function AddressDetailsForm({
             onChange={(event) => {
               const nextAreaId = event.target.value;
               const selectedArea = areas.find((area) => String(area.area_id) === nextAreaId);
-
-              onChange({
-                ...value,
-                areaId: nextAreaId,
-                areaName: selectedArea?.area_name ?? "",
-              });
+              onChange({ ...value, areaId: nextAreaId, areaName: selectedArea?.area_name ?? "" });
             }}
+            onBlur={() => touch("areaId")}
             disabled={!value.zoneId || loadingAreas}
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition disabled:cursor-not-allowed disabled:bg-[#f8fafc] disabled:text-(--color-text-muted) focus:border-(--color-primary)"
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition disabled:cursor-not-allowed disabled:bg-[#f8fafc] disabled:text-(--color-text-muted) focus:border-(--color-primary) ${fieldError("areaId") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           >
             <option value="">
               {!value.zoneId ? "Select zone first" : loadingAreas ? "Loading areas..." : "Select area"}
@@ -313,6 +342,7 @@ export default function AddressDetailsForm({
               </option>
             ))}
           </select>
+          {fieldError("areaId") && <p className="text-xs text-[#d2435b]">{fieldError("areaId")}</p>}
         </label>
 
         <label className="space-y-2 text-sm">
@@ -321,9 +351,11 @@ export default function AddressDetailsForm({
             type="text"
             value={value.addressLine}
             onChange={(event) => updateField("addressLine", event.target.value)}
+            onBlur={() => touch("addressLine")}
             placeholder="House, road, landmark"
-            className="h-13 w-full rounded-[16px] border border-(--color-border) bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary)"
+            className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary) ${fieldError("addressLine") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           />
+          {fieldError("addressLine") && <p className="text-xs text-[#d2435b]">{fieldError("addressLine")}</p>}
         </label>
 
         {showNoteField ? (

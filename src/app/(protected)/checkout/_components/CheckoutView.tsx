@@ -6,7 +6,9 @@ import { useRouter } from "next/navigation";
 import { skipToken } from "@reduxjs/toolkit/query";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import Lottie from "lottie-react";
+import dynamic from "next/dynamic";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 import orderCompletedAnimation from "../../../../../public/images/svg/Order completed.json";
 import orderFailAnimation from "../../../../../public/images/svg/order fail.json";
 import orderLoadingAnimation from "../../../../../public/images/svg/order loading.json";
