@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { FiHome, FiGrid, FiShoppingCart, FiUser } from "react-icons/fi";
 import { useAppSelector } from "@/lib/hooks";
 import { ROUTES } from "@/config/routes";
@@ -15,6 +16,9 @@ const NAV_ITEMS = [
 
 export default function MobileBottomNav() {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const { isAuthenticated } = useAppSelector((s) => s.auth);
   const serverItemCount = useAppSelector((s) =>
     isAuthenticated ? 0 : s.guestCart.items.reduce((n, i) => n + i.quantity, 0)
@@ -44,7 +48,7 @@ export default function MobileBottomNav() {
                   size={22}
                   strokeWidth={active ? 2.5 : 1.8}
                 />
-                {isCart && serverItemCount > 0 && (
+                {isCart && mounted && serverItemCount > 0 && (
                   <span className="absolute -right-2 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-(--color-cta) px-1 text-[10px] font-bold text-white leading-none">
                     {serverItemCount > 99 ? "99+" : serverItemCount}
                   </span>

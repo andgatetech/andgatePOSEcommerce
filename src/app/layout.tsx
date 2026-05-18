@@ -1,4 +1,5 @@
 import ReduxProvider from "@/lib/providers";
+import ServiceWorkerRegistration from "@/components/shared/ServiceWorkerRegistration";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -44,7 +45,10 @@ export default function RootLayout({
   return (
     <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={`${inter.className} antialiased`}>
-        <ReduxProvider>{children}</ReduxProvider>
+        <ReduxProvider>
+          {children}
+          <ServiceWorkerRegistration />
+        </ReduxProvider>
       </body>
     </html>
   );

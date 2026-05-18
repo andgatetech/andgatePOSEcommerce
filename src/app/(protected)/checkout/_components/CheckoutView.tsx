@@ -18,6 +18,9 @@ import {
   FiCreditCard,
   FiCheckCircle,
   FiLock,
+  FiUser,
+  FiLogIn,
+  FiMail,
 } from "react-icons/fi";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import AddressDetailsForm, { type AddressFormValue } from "@/components/shared/AddressDetailsForm";
@@ -102,10 +105,14 @@ function getOrderErrorMessage(error: unknown) {
 function OrderSubmitOverlay({
   status,
   message,
+  isAccountConflict,
+  loginHref,
   onClose,
 }: {
   status: Exclude<OrderSubmitStatus, "idle">;
   message?: string;
+  isAccountConflict?: boolean;
+  loginHref?: string;
   onClose?: () => void;
 }) {
   const isLoading = status === "loading";
@@ -139,14 +146,30 @@ function OrderSubmitOverlay({
                   : "Please try again.")}
           </p>
         </div>
-        {!isLoading && !isSuccess && onClose ? (
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-2 inline-flex min-h-[42px] items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
-          >
-            Try again
-          </button>
+        {!isLoading && !isSuccess ? (
+          <div className="mt-2 flex w-full flex-col gap-2">
+            {isAccountConflict && loginHref ? (
+              <Link
+                href={loginHref}
+                className="inline-flex min-h-[42px] w-full items-center justify-center rounded-full bg-(--color-primary) px-6 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
+              >
+                Sign in to your account
+              </Link>
+            ) : null}
+            {onClose ? (
+              <button
+                type="button"
+                onClick={onClose}
+                className={`inline-flex min-h-[42px] w-full items-center justify-center rounded-full px-6 text-sm font-semibold transition ${
+                  isAccountConflict
+                    ? "border border-(--color-border) bg-white text-(--color-dark) hover:border-(--color-primary) hover:text-(--color-primary)"
+                    : "bg-(--color-primary) text-white hover:bg-(--color-primary-dark)"
+                }`}
+              >
+                {isAccountConflict ? "Use different phone / email" : "Try again"}
+              </button>
+            ) : null}
+          </div>
         ) : null}
       </div>
     </div>
@@ -245,6 +268,106 @@ function CheckoutItemRow({
   );
 }
 
+type CheckoutMode = "gate" | "guest" | "auth";
+
+function CheckoutGate({ onGuest }: { onGuest: () => void }) {
+  return (
+    <section className="relative bg-(--color-bg)">
+      <div className="mx-auto px-4 py-6 md:px-5 lg:px-7 xl:px-8 xl:py-8">
+        <div className="mb-7 flex flex-wrap items-center gap-3 text-sm text-(--color-text-muted)">
+          <Link href={ROUTES.HOME} className="inline-flex items-center gap-2 text-(--color-dark) transition hover:text-(--color-primary)">
+            <FiHome className="text-[17px]" />
+            <span>Home</span>
+          </Link>
+          <span>&bull;</span>
+          <Link href={ROUTES.CART} className="transition hover:text-(--color-primary)">Cart</Link>
+          <span>&bull;</span>
+          <span>Checkout</span>
+        </div>
+
+        <div className="mx-auto max-w-2xl">
+          <h1 className="mb-2 text-[28px] font-semibold tracking-[-0.03em] text-(--color-dark) max-sm:text-[22px]">
+            How would you like to checkout?
+          </h1>
+          <p className="mb-8 text-sm text-(--color-text-muted)">
+            Choose to continue as a guest or sign in for a faster experience.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            {/* Guest option */}
+            <button
+              type="button"
+              onClick={onGuest}
+              className="group flex flex-col items-start gap-4 rounded-[22px] border-2 border-(--color-border) bg-white p-6 text-left transition hover:border-(--color-primary) hover:shadow-[0_8px_30px_rgba(231,146,55,0.12)]"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary) transition group-hover:bg-(--color-primary) group-hover:text-white">
+                <FiUser className="text-[22px]" />
+              </div>
+              <div>
+                <p className="text-[17px] font-bold tracking-[-0.02em] text-(--color-dark)">
+                  Continue as Guest
+                </p>
+                <p className="mt-1 text-sm leading-6 text-(--color-text-muted)">
+                  No account needed. Just fill in your delivery details and place your order.
+                </p>
+              </div>
+              <ul className="mt-1 space-y-1.5 text-sm text-(--color-text-muted)">
+                {["Quick, one-page checkout", "Track order with order number", "No password required"].map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <FiCheckCircle className="shrink-0 text-[14px] text-(--color-primary)" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <span className="mt-auto inline-flex min-h-[44px] w-full items-center justify-center rounded-full bg-(--color-primary) px-5 text-sm font-semibold text-white transition group-hover:bg-(--color-primary-dark)">
+                Continue as Guest
+                <FiChevronRight className="ml-1.5" />
+              </span>
+            </button>
+
+            {/* Sign-in option */}
+            <Link
+              href={`${ROUTES.LOGIN}?callbackUrl=${encodeURIComponent(ROUTES.CHECKOUT)}`}
+              className="group flex flex-col items-start gap-4 rounded-[22px] border-2 border-(--color-border) bg-white p-6 transition hover:border-(--color-primary-900) hover:shadow-[0_8px_30px_rgba(19,45,69,0.10)]"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary-900) transition group-hover:bg-(--color-primary-900) group-hover:text-white">
+                <FiLogIn className="text-[22px]" />
+              </div>
+              <div>
+                <p className="text-[17px] font-bold tracking-[-0.02em] text-(--color-dark)">
+                  Sign In to Account
+                </p>
+                <p className="mt-1 text-sm leading-6 text-(--color-text-muted)">
+                  Use your saved addresses and track all your orders from your account.
+                </p>
+              </div>
+              <ul className="mt-1 space-y-1.5 text-sm text-(--color-text-muted)">
+                {["Use saved delivery addresses", "Full order history", "Faster future checkouts"].map((item) => (
+                  <li key={item} className="flex items-center gap-2">
+                    <FiCheckCircle className="shrink-0 text-[14px] text-(--color-primary)" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <span className="mt-auto inline-flex min-h-[44px] w-full items-center justify-center rounded-full border-2 border-(--color-primary-900) bg-white px-5 text-sm font-semibold text-(--color-primary-900) transition group-hover:bg-(--color-primary-900) group-hover:text-white">
+                Sign In
+                <FiChevronRight className="ml-1.5" />
+              </span>
+            </Link>
+          </div>
+
+          <p className="mt-5 text-center text-sm text-(--color-text-muted)">
+            New here?{" "}
+            <Link href={ROUTES.REGISTER} className="font-semibold text-(--color-primary) hover:underline">
+              Create a free account
+            </Link>
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function CheckoutView() {
   const router = useRouter();
   const dispatch = useAppDispatch();
@@ -260,12 +383,15 @@ export default function CheckoutView() {
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
   const [triggerStockCheck, { isFetching: isCheckingStockBeforeSubmit }] = useLazyCheckStockQuery();
 
+  const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>("gate");
+  const [guestEmail, setGuestEmail] = useState("");
   const [addressValue, setAddressValue] = useState<AddressFormValue>(emptyAddressFormValue);
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
   const [paymentId, setPaymentId] = useState("cash-on-delivery");
   const [orderSubmitStatus, setOrderSubmitStatus] = useState<OrderSubmitStatus>("idle");
   const [orderSubmitMessage, setOrderSubmitMessage] = useState<string | undefined>();
+  const [isAccountConflict, setIsAccountConflict] = useState(false);
 
   const isLoading = hasActiveSession ? isServerCartLoading : !guestCart.isHydrated;
   const items = hasActiveSession ? (cartData?.items ?? []) : guestCart.items;
@@ -302,12 +428,15 @@ export default function CheckoutView() {
   const activeShippingAddress = !showAddressForm && savedAddress ? savedAddress : null;
   const displayAddress = activeShippingAddress ? getAddressDisplayLines(activeShippingAddress) : null;
 
+  const FEE_DHAKA = Number(process.env.NEXT_PUBLIC_SHIPPING_FEE_DHAKA ?? 80);
+  const FEE_OUTSIDE = Number(process.env.NEXT_PUBLIC_SHIPPING_FEE_OUTSIDE_DHAKA ?? 150);
+
   const subtotal = Number(cartTotal);
   const shippingFee =
     activeShippingAddress?.city || addressValue.districtName
       ? (activeShippingAddress?.city ?? addressValue.districtName).trim().toLowerCase() === "dhaka"
-        ? 50
-        : 85
+        ? FEE_DHAKA
+        : FEE_OUTSIDE
       : 0;
   const storeShippingFees = useMemo(() => {
     const storeIds = Array.from(new Set(items.map((item) => item.store.id))).sort((a, b) => a - b);
@@ -322,6 +451,12 @@ export default function CheckoutView() {
       ? storeShippingFees.reduce((sum, fee) => sum + fee.amount, 0)
       : shippingFee;
   const total = subtotal + totalShippingFee;
+
+  useEffect(() => {
+    if (hasActiveSession && checkoutMode === "gate") {
+      setCheckoutMode("auth");
+    }
+  }, [hasActiveSession, checkoutMode]);
 
   useEffect(() => {
     if (defaultAddress) {
@@ -354,6 +489,7 @@ export default function CheckoutView() {
 
     setOrderSubmitStatus("idle");
     setOrderSubmitMessage(undefined);
+    setIsAccountConflict(false);
 
     const shippingAddress = activeShippingAddress ?? formValueToAddressPayload(addressValue);
 
@@ -432,6 +568,7 @@ export default function CheckoutView() {
         ...shippingAddress,
         name: recipientName,
         phone: recipientPhone,
+        email: checkoutMode === "guest" && guestEmail.trim() ? guestEmail.trim() : undefined,
         address_line: addressLine,
         city,
         zone,
@@ -461,10 +598,20 @@ export default function CheckoutView() {
       }, 900);
     } catch (error) {
       const message = getOrderErrorMessage(error);
+      const conflict = message.toLowerCase().includes("account already exists");
+      setIsAccountConflict(conflict);
       setOrderSubmitStatus("failure");
-      setOrderSubmitMessage(message);
-      toast.error(message);
+      setOrderSubmitMessage(
+        conflict
+          ? "An account with this phone number or email already exists. Please sign in to place your order."
+          : message
+      );
+      toast.error(conflict ? "Please sign in to continue." : message);
     }
+  }
+
+  if (checkoutMode === "gate") {
+    return <CheckoutGate onGuest={() => setCheckoutMode("guest")} />;
   }
 
   return (
@@ -473,9 +620,12 @@ export default function CheckoutView() {
         <OrderSubmitOverlay
           status={orderSubmitStatus}
           message={orderSubmitMessage}
+          isAccountConflict={isAccountConflict}
+          loginHref={`${ROUTES.LOGIN}?callbackUrl=${encodeURIComponent(ROUTES.CHECKOUT)}`}
           onClose={() => {
             setOrderSubmitStatus("idle");
             setOrderSubmitMessage(undefined);
+            setIsAccountConflict(false);
           }}
         />
       ) : null}
@@ -569,6 +719,44 @@ export default function CheckoutView() {
 
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_430px]">
           <div className="space-y-5">
+            {/* Guest identity strip */}
+            {checkoutMode === "guest" && (
+              <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
+                <div className="border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4">
+                  <h2 className="text-base font-semibold tracking-[-0.02em] text-(--color-dark)">
+                    Guest Checkout
+                  </h2>
+                  <p className="mt-0.5 text-sm text-(--color-text-muted)">
+                    Checking out without an account.{" "}
+                    <Link
+                      href={`${ROUTES.LOGIN}?callbackUrl=${encodeURIComponent(ROUTES.CHECKOUT)}`}
+                      className="font-semibold text-(--color-primary) hover:underline"
+                    >
+                      Sign in instead
+                    </Link>
+                  </p>
+                </div>
+                <div className="px-5 py-5">
+                  <label className="block">
+                    <span className="mb-1.5 block text-sm font-medium text-(--color-dark)">
+                      Email address{" "}
+                      <span className="text-(--color-text-muted) font-normal">(optional — for order confirmation)</span>
+                    </span>
+                    <div className="relative">
+                      <FiMail className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[16px] text-(--color-text-muted)" />
+                      <input
+                        type="email"
+                        value={guestEmail}
+                        onChange={(e) => setGuestEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        className="h-[46px] w-full rounded-[12px] border border-(--color-border) bg-white pl-10 pr-4 text-sm text-(--color-dark) placeholder:text-(--color-text-muted) focus:border-(--color-primary) focus:outline-none"
+                      />
+                    </div>
+                  </label>
+                </div>
+              </section>
+            )}
+
             {isLoadingMyAddress && !myAddressData ? (
               <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg) p-5">
                 <div className="h-[210px] animate-pulse rounded-[18px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />

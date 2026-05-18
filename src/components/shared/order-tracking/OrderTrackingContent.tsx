@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   FiAlertCircle,
@@ -90,10 +91,23 @@ function getTimelineRows(storeOrder: EcommerceStoreOrder) {
 }
 
 export default function OrderTrackingContent({ variant = "public" }: OrderTrackingContentProps) {
-  const [query, setQuery] = useState("");
+  const searchParams = useSearchParams();
+  const prefilledOrder = searchParams.get("order") ?? "";
+  const [query, setQuery] = useState(prefilledOrder);
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [triggerTracking, trackingState] = useLazyGetOrderTrackingQuery();
+  const autoSubmitted = useRef(false);
   const isAccount = variant === "account";
+
+  useEffect(() => {
+    if (prefilledOrder && !autoSubmitted.current) {
+      autoSubmitted.current = true;
+      setSubmittedQuery(prefilledOrder);
+      void triggerTracking(prefilledOrder);
+    }
+  // run once on mount only
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const activeOrder = trackingState.data;
   const storeOrders = activeOrder ? getStoreOrders(activeOrder) : [];

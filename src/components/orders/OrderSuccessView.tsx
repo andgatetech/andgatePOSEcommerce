@@ -10,6 +10,7 @@ import {
   FiMapPin,
   FiPackage,
   FiPhone,
+  FiSearch,
   FiShoppingBag,
   FiTruck,
 } from "react-icons/fi";
@@ -17,6 +18,7 @@ import orderCompletedAnimation from "../../../public/images/svg/Order completed.
 import orderFailAnimation from "../../../public/images/svg/order fail.json";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { loadCheckoutSuccess } from "@/lib/checkoutSuccessStorage";
+import { useAppSelector } from "@/lib/hooks";
 import type { OrderMutationResult } from "@/types";
 import {
   formatOrderCurrency,
@@ -29,6 +31,7 @@ interface OrderSuccessViewProps {
 }
 
 export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps) {
+  const { isAuthenticated } = useAppSelector((s) => s.auth);
   const [checkoutResult, setCheckoutResult] = useState<OrderMutationResult | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
@@ -36,6 +39,11 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
     setCheckoutResult(loadCheckoutSuccess(orderNumber));
     setIsHydrated(true);
   }, [orderNumber]);
+
+  const orderDetailHref = (num: string) =>
+    isAuthenticated
+      ? ROUTE_BUILDERS.orderDetail(num)
+      : `${ROUTES.ORDER_TRACKING}?order=${encodeURIComponent(num)}`;
 
   const order = checkoutResult?.data ?? null;
   const storeOrders = useMemo(() => order?.orders ?? [], [order]);
@@ -96,10 +104,17 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
           </div>
           <div className="mt-7 flex flex-wrap justify-center gap-3">
             <Link
-              href={ROUTE_BUILDERS.orderDetail(orderNumber)}
-              className="inline-flex min-h-[52px] items-center justify-center rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
+              href={orderDetailHref(orderNumber)}
+              className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full bg-(--color-primary) px-7 text-sm font-semibold text-white transition hover:bg-(--color-primary-dark)"
             >
-              Open order details
+              {isAuthenticated ? (
+                "Open order details"
+              ) : (
+                <>
+                  <FiSearch className="text-[15px]" />
+                  Track your order
+                </>
+              )}
             </Link>
             <Link
               href={ROUTES.HOME}
@@ -182,7 +197,10 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                   What happens next
                 </h2>
                 <p className="mt-3 max-w-[760px] text-sm leading-7 text-(--color-text-muted)">
-                  We have received your order and started the processing workflow. You can review protected order details from your account or return to shopping.
+                  We have received your order and started the processing workflow.{" "}
+                  {isAuthenticated
+                    ? "You can review full order details from your account or return to shopping."
+                    : "Use your order number to track the shipment status at any time."}
                 </p>
 
                 <div className="mt-6 grid gap-4 md:grid-cols-3">
@@ -210,7 +228,9 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     </div>
                     <h3 className="mt-4 text-[18px] font-semibold text-(--color-dark)">Tracking updates</h3>
                     <p className="mt-2 text-sm leading-7 text-(--color-text-muted)">
-                      Shipping and delivery updates will appear in the protected order detail page.
+                      {isAuthenticated
+                        ? "Shipping and delivery updates appear in your order detail page."
+                        : "Use the Track Order page with your order number to check delivery updates."}
                     </p>
                   </article>
                 </div>
@@ -227,10 +247,10 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                     </p>
                   </div>
                   <Link
-                    href={ROUTE_BUILDERS.orderDetail(order.order_number)}
+                    href={orderDetailHref(order.order_number)}
                     className="inline-flex items-center gap-2 text-sm font-semibold text-(--color-primary) transition hover:text-(--color-primary-dark)"
                   >
-                    Open protected order details
+                    {isAuthenticated ? "Open order details" : "Track this order"}
                     <FiArrowRight className="text-[15px]" />
                   </Link>
                 </div>
@@ -271,10 +291,17 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
                   </h2>
                   <div className="mt-5 flex flex-col gap-3">
                     <Link
-                      href={ROUTE_BUILDERS.orderDetail(order.order_number)}
-                      className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
+                      href={orderDetailHref(order.order_number)}
+                      className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-full border border-(--color-primary) bg-(--color-primary-100) px-6 text-sm font-semibold text-(--color-primary) transition hover:bg-(--color-primary) hover:text-white"
                     >
-                      View order details
+                      {isAuthenticated ? (
+                        "View order details"
+                      ) : (
+                        <>
+                          <FiSearch className="text-[15px]" />
+                          Track your order
+                        </>
+                      )}
                     </Link>
                     <Link
                       href={ROUTES.HOME}
