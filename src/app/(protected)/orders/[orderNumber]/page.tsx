@@ -16,10 +16,14 @@ export async function generateMetadata({
 
 export default async function OrderDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orderNumber: string }>;
+  searchParams: Promise<{ store_order_id?: string | string[] }>;
 }) {
   const { orderNumber } = await params;
+  const { store_order_id: storeOrderIdParam } = await searchParams;
+  const storeOrderId = Array.isArray(storeOrderIdParam) ? storeOrderIdParam[0] : storeOrderIdParam;
 
-  return <OrderDetailView orderNumber={decodeURIComponent(orderNumber)} />;
+  return <OrderDetailView orderNumber={decodeURIComponent(orderNumber)} selectedStoreOrderId={storeOrderId} />;
 }

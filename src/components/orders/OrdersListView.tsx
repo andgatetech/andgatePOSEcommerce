@@ -240,10 +240,11 @@ export default function OrdersListView({
                 const storeHref = getStoreHref(order);
                 const unitCount = getOrderSummaryUnitCount(order);
                 const dueAmount = order.due_amount ?? Math.max(Number(order.total) - Number(order.paid_amount ?? 0), 0);
+                const storeOrderId = order.store_order_id ?? order.id;
 
                 return (
                   <article
-                    key={`${order.store_order_id ?? order.id}-${order.order_number}`}
+                    key={`${storeOrderId}-${order.order_number}`}
                     className="rounded-[24px] border border-(--color-border) bg-[#fcfcfd] p-4 transition hover:border-(--color-primary-200) hover:bg-white md:p-5"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4 border-b border-(--color-border) pb-4">
@@ -254,7 +255,7 @@ export default function OrdersListView({
                         <p className="mt-2 text-sm text-(--color-text-muted)">Placed on: {order.created_at}</p>
                       </div>
                       <Link
-                        href={ROUTE_BUILDERS.orderDetail(order.order_number)}
+                        href={ROUTE_BUILDERS.orderDetail(order.order_number, storeOrderId)}
                         className="inline-flex items-center gap-2 rounded-full bg-(--color-primary) px-4 py-2 text-sm font-semibold text-white transition hover:bg-(--color-primary-900)"
                       >
                         View Details

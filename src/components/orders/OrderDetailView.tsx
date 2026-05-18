@@ -28,6 +28,7 @@ import {
 
 interface OrderDetailViewProps {
   orderNumber: string;
+  selectedStoreOrderId?: string;
 }
 
 type CheckoutSummary = {
@@ -38,6 +39,10 @@ type CheckoutSummary = {
 
 function getStoreOrderKey(storeOrder: EcommerceStoreOrder) {
   return storeOrder.store_order_id ?? storeOrder.id;
+}
+
+function isSelectedStoreOrder(storeOrder: EcommerceStoreOrder, selectedStoreOrderId?: string) {
+  return Boolean(selectedStoreOrderId) && String(getStoreOrderKey(storeOrder)) === selectedStoreOrderId;
 }
 
 function getStoreOrders(order: EcommerceOrder): EcommerceStoreOrder[] {
@@ -126,7 +131,7 @@ function getPaymentSummaryTone(storeOrders: EcommerceStoreOrder[]) {
   return statuses.length === 1 ? getPaymentStatusTone(statuses[0]).badge : "bg-[#eef5ff] text-[#2563eb]";
 }
 
-export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
+export default function OrderDetailView({ orderNumber, selectedStoreOrderId }: OrderDetailViewProps) {
   const { data: fetchedOrder, isFetching, isError, refetch } = useGetOrderQuery(orderNumber);
   const [cancelOrder, { isLoading: isCancelling }] = useCancelOrderMutation();
   const [replacementOrder, setReplacementOrder] = useState<EcommerceOrder | null>(null);
@@ -136,8 +141,29 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
   }, [orderNumber]);
 
   const order = replacementOrder ?? fetchedOrder ?? null;
-  const storeOrders = useMemo(() => (order ? getStoreOrders(order) : []), [order]);
-  const checkoutSummary = useMemo(() => (order ? getCheckoutSummary(order, storeOrders) : null), [order, storeOrders]);
+  const allStoreOrders = useMemo(() => (order ? getStoreOrders(order) : []), [order]);
+  const selectedStoreOrder = useMemo(
+    () => allStoreOrders.find((storeOrder) => isSelectedStoreOrder(storeOrder, selectedStoreOrderId)) ?? null,
+    [allStoreOrders, selectedStoreOrderId],
+  );
+  const storeOrders = useMemo(
+    () => (selectedStoreOrder ? [selectedStoreOrder] : allStoreOrders),
+    [allStoreOrders, selectedStoreOrder],
+  );
+  const isPackageDetail = Boolean(selectedStoreOrder);
+  const checkoutSummary = useMemo(() => {
+    if (!order) {
+      return null;
+    }
+
+    return isPackageDetail
+      ? {
+          subtotal: storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.subtotal), 0),
+          shipping_fee: storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.shipping_fee), 0),
+          total: storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.total), 0),
+        }
+      : getCheckoutSummary(order, storeOrders);
+  }, [isPackageDetail, order, storeOrders]);
   const totalUnits = storeOrders.reduce((sum, storeOrder) => sum + getStoreOrderItemCount(storeOrder), 0);
   const canCancel = storeOrders.some((storeOrder) => isOrderCancellable(storeOrder.status));
   const paidAmount = storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.paid_amount ?? 0), 0);
@@ -268,7 +294,7 @@ export default function OrderDetailView({ orderNumber }: OrderDetailViewProps) {
               <div>
                 <p className="text-[16px] font-medium text-[#0f172a]">Order No: #{order.order_number}</p>
                 <p className="mt-1 text-sm text-[#475467]">
-                  Package collection for this checkout
+                  {isPackageDetail ? "Selected package for this checkout" : "Package collection for this checkout"}
                 </p>
               </div>
               <span className={`rounded px-3 py-1 text-xs font-semibold ${getPaymentSummaryTone(storeOrders)}`}>

@@ -41,7 +41,8 @@ export const ROUTE_BUILDERS = {
   categoryDetail: (slug: string) => `${ROUTES.CATEGORY}/${slug}`,
   brandDetail: (slug: string) => `${ROUTES.BRAND}/${slug}`,
   productDetail: (slug: string) => `${ROUTES.PRODUCT}/${slug}`,
-  orderDetail: (orderNumber: string) => `${ROUTES.ORDERS}/${orderNumber}`,
+  orderDetail: (orderNumber: string, storeOrderId?: number | string) =>
+    `${ROUTES.ORDERS}/${orderNumber}${storeOrderId ? `?store_order_id=${encodeURIComponent(String(storeOrderId))}` : ""}`,
   orderSuccess: (orderNumber: string) => `${ROUTES.ORDERS}/${orderNumber}/order-success`,
 } as const;
 
