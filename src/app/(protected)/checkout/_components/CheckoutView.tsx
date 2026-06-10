@@ -29,6 +29,7 @@ import AddressDetailsForm, { type AddressFormValue } from "@/components/shared/A
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetMyAddressesQuery } from "@/features/account/myAddressApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { useGetPathaoCitiesQuery } from "@/features/locations/locationApi";
 import {
   emptyAddressFormValue,
   formValueToAddressPayload,
@@ -384,6 +385,7 @@ export default function CheckoutView() {
   });
   const [createOrder, { isLoading: isSubmitting }] = useCreateOrderMutation();
   const [triggerStockCheck, { isFetching: isCheckingStockBeforeSubmit }] = useLazyCheckStockQuery();
+  useGetPathaoCitiesQuery();
 
   const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>("gate");
   const [guestEmail, setGuestEmail] = useState("");

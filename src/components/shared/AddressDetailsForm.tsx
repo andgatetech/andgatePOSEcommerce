@@ -1,8 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { z } from "zod";
 import { FiMapPin } from "react-icons/fi";
+import {
+  useGetPathaoAreasQuery,
+  useGetPathaoCitiesQuery,
+  useGetPathaoZonesQuery,
+} from "@/features/locations/locationApi";
 
 export const addressSchema = z.object({
   fullName: z.string().min(2, "Full name must be at least 2 characters"),
@@ -21,24 +26,6 @@ export const addressSchema = z.object({
 });
 
 export type AddressFormValue = z.infer<typeof addressSchema>;
-
-type City = {
-  city_id: number;
-  city_name: string;
-};
-
-type Zone = {
-  zone_id: number;
-  zone_name: string;
-};
-
-type Area = {
-  area_id: number;
-  area_name: string;
-};
-
-type ZoneMap = Record<string, Zone[]>;
-type AreaMap = Record<string, Area[]>;
 
 type AddressDetailsFormProps = {
   value: AddressFormValue;
@@ -71,12 +58,14 @@ export default function AddressDetailsForm({
   showNoteField = true,
   className = "",
 }: AddressDetailsFormProps) {
-  const [cities, setCities] = useState<City[]>([]);
-  const [zonesByCity, setZonesByCity] = useState<ZoneMap | null>(null);
-  const [areasByZone, setAreasByZone] = useState<AreaMap | null>(null);
-  const [loadingZones, startLoadingZones] = useTransition();
-  const [loadingAreas, startLoadingAreas] = useTransition();
   const [touched, setTouched] = useState<Partial<Record<keyof AddressFormValue, boolean>>>({});
+  const { data: cities = [], isFetching: loadingCities } = useGetPathaoCitiesQuery();
+  const { currentData: zones = [], isFetching: loadingZones } = useGetPathaoZonesQuery(value.districtId, {
+    skip: !value.districtId,
+  });
+  const { currentData: areas = [], isFetching: loadingAreas } = useGetPathaoAreasQuery(value.zoneId, {
+    skip: !value.zoneId,
+  });
 
   const fieldErrors = useMemo<Partial<Record<keyof AddressFormValue, string>>>(() => {
     const result = addressSchema.safeParse(value);
@@ -98,28 +87,6 @@ export default function AddressDetailsForm({
   }
 
   useEffect(() => {
-    let active = true;
-
-    async function loadCities() {
-      const response = await fetch("/data/pathao/pathao-cities.json");
-      const data = (await response.json()) as City[];
-      if (active) {
-        setCities(data);
-      }
-    }
-
-    loadCities().catch(() => {
-      if (active) {
-        setCities([]);
-      }
-    });
-
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  useEffect(() => {
     if (!value.districtId && value.districtName && cities.length > 0) {
       const matchedCity = cities.find(
         (city) => city.city_name.toLowerCase() === value.districtName.toLowerCase(),
@@ -134,36 +101,6 @@ export default function AddressDetailsForm({
       }
     }
   }, [cities, onChange, value]);
-
-  async function ensureZonesLoaded() {
-    if (zonesByCity) return;
-    const response = await fetch("/data/pathao/pathao-zones-by-city.json");
-    const data = (await response.json()) as ZoneMap;
-    setZonesByCity(data);
-  }
-
-  async function ensureAreasLoaded() {
-    if (areasByZone) return;
-    const response = await fetch("/data/pathao/pathao-areas-by-zone.json");
-    const data = (await response.json()) as AreaMap;
-    setAreasByZone(data);
-  }
-
-  useEffect(() => {
-    if (value.districtId && !zonesByCity) {
-      startLoadingZones(() => {
-        void ensureZonesLoaded();
-      });
-    }
-  }, [value.districtId, zonesByCity]);
-
-  useEffect(() => {
-    if (value.zoneId && !areasByZone) {
-      startLoadingAreas(() => {
-        void ensureAreasLoaded();
-      });
-    }
-  }, [value.zoneId, areasByZone]);
 
   function updateField<Key extends keyof AddressFormValue>(field: Key, fieldValue: AddressFormValue[Key]) {
     onChange({ ...value, [field]: fieldValue });
@@ -181,11 +118,6 @@ export default function AddressDetailsForm({
       areaId: "",
       areaName: "",
     });
-
-    if (!nextDistrictId) return;
-    startLoadingZones(() => {
-      void ensureZonesLoaded();
-    });
   }
 
   function handleZoneChange(nextZoneId: string) {
@@ -198,15 +130,7 @@ export default function AddressDetailsForm({
       areaId: "",
       areaName: "",
     });
-
-    if (!nextZoneId) return;
-    startLoadingAreas(() => {
-      void ensureAreasLoaded();
-    });
   }
-
-  const zones = value.districtId && zonesByCity ? zonesByCity[value.districtId] ?? [] : [];
-  const areas = value.zoneId && areasByZone ? areasByZone[value.zoneId] ?? [] : [];
 
   useEffect(() => {
     if (!value.zoneId && value.zoneName && zones.length > 0) {
@@ -287,9 +211,10 @@ export default function AddressDetailsForm({
             value={value.districtId}
             onChange={(event) => handleDistrictChange(event.target.value)}
             onBlur={() => touch("districtId")}
+            disabled={loadingCities}
             className={`h-13 w-full rounded-[16px] border bg-(--color-bg) px-4 text-(--color-dark) outline-none transition focus:border-(--color-primary) ${fieldError("districtId") ? "border-[#d2435b]" : "border-(--color-border)"}`}
           >
-            <option value="">Select district</option>
+            <option value="">{loadingCities ? "Loading districts..." : "Select district"}</option>
             {cities.map((city) => (
               <option key={city.city_id} value={city.city_id}>
                 {city.city_name}

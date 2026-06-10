@@ -5,6 +5,23 @@ export const runtime = "edge";
 
 const isDev = process.env.NODE_ENV === "development";
 
+function originFromEnv(value: string | undefined): string | null {
+  if (!value) return null;
+
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
+
+const apiOrigin = originFromEnv(process.env.NEXT_PUBLIC_API_URL);
+const imageOrigin = originFromEnv(process.env.NEXT_PUBLIC_IMAGE_BASE_URL);
+
+function cspSources(...sources: Array<string | null | undefined>) {
+  return Array.from(new Set(sources.filter(Boolean))).join(" ");
+}
+
 export function middleware(request: NextRequest) {
   const nonce = btoa(crypto.randomUUID());
 
@@ -14,6 +31,15 @@ export function middleware(request: NextRequest) {
     ? `script-src 'self' 'nonce-${nonce}' 'unsafe-eval' https://accounts.google.com`
     : `script-src 'self' 'nonce-${nonce}' https://accounts.google.com`;
 
+  const imageSources = cspSources("'self'", "data:", "blob:", "https://api.andgatepos.com", imageOrigin);
+  const connectSources = cspSources(
+    "'self'",
+    "https://api.andgatepos.com",
+    "https://accounts.google.com",
+    apiOrigin,
+    imageOrigin,
+  );
+
   const csp = [
     "default-src 'self'",
     "base-uri 'self'",
@@ -22,9 +48,9 @@ export function middleware(request: NextRequest) {
     scriptSrc,
     // 'unsafe-inline' kept — React style={{}} props produce HTML style="" attributes which cannot be nonced
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https://api.andgatepos.com",
+    `img-src ${imageSources}`,
     "font-src 'self' data:",
-    "connect-src 'self' https://api.andgatepos.com https://accounts.google.com",
+    `connect-src ${connectSources}`,
     "worker-src 'self'",
     "manifest-src 'self'",
     "media-src 'self'",

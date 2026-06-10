@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import {
   FaChevronRight,
@@ -29,6 +30,12 @@ const accountLinks = [
   { label: "Wishlist", href: ROUTES.WISHLIST },
   { label: "Affiliate Program", href: ROUTES.AFFILIATE },
   { label: "FAQs", href: ROUTES.FAQS },
+];
+
+const deliveryPartners = [
+  { name: "Pathao", logo: "/images/delivery/pathao.svg" },
+  { name: "REDX", logo: "/images/delivery/redx.svg" },
+  { name: "Steadfast", logo: "/images/delivery/steadfast.svg" },
 ];
 
 export default function Footer() {
@@ -227,6 +234,35 @@ export default function Footer() {
               </ul>
             </div>
 
+          </div>
+
+          {/* Delivery partners */}
+          <div className="flex flex-col items-start justify-between gap-5 border-b border-white/10 py-6 lg:flex-row lg:items-center">
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-widest text-white">
+                Supported Delivery Partners
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-(--color-secondary-200)">
+                We support deliveries through Pathao, REDX, and Steadfast.
+              </p>
+            </div>
+            <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:justify-end">
+              {deliveryPartners.map((partner) => (
+                <div
+                  key={partner.name}
+                  className="flex h-12 w-[122px] items-center justify-center rounded-lg border border-white/10 bg-white px-4"
+                >
+                  <Image
+                    src={partner.logo}
+                    alt={`${partner.name} logo`}
+                    width={94}
+                    height={28}
+                    loading="lazy"
+                    className="max-h-7 max-w-[94px] object-contain"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Bottom bar */}

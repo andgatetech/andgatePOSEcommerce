@@ -29,6 +29,11 @@ export const API_ROUTES = {
     MY_ADDRESS: "/my-address",
     MY_ACCOUNT: "/my-account",
   },
+  ECOMMERCE_LOCATIONS: {
+    CITIES: "/locations/cities",
+    ZONES: (cityId: string | number) => `/locations/cities/${cityId}/zones` as const,
+    AREAS: (zoneId: string | number) => `/locations/zones/${zoneId}/areas` as const,
+  },
   ECOMMERCE_WISHLIST: {
     WISHLIST: "/wishlist",
     WISHLIST_TOGGLE: "/wishlist/toggle",
