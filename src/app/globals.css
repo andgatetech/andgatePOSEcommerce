@@ -382,3 +382,11 @@ html { scroll-behavior: smooth; }
   46%  { transform: translate(-50%, calc(-50% + 3px));  opacity:0; }
   100% { transform: translate(-50%, calc(-50% + 3px));  opacity:0; }
 }
+
+body.cart-drawer-open .product-detail-sticky-atc,
+body[data-cart-drawer-open="true"] .product-detail-sticky-atc {
+  transform: translateY(100%) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+}

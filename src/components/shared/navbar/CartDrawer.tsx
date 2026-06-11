@@ -206,7 +206,10 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
   useEffect(() => {
     if (!isOpen) return;
     const previousOverflow = document.body.style.overflow;
+    const previousCartDrawerState = document.body.dataset.cartDrawerOpen;
     document.body.style.overflow = "hidden";
+    document.body.dataset.cartDrawerOpen = "true";
+    document.body.classList.add("cart-drawer-open");
     window.requestAnimationFrame(() => closeButtonRef.current?.focus());
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -231,6 +234,12 @@ export default function CartDrawer({ isOpen, items, isAuthenticated, onClose }: 
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
+      if (previousCartDrawerState === undefined) {
+        delete document.body.dataset.cartDrawerOpen;
+      } else {
+        document.body.dataset.cartDrawerOpen = previousCartDrawerState;
+      }
+      document.body.classList.remove("cart-drawer-open");
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isOpen, onClose]);

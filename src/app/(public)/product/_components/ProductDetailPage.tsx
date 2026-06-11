@@ -1128,7 +1128,8 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
       {/* Sticky Add-to-Cart Bar */}
       <div
-        className={`fixed bottom-16 xl:bottom-0 left-0 right-0 z-30 border-t border-(--color-border) bg-white shadow-[0_-4px_24px_rgba(17,17,17,0.10)] transition-all duration-300 ${
+        suppressHydrationWarning
+        className={`product-detail-sticky-atc fixed bottom-16 xl:bottom-0 left-0 right-0 z-30 border-t border-(--color-border) bg-white shadow-[0_-4px_24px_rgba(17,17,17,0.10)] transition-all duration-300 ${
           stickyAtcVisible ? "translate-y-0 opacity-100" : "translate-y-full opacity-0 pointer-events-none"
         }`}
       >
