@@ -21,6 +21,7 @@ import orderFailAnimation from "../../../public/images/svg/order fail.json";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { loadCheckoutSuccess } from "@/lib/checkoutSuccessStorage";
 import { useAppSelector } from "@/lib/hooks";
+import { trackMetaPixel } from "@/lib/metaPixel";
 import type { OrderMutationResult } from "@/types";
 import {
   formatOrderCurrency,
@@ -55,6 +56,31 @@ export default function OrderSuccessView({ orderNumber }: OrderSuccessViewProps)
   const checkoutSubtotal = order?.checkout_summary?.subtotal ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.subtotal), 0);
   const checkoutShipping = order?.checkout_summary?.shipping_fee ?? storeOrders.reduce((sum, storeOrder) => sum + Number(storeOrder.shipping_fee), 0);
   const paymentMethod = storeOrders[0]?.payment_method;
+
+  useEffect(() => {
+    if (!order) return;
+
+    for (const storeOrder of storeOrders) {
+      const dedupeKey = `meta-purchase:${order.order_number}:${storeOrder.id}`;
+      if (window.localStorage.getItem(dedupeKey)) {
+        continue;
+      }
+
+      const orderItems = storeOrder.items ?? [];
+      trackMetaPixel(storeOrder.store?.meta_pixel_id, "Purchase", {
+        content_type: "product",
+        content_ids: orderItems.map((item) => String(item.stock_id ?? item.id)),
+        num_items: orderItems.reduce((sum, item) => sum + item.quantity, 0),
+        value: Number(storeOrder.total),
+        currency: "BDT",
+        order_id: `${order.order_number}-${storeOrder.id}`,
+        store_slug: storeOrder.store?.slug,
+        content_name: storeOrder.store?.store_name,
+      });
+
+      window.localStorage.setItem(dedupeKey, "1");
+    }
+  }, [order, storeOrders]);
 
   if (!isHydrated) {
     return (

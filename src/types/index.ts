@@ -94,6 +94,9 @@ export interface Store {
   store_number: string | null;
   store_contact: string | null;
   logo_path: string | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  meta_pixel_id?: string | null;
 }
 
 export type {
@@ -128,6 +131,7 @@ export interface CartStoreRef {
   id: number;
   store_name: string;
   slug: string;
+  meta_pixel_id?: string | null;
 }
 
 export interface CartItemData {
@@ -283,6 +287,7 @@ export interface EcommerceOrderStoreRef {
   id: number;
   store_name: string;
   slug?: string;
+  meta_pixel_id?: string | null;
 }
 
 export interface EcommerceOrderSourceRef {
@@ -412,6 +417,7 @@ export interface EcommerceProductImage {
 export interface EcommerceProductSoldBy {
   store_name: string;
   store_slug: string;
+  meta_pixel_id?: string | null;
 }
 
 export interface EcommerceProductCategory {

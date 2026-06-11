@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import MetaPixelEventOnMount from "@/components/analytics/MetaPixelEventOnMount";
 import ProductDetailPage from "@/app/(public)/product/_components/ProductDetailPage";
 import { API_ROUTES } from "@/config/apiRoutes";
 import { resolveImageUrl } from "@/lib/imageUrl";
@@ -107,5 +108,31 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound();
   }
 
-  return <ProductDetailPage product={product} />;
+  return (
+    <>
+      <MetaPixelEventOnMount
+        pixelId={product.sold_by.meta_pixel_id}
+        eventName="PageView"
+        params={{
+          content_category: "Product",
+          content_name: product.product_name,
+          content_ids: [String(product.id)],
+          store_slug: product.sold_by.store_slug,
+        }}
+      />
+      <MetaPixelEventOnMount
+        pixelId={product.sold_by.meta_pixel_id}
+        eventName="ViewContent"
+        params={{
+          content_type: "product",
+          content_name: product.product_name,
+          content_ids: [String(product.id)],
+          value: Number(product.price),
+          currency: "BDT",
+          store_slug: product.sold_by.store_slug,
+        }}
+      />
+      <ProductDetailPage product={product} />
+    </>
+  );
 }

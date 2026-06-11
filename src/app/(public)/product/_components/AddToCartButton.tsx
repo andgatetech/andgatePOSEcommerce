@@ -7,6 +7,7 @@ import {
 import { addGuestCartItem, type GuestCartProduct } from "@/features/cart/guestCartSlice";
 import { isTokenExpired } from "@/features/auth/authStorage";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { trackMetaPixel } from "@/lib/metaPixel";
 import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { FiShoppingCart } from "react-icons/fi";
@@ -26,6 +27,17 @@ interface AddToCartButtonProps {
 
 /** Animation duration — API call and timer run in parallel via Promise.all */
 const ANIM_MS = 1800;
+
+function trackAddToCart(product: GuestCartProduct, quantity: number) {
+  trackMetaPixel(product.store.meta_pixel_id, "AddToCart", {
+    content_type: "product",
+    content_name: product.product_name,
+    content_ids: [String(product.id)],
+    value: Number(product.price) * quantity,
+    currency: "BDT",
+    store_slug: product.store.slug,
+  });
+}
 
 export default function AddToCartButton({
   stockId,
@@ -71,6 +83,7 @@ export default function AddToCartButton({
     if (!hasActiveSession) {
       await animTimer;
       dispatch(addGuestCartItem({ product, quantity }));
+      trackAddToCart(product, quantity);
       toast.success("Added to cart!");
       setAnimState("success");
       resetTimer.current = setTimeout(() => setAnimState("idle"), 2000);
@@ -94,6 +107,7 @@ export default function AddToCartButton({
       await updateCartItem({ cart_id: result.data.data.id, quantity });
     }
 
+    trackAddToCart(product, quantity);
     toast.success(result.data?.message ?? "Added to cart!");
     setAnimState("success");
     resetTimer.current = setTimeout(() => setAnimState("idle"), 2000);

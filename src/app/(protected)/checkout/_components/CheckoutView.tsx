@@ -43,6 +43,7 @@ import { useCreateOrderMutation } from "@/features/orders/ordersApi";
 import { getBackendMessage } from "@/lib/apiMessage";
 import { saveCheckoutSuccess } from "@/lib/checkoutSuccessStorage";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { trackMetaPixel } from "@/lib/metaPixel";
 import type { CartItemData, CreateOrderRequest } from "@/types";
 
 type PaymentOption = {
@@ -502,12 +503,76 @@ export default function CheckoutView() {
       ? storeShippingFees.reduce((sum, fee) => sum + fee.amount, 0)
       : shippingFee;
   const total = subtotal + totalShippingFee;
+  const checkoutStoreGroups = useMemo(() => {
+    const groups = new Map<
+      number,
+      {
+        storeId: number;
+        storeName: string;
+        storeSlug: string;
+        pixelId?: string | null;
+        subtotal: number;
+        itemCount: number;
+        contentIds: string[];
+      }
+    >();
+
+    for (const item of items) {
+      const current = groups.get(item.store.id) ?? {
+        storeId: item.store.id,
+        storeName: item.store.store_name,
+        storeSlug: item.store.slug,
+        pixelId: item.store.meta_pixel_id,
+        subtotal: 0,
+        itemCount: 0,
+        contentIds: [],
+      };
+
+      current.subtotal += Number(item.subtotal);
+      current.itemCount += item.quantity;
+      current.contentIds.push(String(item.stock.id));
+      groups.set(item.store.id, current);
+    }
+
+    return Array.from(groups.values());
+  }, [items]);
 
   useEffect(() => {
     if (hasActiveSession && checkoutMode === "gate") {
       setCheckoutMode("auth");
     }
   }, [hasActiveSession, checkoutMode]);
+
+  useEffect(() => {
+    if (isLoading || checkoutMode === "gate" || checkoutStoreGroups.length === 0) {
+      return;
+    }
+
+    for (const group of checkoutStoreGroups) {
+      const dedupeKey = [
+        "meta-initiate-checkout",
+        group.storeId,
+        group.contentIds.join(","),
+        group.itemCount,
+        group.subtotal.toFixed(2),
+      ].join(":");
+
+      if (window.sessionStorage.getItem(dedupeKey)) {
+        continue;
+      }
+
+      trackMetaPixel(group.pixelId, "InitiateCheckout", {
+        content_type: "product",
+        content_ids: group.contentIds,
+        num_items: group.itemCount,
+        value: Number(group.subtotal.toFixed(2)),
+        currency: "BDT",
+        store_slug: group.storeSlug,
+        content_name: group.storeName,
+      });
+      window.sessionStorage.setItem(dedupeKey, "1");
+    }
+  }, [checkoutMode, checkoutStoreGroups, isLoading]);
 
   useEffect(() => {
     if (defaultAddress) {

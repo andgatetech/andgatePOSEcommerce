@@ -12,6 +12,7 @@ export const API_ROUTES = {
     PRODUCTS: "/products",
     POPULAR_PRODUCTS: "/products/popular",
     DEALS_OF_DAY: "/products/deals-of-day",
+    STORE_DETAIL: (slug: string) => `/stores/${slug}` as const,
   },
   ECOMMERCE_CART: {
     CART: "/cart",

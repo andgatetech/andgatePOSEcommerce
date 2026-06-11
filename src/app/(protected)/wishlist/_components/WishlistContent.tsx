@@ -15,6 +15,7 @@ import {
 import { ROUTES } from "@/config/routes";
 import { WishlistTableSkeleton } from "@/components/shared/Skeletons";
 import { resolveImageUrl } from "@/lib/imageUrl";
+import { trackMetaPixel } from "@/lib/metaPixel";
 import { useGetWishlistQuery, useRemoveWishlistItemMutation } from "@/features/wishlist/wishlistApi";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
 import type { WishlistItemData } from "@/types";
@@ -83,6 +84,14 @@ function WishlistItemRow({
     if ("error" in result) {
       toast.error("Failed to add to cart.");
     } else if ("data" in result) {
+      trackMetaPixel(item.store.meta_pixel_id, "AddToCart", {
+        content_type: "product",
+        content_name: item.stock.product_name,
+        content_ids: [String(item.stock.id)],
+        value: Number(item.stock.price),
+        currency: "BDT",
+        store_slug: item.store.slug,
+      });
       const msg = result.data.data ? result.data.message : "Added to cart!";
       toast.success(msg);
     }

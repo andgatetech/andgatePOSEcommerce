@@ -3,22 +3,24 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { FiChevronRight, FiHome, FiShoppingBag } from "react-icons/fi";
+import MetaPixelEventOnMount from "@/components/analytics/MetaPixelEventOnMount";
 import ProductPageDataProvider from "@/app/(public)/product/_components/ProductPageDataProvider";
 import Container from "@/components/shared/Container";
+import { API_ROUTES } from "@/config/apiRoutes";
 import { ROUTES } from "@/config/routes";
 import { resolveStoreLogoUrl } from "@/lib/storeLogo";
 import { serverFetchJson } from "@/lib/serverFetch";
-import type { PaginatedResponse, Store, Category, Brand } from "@/types";
+import type { ApiResponse, PaginatedResponse, Store, Category, Brand } from "@/types";
 
 async function getStoreBySlug(slug: string): Promise<Store | null> {
   try {
-    const response = await serverFetchJson<PaginatedResponse<Store>>("/stores", {
-      per_page: 100,
-      sort_field: "store_name",
-      sort_direction: "asc",
-    });
+    const response = await serverFetchJson<ApiResponse<Store | null>>(
+      API_ROUTES.ECOMMERCE_CATALOG.STORE_DETAIL(slug),
+      undefined,
+      { revalidate: 60 },
+    );
 
-    return response.data.items.find((item) => item.slug === slug) ?? null;
+    return response.success ? response.data : null;
   } catch {
     return null;
   }
@@ -38,9 +40,29 @@ export async function generateMetadata({
     };
   }
 
+  const title = store.seo_title?.trim() || store.store_name;
+  const description = store.seo_description?.trim() || `Browse ${store.store_name} on Hawkeri.`;
+  const canonical = `/store/${store.slug}`;
+  const image = resolveStoreLogoUrl(store.logo_path) ?? undefined;
+
   return {
-    title: store.store_name,
-    description: `Browse ${store.store_name} on Hawkeri.`,
+    title,
+    description,
+    alternates: {
+      canonical,
+    },
+    openGraph: {
+      title,
+      description,
+      url: canonical,
+      images: image ? [{ url: image, alt: store.store_name }] : undefined,
+    },
+    twitter: {
+      card: image ? "summary_large_image" : "summary",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
   };
 }
 
@@ -82,6 +104,15 @@ export default async function StoreDetailPage({
 
   return (
     <section className="bg-(--color-bg)">
+      <MetaPixelEventOnMount
+        pixelId={store.meta_pixel_id}
+        eventName="PageView"
+        params={{
+          content_category: "Store",
+          content_name: store.store_name,
+          store_slug: store.slug,
+        }}
+      />
       <Container className="py-8 xl:py-10">
         <div className="mb-7 flex items-center gap-3 text-sm text-(--color-text-muted)">
           <Link
