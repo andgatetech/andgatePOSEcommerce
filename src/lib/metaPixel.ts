@@ -70,6 +70,7 @@ export function initMetaPixel(pixelId?: string | null) {
   if (!fbq) return null;
 
   if (!initializedPixels.has(normalizedPixelId)) {
+    fbq("set", "autoConfig", false, normalizedPixelId);
     fbq("init", normalizedPixelId);
     initializedPixels.add(normalizedPixelId);
   }

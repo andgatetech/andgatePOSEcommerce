@@ -17,7 +17,7 @@ async function getStoreBySlug(slug: string): Promise<Store | null> {
     const response = await serverFetchJson<ApiResponse<Store | null>>(
       API_ROUTES.ECOMMERCE_CATALOG.STORE_DETAIL(slug),
       undefined,
-      { revalidate: 60 },
+      { cache: "no-store" },
     );
 
     return response.success ? response.data : null;

@@ -34,7 +34,7 @@ async function getProduct(slug: string): Promise<EcommerceProduct | null> {
     const response = await serverFetchJson<ApiResponse<EcommerceProduct | null>>(
       `${API_ROUTES.ECOMMERCE_CATALOG.PRODUCTS}/${slug}`,
       undefined,
-      { revalidate: 60 },
+      { cache: "no-store" },
     );
     return response.success ? response.data : null;
   } catch {

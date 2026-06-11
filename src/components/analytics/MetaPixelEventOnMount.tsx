@@ -17,7 +17,20 @@ export default function MetaPixelEventOnMount({
   const serializedParams = useMemo(() => JSON.stringify(params), [params]);
 
   useEffect(() => {
-    trackMetaPixel(pixelId, eventName, JSON.parse(serializedParams) as MetaPixelParams);
+    if (!pixelId) return;
+
+    const eventParams = {
+      page_url: window.location.href,
+      ...(JSON.parse(serializedParams) as MetaPixelParams),
+    };
+    const eventKey = `meta-pixel-event:${pixelId.trim()}:${eventName}:${window.location.href}:${serializedParams}`;
+    const now = Date.now();
+    const lastSentAt = Number(window.sessionStorage.getItem(eventKey) || 0);
+
+    if (now - lastSentAt < 10000) return;
+
+    window.sessionStorage.setItem(eventKey, String(now));
+    trackMetaPixel(pixelId, eventName, eventParams);
   }, [eventName, pixelId, serializedParams]);
 
   return null;
