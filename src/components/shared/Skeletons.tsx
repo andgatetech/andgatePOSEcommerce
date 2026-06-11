@@ -770,15 +770,6 @@ export function CheckoutPageSkeleton() {
     <section className="bg-[#f6f8fb] px-4 py-8 md:px-8 lg:px-12 lg:py-10">
       <div className="mx-auto">
         <div className="rounded-[32px] border border-[rgba(20,33,43,0.08)] bg-white p-6 md:p-8">
-          <div className="flex flex-wrap items-center justify-center gap-4 pb-6">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex items-center gap-2">
-                <SkeletonBlock className="h-8 w-8 rounded-full" />
-                <SkeletonBlock className="h-4 w-16" />
-                {index < 2 ? <SkeletonBlock className="hidden h-px w-12 sm:block" /> : null}
-              </div>
-            ))}
-          </div>
           <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
             <div className="space-y-5">
               <SkeletonBlock className="h-6 w-36" />

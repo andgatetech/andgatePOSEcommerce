@@ -16,8 +16,6 @@ import {
   FiChevronRight,
   FiHome,
   FiShoppingBag,
-  FiMapPin,
-  FiCreditCard,
   FiCheckCircle,
   FiLock,
   FiUser,
@@ -700,56 +698,6 @@ export default function CheckoutView() {
           </Link>
           <span>&bull;</span>
           <span>Checkout</span>
-        </div>
-
-        {/* Checkout Progress Stepper */}
-        <div className="mb-7 flex items-center justify-center gap-0">
-          {[
-            { icon: FiMapPin, label: "Address", step: 1 },
-            { icon: FiCreditCard, label: "Payment", step: 2 },
-            { icon: FiCheckCircle, label: "Confirm", step: 3 },
-          ].map(({ icon: Icon, label, step }, idx) => {
-            const isComplete =
-              step === 1
-                ? !!(activeShippingAddress || addressValue.addressLine)
-                : step === 2
-                  ? !!paymentId
-                  : false;
-            const isActive = step === 3 ? false : step === 1 ? !isComplete : isComplete;
-            return (
-              <div key={step} className="flex items-center">
-                <div className="flex flex-col items-center gap-1.5">
-                  <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${
-                      isComplete
-                        ? "border-(--color-primary) bg-(--color-primary) text-white"
-                        : isActive
-                          ? "border-(--color-primary) bg-(--color-primary-100) text-(--color-primary)"
-                          : "border-(--color-border) bg-white text-(--color-text-muted)"
-                    }`}
-                  >
-                    <Icon size={18} />
-                  </div>
-                  <span
-                    className={`text-xs font-medium ${
-                      isComplete || isActive
-                        ? "text-(--color-primary)"
-                        : "text-(--color-text-muted)"
-                    }`}
-                  >
-                    {label}
-                  </span>
-                </div>
-                {idx < 2 && (
-                  <div
-                    className={`mb-5 h-0.5 w-16 sm:w-24 mx-1 rounded-full transition-all ${
-                      isComplete ? "bg-(--color-primary)" : "bg-(--color-border)"
-                    }`}
-                  />
-                )}
-              </div>
-            );
-          })}
         </div>
 
         <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
