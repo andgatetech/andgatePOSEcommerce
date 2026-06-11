@@ -14,6 +14,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { setUser } from "@/features/auth/authSlice";
+import { ProfilePanelSkeleton } from "@/components/shared/Skeletons";
 import { useGetMyAccountQuery, useUpdateMyAccountMutation } from "@/features/account/myAccountApi";
 import { loadStoredAuth, saveStoredAuth } from "@/features/auth/authStorage";
 import { useAppDispatch } from "@/lib/hooks";
@@ -268,11 +269,7 @@ export default function MyAccountProfilePanel() {
   }
 
   if (isFetching && !user) {
-    return (
-      <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-        <div className="h-[520px] animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
-      </div>
-    );
+    return <ProfilePanelSkeleton />;
   }
 
   if (isError || !user) {

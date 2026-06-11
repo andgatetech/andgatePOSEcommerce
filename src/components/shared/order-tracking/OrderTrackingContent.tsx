@@ -16,6 +16,7 @@ import {
   FiTruck,
 } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
+import { OrderTrackingResultSkeleton } from "@/components/shared/Skeletons";
 import { useLazyGetOrderTrackingQuery } from "@/features/orders/orderTrackingApi";
 import type { EcommerceOrder, EcommerceStoreOrder } from "@/types";
 import {
@@ -186,7 +187,7 @@ export default function OrderTrackingContent({ variant = "public" }: OrderTracki
         ) : null}
 
         {trackingState.isFetching ? (
-          <div className="mt-8 h-[420px] animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
+          <OrderTrackingResultSkeleton />
         ) : null}
 
         {trackingState.isError ? (

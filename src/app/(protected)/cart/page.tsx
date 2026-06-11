@@ -19,6 +19,7 @@ import { ROUTES } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { getStockQuantityMap, getStockIssues } from "@/lib/stockCheck";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
+import { CartContentSkeleton } from "@/components/shared/Skeletons";
 import {
   useCheckStockQuery,
   useGetCartQuery,
@@ -424,9 +425,7 @@ export default function CartPage() {
         
 
         {isLoading ? (
-          <div className="flex min-h-[300px] items-center justify-center text-(--color-text-muted)">
-            Loading cart…
-          </div>
+          <CartContentSkeleton />
         ) : items.length === 0 ? (
           <div className="flex min-h-[300px] flex-col items-center justify-center gap-4 text-(--color-text-muted)">
             <FiShoppingBag size={48} className="opacity-30" />

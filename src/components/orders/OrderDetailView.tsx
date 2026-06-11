@@ -8,6 +8,7 @@ import { FiAlertCircle, FiArrowLeft, FiHome, FiPackage, FiRefreshCw, FiTruck } f
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import Container from "@/components/shared/Container";
+import { OrderDetailSkeleton } from "@/components/shared/Skeletons";
 import { useCancelOrderMutation, useGetOrderQuery } from "@/features/orders/ordersApi";
 import { getBackendMessage } from "@/lib/apiMessage";
 import { resolveImageUrl } from "@/lib/imageUrl";
@@ -225,16 +226,7 @@ export default function OrderDetailView({ orderNumber, selectedStoreOrderId }: O
   }
 
   if (isFetching && !order) {
-    return (
-      <section className="bg-[#f7f8fa] py-8">
-        <Container className="space-y-5">
-          <div className="h-8 w-[220px] animate-pulse rounded bg-[#e8edf2]" />
-          <div className="h-12 animate-pulse rounded-md bg-[#e8edf2]" />
-          <div className="h-[540px] animate-pulse border border-(--color-border) bg-white" />
-          <div className="h-[170px] w-full max-w-[560px] animate-pulse border border-(--color-border) bg-white" />
-        </Container>
-      </section>
-    );
+    return <OrderDetailSkeleton />;
   }
 
   if (!order || !checkoutSummary) {

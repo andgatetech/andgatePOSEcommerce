@@ -7,6 +7,7 @@ import { useMemo } from "react";
 import Container from "@/components/shared/Container";
 import ListingFilterBar from "@/components/shared/ListingFilterBar";
 import Pagination from "@/components/shared/Pagination";
+import { DirectoryGridSkeleton } from "@/components/shared/Skeletons";
 import StoreCard from "./StoreCard";
 import { sameStoreParams, STORE_SORT_OPTIONS } from "./shared/storeListShared";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
@@ -120,12 +121,7 @@ export default function StoreListPageContent({
             <p className="mt-1 text-sm text-(--color-text-muted)">Please try again in a moment.</p>
           </div>
         ) : isFetching && items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-(--color-border) bg-(--color-bg) py-16 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-            <p className="mt-4 text-sm font-medium tracking-[0.12em] text-(--color-text-muted) uppercase">
-              Loading stores...
-            </p>
-          </div>
+          <DirectoryGridSkeleton kind="store" />
         ) : items.length === 0 ? (
           <div className="rounded-lg border border-(--color-border) bg-(--color-bg) px-5 py-16 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
             <p className="text-sm font-semibold text-(--color-dark)">No stores found</p>

@@ -13,6 +13,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
+import { WishlistTableSkeleton } from "@/components/shared/Skeletons";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import { useGetWishlistQuery, useRemoveWishlistItemMutation } from "@/features/wishlist/wishlistApi";
 import { useAddToCartMutation } from "@/features/cart/cartApi";
@@ -237,9 +238,7 @@ export default function WishlistContent({ variant = "page" }: WishlistContentPro
       </div>
 
       {isLoading ? (
-        <div className="flex min-h-[200px] items-center justify-center text-(--color-text-muted)">
-          Loading wishlist…
-        </div>
+        <WishlistTableSkeleton account={isAccount} showHeading={false} />
       ) : items.length === 0 ? (
         <div className="flex min-h-[200px] flex-col items-center justify-center gap-3 text-(--color-text-muted)">
           <FiHeart size={40} className="opacity-30" />

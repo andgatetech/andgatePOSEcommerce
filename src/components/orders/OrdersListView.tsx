@@ -13,6 +13,7 @@ import {
   FiRefreshCw,
 } from "react-icons/fi";
 import Pagination from "@/components/shared/Pagination";
+import { OrderCardsSkeleton } from "@/components/shared/Skeletons";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetOrdersQuery } from "@/features/orders/ordersApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
@@ -211,14 +212,7 @@ export default function OrdersListView({
               </button>
             </div>
           ) : isFetching && !data ? (
-            <div className="space-y-4 p-5">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="h-[120px] animate-pulse rounded-[22px] border border-(--color-border) bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]"
-                />
-              ))}
-            </div>
+            <OrderCardsSkeleton />
           ) : filteredOrders.length === 0 ? (
             <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[24px] border border-(--color-border) bg-[#fcfcfd] px-6 py-10 text-center">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-(--color-primary-100) text-(--color-primary)">

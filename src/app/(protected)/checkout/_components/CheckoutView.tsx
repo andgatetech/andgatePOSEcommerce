@@ -26,6 +26,7 @@ import {
 } from "react-icons/fi";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import AddressDetailsForm, { type AddressFormValue } from "@/components/shared/AddressDetailsForm";
+import { SkeletonBlock } from "@/components/shared/Skeletons";
 import { ROUTE_BUILDERS, ROUTES } from "@/config/routes";
 import { useGetMyAddressesQuery } from "@/features/account/myAddressApi";
 import { resolveImageUrl } from "@/lib/imageUrl";
@@ -55,6 +56,54 @@ type PaymentOption = {
 };
 
 type OrderSubmitStatus = "idle" | "loading" | "success" | "failure";
+
+function CheckoutAddressSkeleton() {
+  return (
+    <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
+      <div className="flex flex-col gap-3 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <SkeletonBlock className="h-5 w-36" />
+          <SkeletonBlock className="mt-2 h-4 w-64" />
+        </div>
+        <SkeletonBlock className="h-[42px] w-40 rounded-full" />
+      </div>
+      <div className="grid gap-3 px-5 py-5">
+        {Array.from({ length: 2 }).map((_, index) => (
+          <div key={index} className="flex gap-3 rounded-[18px] border border-(--color-border) p-4">
+            <SkeletonBlock className="mt-1 h-5 w-5 rounded-full" />
+            <div className="min-w-0 flex-1">
+              <SkeletonBlock className="h-5 w-48" />
+              <SkeletonBlock className="mt-3 h-4 w-36" />
+              <SkeletonBlock className="mt-2 h-4 w-full max-w-[520px]" />
+              <SkeletonBlock className="mt-2 h-4 w-full max-w-[420px]" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function CheckoutCartItemsSkeleton() {
+  return (
+    <div className="divide-y divide-(--color-border)">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div key={index} className="grid gap-4 px-5 py-4 md:grid-cols-[minmax(0,2fr)_0.6fr_0.5fr_0.6fr] md:items-center">
+          <div className="flex gap-3">
+            <SkeletonBlock className="h-16 w-16 shrink-0 rounded-[14px]" />
+            <div className="min-w-0 flex-1">
+              <SkeletonBlock className="h-5 w-4/5" />
+              <SkeletonBlock className="mt-2 h-4 w-1/2" />
+            </div>
+          </div>
+          <SkeletonBlock className="h-5 w-20" />
+          <SkeletonBlock className="h-5 w-12" />
+          <SkeletonBlock className="h-5 w-20" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const paymentOptions: PaymentOption[] = [
   {
@@ -762,9 +811,7 @@ export default function CheckoutView() {
             )}
 
             {isLoadingMyAddress && !myAddressData ? (
-              <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg) p-5">
-                <div className="h-[210px] animate-pulse rounded-[18px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
-              </section>
+              <CheckoutAddressSkeleton />
             ) : activeShippingAddress && !showAddressForm && displayAddress ? (
               <section className="overflow-hidden rounded-[22px] border border-(--color-border) bg-(--color-bg)">
                 <div className="flex flex-col gap-3 border-b border-(--color-border) bg-[#f4f6f8] px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -881,9 +928,7 @@ export default function CheckoutView() {
               ) : null}
 
               {isLoading ? (
-                <div className="flex min-h-[160px] items-center justify-center text-sm text-(--color-text-muted)">
-                  Loading cart…
-                </div>
+                <CheckoutCartItemsSkeleton />
               ) : items.length === 0 ? (
                 <div className="flex min-h-[160px] flex-col items-center justify-center gap-3 text-(--color-text-muted)">
                   <p className="text-sm font-medium">Your cart is empty.</p>

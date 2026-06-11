@@ -13,6 +13,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import AddressDetailsForm from "@/components/shared/AddressDetailsForm";
+import { AddressPanelSkeleton } from "@/components/shared/Skeletons";
 import {
   useCreateMyAddressMutation,
   useDeleteMyAddressMutation,
@@ -144,11 +145,7 @@ export default function MyAccountAddressPanel() {
   }
 
   if (isFetching && !data) {
-    return (
-      <div className="rounded-[28px] border border-(--color-border) bg-(--color-bg) p-6 shadow-[0_18px_40px_rgba(17,17,17,0.04)]">
-        <div className="h-[320px] animate-pulse rounded-[24px] bg-[linear-gradient(90deg,#f6f8fa_0%,#eef3f7_50%,#f6f8fa_100%)]" />
-      </div>
-    );
+    return <AddressPanelSkeleton />;
   }
 
   if (isError) {

@@ -11,6 +11,7 @@ import ListingFilterBar from "@/components/shared/ListingFilterBar";
 import Pagination from "@/components/shared/Pagination";
 import type { SortOption } from "@/components/shared/SortSelect";
 import GeneratedImageFallback from "@/components/shared/GeneratedImageFallback";
+import { DirectoryGridSkeleton } from "@/components/shared/Skeletons";
 import { ROUTE_BUILDERS } from "@/config/routes";
 import { resolveImageUrl } from "@/lib/imageUrl";
 import type { Brand, ListQueryParams, PaginatedPayload } from "@/types";
@@ -143,12 +144,7 @@ export default function BrandGallery({
             <p className="mt-1 text-sm text-(--color-text-muted)">Please try again in a moment.</p>
           </div>
         ) : isFetching && items.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-lg border border-(--color-border) bg-(--color-bg) py-16 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
-            <div className="h-10 w-10 animate-spin rounded-full border-4 border-(--color-primary-100) border-t-(--color-primary)" />
-            <p className="mt-4 text-sm font-medium uppercase tracking-[0.12em] text-(--color-text-muted)">
-              Loading brands...
-            </p>
-          </div>
+          <DirectoryGridSkeleton kind="brand" />
         ) : items.length === 0 && !isFetching ? (
           <div className="rounded-lg border border-(--color-border) bg-(--color-bg) px-5 py-16 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
             <p className="text-sm font-semibold text-(--color-dark)">No brands found</p>
