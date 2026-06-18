@@ -51,10 +51,10 @@ function AnimatedCounter({ end, suffix = "", prefix = "" }: CounterProps) {
 }
 
 const stats = [
-    { icon: FiShoppingBag, end: 500, suffix: "+", prefix: "", label: "Active Stores", labelBn: "সক্রিয় স্টোর" },
-    { icon: FiPackage, end: 15000, suffix: "+", prefix: "", label: "Products Listed", labelBn: "পণ্য তালিকাভুক্ত" },
-    { icon: FiSmile, end: 25000, suffix: "+", prefix: "", label: "Happy Customers", labelBn: "সন্তুষ্ট গ্রাহক" },
-    { icon: FiTruck, end: 100000, suffix: "+", prefix: "", label: "Orders Delivered", labelBn: "অর্ডার ডেলিভারি" },
+    { icon: FiShoppingBag, end: 500, suffix: "+", prefix: "", label: "Active Stores" },
+    { icon: FiPackage, end: 15000, suffix: "+", prefix: "", label: "Products Listed" },
+    { icon: FiSmile, end: 25000, suffix: "+", prefix: "", label: "Happy Customers" },
+    { icon: FiTruck, end: 100000, suffix: "+", prefix: "", label: "Orders Delivered" },
 ];
 
 export default function TrustStatsBar() {
@@ -68,7 +68,7 @@ export default function TrustStatsBar() {
                             <div className="text-2xl font-bold text-gray-900 sm:text-3xl">
                                 <AnimatedCounter end={stat.end} suffix={stat.suffix} prefix={stat.prefix} />
                             </div>
-                            <p className="mt-1 text-sm text-gray-500">{stat.labelBn}</p>
+                            <p className="mt-1 text-sm text-gray-500">{stat.label}</p>
                         </div>
                     ))}
                 </div>

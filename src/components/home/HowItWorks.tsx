@@ -5,21 +5,18 @@ const steps = [
     {
         step: "01",
         title: "Browse & Choose",
-        titleBn: "ব্রাউজ ও নির্বাচন",
         description: "Explore thousands of products from verified local stores across Bangladesh. Filter by category, brand, or store.",
         image: "/images/banner/banner (1).png",
     },
     {
         step: "02",
         title: "Place Your Order",
-        titleBn: "অর্ডার করুন",
         description: "Add items to your cart, choose cash on delivery or online payment, and enter your delivery address.",
         image: "/images/banner/banner (2).png",
     },
     {
         step: "03",
         title: "Fast Delivery",
-        titleBn: "দ্রুত ডেলিভারি",
         description: "Your order is packed and shipped via Pathao, RedX, or Steadfast. Track your order anytime.",
         image: "/images/banner/banner (3).png",
     },
@@ -31,13 +28,13 @@ export default function HowItWorks() {
             <Container>
                 <div className="mb-10 text-center">
                     <span className="inline-block rounded-full bg-[#046ca9]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#046ca9]">
-                        কিভাবে কাজ করে
+                        How It Works
                     </span>
                     <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
                         Shop in 3 Easy Steps
                     </h2>
                     <p className="mt-2 text-gray-500">
-                        আপনার পছন্দের পণ্য কয়েক ক্লিকেই অর্ডার করুন
+                        From browsing to delivery — we make online shopping simple
                     </p>
                 </div>
 
@@ -49,8 +46,7 @@ export default function HowItWorks() {
                                     {step.step}
                                 </span>
                                 <div>
-                                    <h3 className="font-semibold text-gray-900">{step.titleBn}</h3>
-                                    <p className="text-xs text-gray-400">{step.title}</p>
+                                    <h3 className="font-semibold text-gray-900">{step.title}</h3>
                                 </div>
                             </div>
                             <p className="text-sm leading-relaxed text-gray-600">{step.description}</p>

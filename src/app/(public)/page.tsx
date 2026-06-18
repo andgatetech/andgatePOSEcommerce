@@ -1,5 +1,7 @@
 import HeroBanner from "@/components/home/HeroBanner";
 import FeaturedCategories from "@/components/home/FeaturedCategories";
+import CategoryShowcase from "@/components/home/CategoryShowcase";
+import FeaturedStores from "@/components/home/FeaturedStores";
 import PopularProductsSection from "./product/_components/PopularProductsSection";
 import ProductPromoBanners from "./product/_components/ProductPromoBanners";
 import DealsOfTheDay from "@/components/home/DealsOfTheDay";
@@ -12,7 +14,8 @@ import TrustStatsBar from "@/components/home/TrustStatsBar";
 import HowItWorks from "@/components/home/HowItWorks";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
-import type { Category, EcommerceProduct, PaginatedResponse } from "@/types";
+import { getSharedStores } from "@/lib/catalog";
+import type { Category, EcommerceProduct, Store, PaginatedResponse } from "@/types";
 
 async function getPageItems<T>(
   path: string,
@@ -80,11 +83,12 @@ export default async function HomePage() {
   const dedup = <T extends { id: number }>(arr: T[]) =>
     Array.from(new Map(arr.map((x) => [x.id, x])).values());
 
-  const [rawProducts, featuredCategories, rawPopular, rawDeals] = await Promise.all([
+  const [rawProducts, featuredCategories, rawPopular, rawDeals, stores] = await Promise.all([
     getHomeProducts(),
     getFeaturedCategories(),
     getPopularProducts(),
     getDealsOfTheDay(),
+    getSharedStores(),
   ]);
   const products = dedup(rawProducts);
   const popularProducts = dedup(rawPopular);
@@ -101,8 +105,10 @@ export default async function HomePage() {
       <DealsOfTheDay products={dealProducts} />
       <CountdownPromoBanner />
       <PopularProductsSection products={popularProducts} />
+      <CategoryShowcase categories={featuredCategories} />
       <ProductPromoBanners />
       <EditorialPromoGrid />
+      <FeaturedStores stores={stores} />
       <TopProductsGrid products={topProducts} />
       <HowItWorks />
       <RecentlyViewedSection />
