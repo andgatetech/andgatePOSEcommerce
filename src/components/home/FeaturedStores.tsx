@@ -13,19 +13,19 @@ export default function FeaturedStores({ stores }: FeaturedStoresProps) {
     if (!stores.length) return null;
 
     return (
-        <section className="bg-white py-12 sm:py-16">
+        <section className="bg-gray-50 py-12 sm:py-16">
             <Container>
                 <div className="mb-8 flex items-end justify-between">
                     <div>
-                        <span className="inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-purple-700">
+                        <span className="inline-block rounded-full bg-primary-100 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
                             Featured Stores
                         </span>
                         <h2 className="mt-2 text-2xl font-bold text-gray-900 sm:text-3xl">Popular Stores</h2>
-                        <p className="mt-1 text-sm text-gray-500">Explore products from verified local stores</p>
+                        <p className="mt-1 text-sm text-neutral">Explore products from verified local stores</p>
                     </div>
                     <Link
                         href={ROUTES.STORE}
-                        className="hidden text-sm font-medium text-[#046ca9] hover:underline sm:block"
+                        className="hidden text-sm font-medium text-primary hover:underline sm:block"
                     >
                         View All Stores →
                     </Link>
@@ -36,9 +36,9 @@ export default function FeaturedStores({ stores }: FeaturedStoresProps) {
                         <Link
                             key={store.id}
                             href={ROUTE_BUILDERS.storeDetail(store.slug)}
-                            className="group rounded-2xl border border-gray-100 bg-white p-4 text-center shadow-sm transition-all hover:border-[#046ca9]/30 hover:shadow-md"
+                            className="group rounded-2xl border border-gray-100 bg-white p-4 text-center shadow-sm transition-all hover:border-primary-200 hover:shadow-md"
                         >
-                            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-gray-50 p-2">
+                            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl bg-primary-50 p-2">
                                 {store.logo_path ? (
                                     <Image
                                         src={store.logo_path}
@@ -48,16 +48,16 @@ export default function FeaturedStores({ stores }: FeaturedStoresProps) {
                                         className="h-full w-full object-contain"
                                     />
                                 ) : (
-                                    <span className="text-2xl font-bold text-[#046ca9]">
+                                    <span className="text-2xl font-bold text-primary">
                                         {store.store_name.charAt(0)}
                                     </span>
                                 )}
                             </div>
-                            <h3 className="text-sm font-semibold text-gray-900 group-hover:text-[#046ca9] transition-colors line-clamp-1">
+                            <h3 className="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
                                 {store.store_name}
                             </h3>
                             {store.store_location && (
-                                <p className="mt-1 flex items-center justify-center gap-1 text-xs text-gray-400">
+                                <p className="mt-1 flex items-center justify-center gap-1 text-xs text-neutral">
                                     <FiMapPin className="h-3 w-3" />
                                     {store.store_location}
                                 </p>

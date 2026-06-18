@@ -27,29 +27,27 @@ export default function HowItWorks() {
         <section className="bg-gray-50 py-12 sm:py-16">
             <Container>
                 <div className="mb-10 text-center">
-                    <span className="inline-block rounded-full bg-[#046ca9]/10 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-[#046ca9]">
+                    <span className="inline-block rounded-full bg-primary-100 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
                         How It Works
                     </span>
                     <h2 className="mt-3 text-2xl font-bold text-gray-900 sm:text-3xl">
                         Shop in 3 Easy Steps
                     </h2>
-                    <p className="mt-2 text-gray-500">
+                    <p className="mt-2 text-neutral">
                         From browsing to delivery — we make online shopping simple
                     </p>
                 </div>
 
                 <div className="grid gap-8 sm:grid-cols-3">
                     {steps.map((step) => (
-                        <div key={step.step} className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-sm transition-all hover:shadow-md">
+                        <div key={step.step} className="group relative overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:border-primary-200 hover:shadow-md">
                             <div className="mb-4 flex items-center gap-3">
-                                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#046ca9] text-lg font-bold text-white">
+                                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-lg font-bold text-white">
                                     {step.step}
                                 </span>
-                                <div>
-                                    <h3 className="font-semibold text-gray-900">{step.title}</h3>
-                                </div>
+                                <h3 className="font-semibold text-gray-900">{step.title}</h3>
                             </div>
-                            <p className="text-sm leading-relaxed text-gray-600">{step.description}</p>
+                            <p className="text-sm leading-relaxed text-neutral-dark">{step.description}</p>
                             <div className="mt-4 overflow-hidden rounded-xl bg-gray-100">
                                 <Image
                                     src={step.image}

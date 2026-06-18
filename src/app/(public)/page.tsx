@@ -101,32 +101,34 @@ export default async function HomePage() {
     <main>
       {/* White bg */}
       <HeroBanner />
-      {/* Gray bg */}
-      <div className="bg-gray-50">
+      {/* Primary-50 tint */}
+      <div className="bg-primary-50/50">
         <TrustStatsBar />
       </div>
       {/* White bg */}
       <FeaturedCategories categories={featuredCategories} />
-      {/* Gray bg - Deals with urgency */}
-      <div className="bg-gradient-to-b from-gray-50 to-white">
+      {/* Primary-50 tint */}
+      <div className="bg-primary-50/30">
         <DealsOfTheDay products={dealProducts} />
       </div>
       <CountdownPromoBanner />
       {/* White bg */}
       <PopularProductsSection products={popularProducts} />
-      {/* Gray bg - Category visuals */}
+      {/* White bg */}
       <CategoryShowcase categories={featuredCategories} />
       {/* White bg */}
       <ProductPromoBanners />
       <EditorialPromoGrid />
-      {/* Gray bg - Store showcase */}
-      <div className="bg-gray-50">
+      {/* Primary-50 tint */}
+      <div className="bg-primary-50/30">
         <FeaturedStores stores={stores} />
       </div>
       {/* White bg */}
       <TopProductsGrid products={topProducts} />
-      {/* Gray bg - How it works */}
-      <HowItWorks />
+      {/* Primary-50 tint */}
+      <div className="bg-primary-50/30">
+        <HowItWorks />
+      </div>
       <RecentlyViewedSection />
       {/* White bg */}
       <ServiceHighlights />
