@@ -99,19 +99,36 @@ export default async function HomePage() {
 
   return (
     <main>
+      {/* White bg */}
       <HeroBanner />
-      <TrustStatsBar />
+      {/* Gray bg */}
+      <div className="bg-gray-50">
+        <TrustStatsBar />
+      </div>
+      {/* White bg */}
       <FeaturedCategories categories={featuredCategories} />
-      <DealsOfTheDay products={dealProducts} />
+      {/* Gray bg - Deals with urgency */}
+      <div className="bg-gradient-to-b from-gray-50 to-white">
+        <DealsOfTheDay products={dealProducts} />
+      </div>
       <CountdownPromoBanner />
+      {/* White bg */}
       <PopularProductsSection products={popularProducts} />
+      {/* Gray bg - Category visuals */}
       <CategoryShowcase categories={featuredCategories} />
+      {/* White bg */}
       <ProductPromoBanners />
       <EditorialPromoGrid />
-      <FeaturedStores stores={stores} />
+      {/* Gray bg - Store showcase */}
+      <div className="bg-gray-50">
+        <FeaturedStores stores={stores} />
+      </div>
+      {/* White bg */}
       <TopProductsGrid products={topProducts} />
+      {/* Gray bg - How it works */}
       <HowItWorks />
       <RecentlyViewedSection />
+      {/* White bg */}
       <ServiceHighlights />
     </main>
   );
