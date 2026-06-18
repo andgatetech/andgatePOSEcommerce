@@ -7,6 +7,9 @@ import EditorialPromoGrid from "@/components/home/EditorialPromoGrid";
 import TopProductsGrid from "@/components/home/TopProductsGrid";
 import ServiceHighlights from "@/components/home/ServiceHighlights";
 import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
+import CountdownPromoBanner from "@/components/home/CountdownPromoBanner";
+import TrustStatsBar from "@/components/home/TrustStatsBar";
+import HowItWorks from "@/components/home/HowItWorks";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
 import type { Category, EcommerceProduct, PaginatedResponse } from "@/types";
@@ -93,12 +96,15 @@ export default async function HomePage() {
   return (
     <main>
       <HeroBanner />
+      <TrustStatsBar />
       <FeaturedCategories categories={featuredCategories} />
       <DealsOfTheDay products={dealProducts} />
+      <CountdownPromoBanner />
       <PopularProductsSection products={popularProducts} />
       <ProductPromoBanners />
       <EditorialPromoGrid />
       <TopProductsGrid products={topProducts} />
+      <HowItWorks />
       <RecentlyViewedSection />
       <ServiceHighlights />
     </main>
