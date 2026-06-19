@@ -67,17 +67,17 @@ export default function Footer() {
   return (
     <>
       {/* ── Newsletter ── */}
-      <section className="bg-(--color-primary-100) border-y border-(--color-primary-200)">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
-          <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:gap-16">
+      <section className="border-y border-(--color-primary-200) bg-[linear-gradient(135deg,var(--color-primary-100)_0%,#ffffff_54%,var(--color-cta-100)_100%)]">
+        <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center gap-7 rounded-[28px] border border-white bg-white/62 p-5 shadow-[0_18px_48px_rgba(2,58,92,0.08)] backdrop-blur lg:flex-row lg:items-center lg:gap-16 lg:p-7">
 
             {/* Left copy */}
             <div className="flex-1 text-center lg:text-left">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-(--color-primary-200) px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-(--color-primary-dark)">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-widest text-(--color-primary-dark) shadow-sm">
                 <FiMail size={11} />
                 Newsletter
               </span>
-              <h3 className="mt-3 text-[24px] font-bold leading-snug tracking-tight text-(--color-primary-900) sm:text-[28px]">
+              <h3 className="mt-3 text-[25px] font-extrabold leading-snug tracking-[-0.03em] text-(--color-primary-900) sm:text-[30px]">
                 Get exclusive deals &amp;<br className="hidden sm:block" />
                 <span className="text-(--color-primary)"> flash sale alerts.</span>
               </h3>
@@ -100,7 +100,7 @@ export default function Footer() {
                 </div>
               ) : (
                 <form onSubmit={handleSubscribe} noValidate>
-                  <div className="flex h-[52px] overflow-hidden rounded-full border border-(--color-primary-200) bg-white shadow-sm focus-within:border-(--color-primary) focus-within:ring-2 focus-within:ring-(--color-primary)/20">
+                  <div className="flex h-[54px] overflow-hidden rounded-full border border-(--color-primary-200) bg-white shadow-[0_12px_30px_rgba(2,58,92,0.10)] focus-within:border-(--color-primary) focus-within:ring-2 focus-within:ring-(--color-primary)/20">
                     <div className="relative flex flex-1 items-center">
                       <FiMail size={15} className="pointer-events-none absolute left-4 text-(--color-text-muted)" />
                       <input
@@ -133,7 +133,7 @@ export default function Footer() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="bg-(--color-primary-900) pt-12 pb-8 sm:pt-16">
+      <footer className="bg-(--color-primary-900) pt-10 pb-8 sm:pt-14">
         <div className="mx-auto px-4 sm:px-6 lg:px-8">
 
           {/* Main grid */}
@@ -141,7 +141,7 @@ export default function Footer() {
 
             {/* Brand column */}
             <div className="col-span-12 flex flex-col gap-5 lg:col-span-5">
-              <div className="inline-flex w-fit items-center rounded-xl bg-white px-3 pb-4 pt-2">
+              <div className="inline-flex w-fit items-center rounded-2xl bg-white px-4 pb-4 pt-2 shadow-[0_16px_34px_rgba(0,0,0,0.16)]">
                 <Logo
                   width={120}
                   height={60}
@@ -157,13 +157,13 @@ export default function Footer() {
               <div className="grid max-w-[430px] grid-cols-2 gap-3">
                 <Link
                   href={ROUTES.STORE}
-                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-(--color-primary) hover:bg-white/10"
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white transition hover:border-(--color-primary) hover:bg-white/10"
                 >
                   Browse Stores
                 </Link>
                 <Link
                   href={ROUTES.BRAND}
-                  className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:border-(--color-primary) hover:bg-white/10"
+                  className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white transition hover:border-(--color-primary) hover:bg-white/10"
                 >
                   Browse Brands
                 </Link>
@@ -171,7 +171,7 @@ export default function Footer() {
             </div>
 
             {/* Links columns */}
-            <div className="col-span-6 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-4 lg:col-span-2">
+            <div className="col-span-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:col-span-4 lg:col-span-2">
               <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Company</h3>
               <ul className="flex flex-col gap-3">
                 {companyLinks.map((link) => (
@@ -188,7 +188,7 @@ export default function Footer() {
               </ul>
             </div>
 
-            <div className="col-span-6 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-4 lg:col-span-2">
+            <div className="col-span-6 rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:col-span-4 lg:col-span-2">
               <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Customer</h3>
               <ul className="flex flex-col gap-3">
                 {accountLinks.map((link) => (
@@ -206,7 +206,7 @@ export default function Footer() {
             </div>
 
             {/* Contact column */}
-            <div className="col-span-12 rounded-lg border border-white/10 bg-white/[0.03] p-5 sm:col-span-6 lg:col-span-3">
+            <div className="col-span-12 rounded-2xl border border-white/10 bg-white/[0.04] p-5 sm:col-span-6 lg:col-span-3">
               <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Contact</h3>
               <ul className="flex flex-col gap-4">
                 <li className="flex items-start gap-3">
@@ -250,7 +250,7 @@ export default function Footer() {
               {deliveryPartners.map((partner) => (
                 <div
                   key={partner.name}
-                  className="flex h-12 w-[122px] items-center justify-center rounded-lg border border-white/10 bg-white px-4"
+                  className="flex h-12 w-[122px] items-center justify-center rounded-xl border border-white/10 bg-white px-4 shadow-[0_10px_24px_rgba(0,0,0,0.12)]"
                 >
                   <Image
                     src={partner.logo}

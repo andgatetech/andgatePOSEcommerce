@@ -18,12 +18,12 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
   return (
     <section className="pb-8 md:pb-10">
       <Container>
-        <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <span className="inline-flex rounded-full border border-(--color-primary-200) bg-(--color-primary-100) px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-(--color-primary)">
+            <span className="inline-flex rounded-full border border-(--color-primary-200) bg-white px-3 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-(--color-primary) shadow-sm">
               Shop By Category
             </span>
-            <h2 className="mt-2 text-[25px] font-semibold tracking-[-0.03em] text-(--color-primary-900) md:text-[32px]">
+            <h2 className="mt-2 text-[27px] font-extrabold tracking-[-0.04em] text-(--color-primary-900) md:text-[36px]">
               Featured Categories
             </h2>
           </div>
@@ -39,7 +39,7 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
           </Link>
         </div>
 
-        <div className="rounded-[20px] border border-(--color-border) bg-white p-3 shadow-[0_14px_36px_rgba(15,23,42,0.05)] md:p-4">
+        <div className="rounded-[28px] border border-(--color-primary-100) bg-[linear-gradient(180deg,#ffffff_0%,var(--color-primary-50)_100%)] p-3 shadow-[0_18px_48px_rgba(2,58,92,0.08)] md:p-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10">
             {categories.map((category) => {
               const image = resolveImageUrl(category.image_url);
@@ -48,25 +48,25 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
                 <Link
                   key={category.id}
                   href={ROUTE_BUILDERS.categoryDetail(category.slug)}
-                  className="group min-w-0 rounded-[14px] border border-(--color-border) bg-[#f8fafc] p-2 text-center transition duration-300 hover:-translate-y-0.5 hover:border-(--color-primary-200) hover:bg-white hover:shadow-[0_14px_28px_rgba(15,23,42,0.08)]"
+                  className="group min-w-0 rounded-[18px] border border-white bg-white p-2.5 text-center shadow-[0_10px_24px_rgba(2,58,92,0.05)] transition duration-300 hover:-translate-y-1 hover:border-(--color-primary-200) hover:shadow-[0_18px_34px_rgba(2,58,92,0.12)]"
                 >
-                  <div className="relative mx-auto mb-2 flex aspect-square w-full max-w-[92px] items-center justify-center overflow-hidden rounded-[12px] bg-white">
+                  <div className="relative mx-auto mb-2 flex aspect-square w-full max-w-[108px] items-center justify-center overflow-hidden rounded-[16px] bg-(--color-primary-50)">
                     {image ? (
                       <Image
                         src={image}
                         alt={category.name}
                         fill
                         sizes="120px"
-                        className="object-contain p-2.5 transition duration-300 group-hover:scale-[1.06]"
+                        className="object-contain p-2 transition duration-300 group-hover:scale-[1.08]"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef7f8_0%,#fff7ed_100%)] text-(--color-primary)">
-                        <FiGrid className="text-[26px]" />
+                      <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,var(--color-primary-100)_0%,var(--color-cta-100)_100%)] text-(--color-primary)">
+                        <FiGrid className="text-[30px]" />
                       </div>
                     )}
                   </div>
 
-                  <h3 className="line-clamp-2 min-h-[32px] text-[12px] font-semibold leading-[1.3] text-(--color-primary-900) md:text-[13px]">
+                  <h3 className="line-clamp-2 min-h-[32px] text-[12px] font-bold leading-[1.3] text-(--color-primary-900) md:text-[13px]">
                     {category.name}
                   </h3>
                 </Link>

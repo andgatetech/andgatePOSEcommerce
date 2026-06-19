@@ -12,7 +12,7 @@ import type { EcommerceProduct } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import toast from "react-hot-toast";
-import { FiHeart } from "react-icons/fi";
+import { FiHeart, FiStar } from "react-icons/fi";
 import AddToCartButton from "./AddToCartButton";
 
 type PopularProductCardProps = {
@@ -65,7 +65,7 @@ export default function PopularProductCard({
   }
 
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-[22px] border border-(--color-border) bg-white shadow-[0_10px_35px_rgba(19,45,69,0.06)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_16px_48px_rgba(19,45,69,0.12)]">
+    <div className="group flex h-full flex-col overflow-hidden rounded-[24px] border border-(--color-primary-100) bg-white shadow-[0_14px_42px_rgba(2,58,92,0.07)] transition duration-300 hover:-translate-y-1.5 hover:border-(--color-primary-200) hover:shadow-[0_22px_60px_rgba(2,58,92,0.14)]">
       <div className="relative">
         <button
           type="button"
@@ -83,7 +83,11 @@ export default function PopularProductCard({
         </button>
 
         <Link href={ROUTE_BUILDERS.productDetail(product.slug)}>
-          <div className="relative aspect-square overflow-hidden rounded-[18px] bg-[#f7f8fa]">
+          <div className="relative aspect-square overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,var(--color-primary-50)_100%)]">
+            <div className="absolute left-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-bold text-(--color-primary-900) shadow-sm backdrop-blur">
+              <FiStar className="h-3 w-3 fill-(--color-cta) text-(--color-cta)" />
+              Popular
+            </div>
             {primaryImage ? (
               <>
                 <Image
@@ -91,9 +95,9 @@ export default function PopularProductCard({
                   alt={product.product_name}
                   fill
                   sizes="(max-width: 639px) 50vw, (max-width: 1279px) 33vw, 20vw"
-                  className="object-contain p-4 transition duration-300 group-hover:scale-[1.06]"
+                  className="object-contain p-5 transition duration-500 group-hover:scale-[1.07]"
                 />
-                <div className="pointer-events-none absolute inset-x-8 bottom-3 h-5 rounded-full bg-black/[0.06] blur-xl" />
+                <div className="pointer-events-none absolute inset-x-8 bottom-4 h-6 rounded-full bg-(--color-primary-900)/[0.08] blur-xl" />
               </>
             ) : (
               <GeneratedImageFallback
@@ -110,14 +114,14 @@ export default function PopularProductCard({
       </div>
 
       <Link href={ROUTE_BUILDERS.productDetail(product.slug)} className="flex flex-1 flex-col">
-        <div className="flex flex-1 flex-col px-4 pb-2 pt-3">
+        <div className="flex flex-1 flex-col px-4 pb-2 pt-4">
           {product.category && (
-            <p className="text-[12px] font-medium uppercase tracking-[0.08em] text-(--color-text-muted)">
+            <p className="inline-flex w-fit rounded-full bg-(--color-primary-50) px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-[0.12em] text-(--color-primary)">
               {product.category.name}
             </p>
           )}
 
-          <h3 className="mt-2 line-clamp-2 min-h-[42px] text-[16px] font-semibold leading-[1.3] text-(--color-primary-900)">
+          <h3 className="mt-3 line-clamp-2 min-h-[42px] text-[15px] font-extrabold leading-[1.35] tracking-[-0.02em] text-(--color-primary-900)">
             {product.product_name}
           </h3>
 
@@ -141,7 +145,7 @@ export default function PopularProductCard({
           </p>
 
           <div className="mt-3 flex items-end gap-2">
-            <span className="text-[18px] font-semibold text-(--color-primary)">
+            <span className="text-[21px] font-extrabold tracking-[-0.03em] text-(--color-primary)">
               ৳{price}
             </span>
             {originalPriceText && originalPrice !== displayPrice ? (
@@ -184,7 +188,7 @@ export default function PopularProductCard({
               slug: product.sold_by.store_slug,
             },
           }}
-          className="mt-3 w-full"
+          className="mt-3 w-full shadow-[0_12px_24px_rgba(231,145,55,0.22)]"
         />
       </div>
     </div>
