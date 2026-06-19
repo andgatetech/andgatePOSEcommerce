@@ -53,37 +53,32 @@ const formatStat = (n: number): number => {
 export default function TrustStatsBar({ stats }: { stats: TrustStats }) {
     const displayStores = formatStat(stats.stores);
     const displayProducts = formatStat(stats.products);
+    const supportMetrics = [
+        { value: displayStores, label: "Verified Stores", suffix: "+" },
+        { value: displayProducts, label: "Products to Browse", suffix: "+" },
+        { value: 64, label: "District Delivery Coverage", suffix: "" },
+        { value: 24, label: "Order Support Window", suffix: "/7" },
+    ];
 
     return (
-        <section className="py-8 sm:py-10">
+        <section className="py-6 sm:py-8">
             <Container>
-                <div className="flex flex-wrap items-center justify-center gap-6 rounded-2xl border border-primary-100 bg-white px-6 py-8 shadow-sm sm:gap-12 sm:px-10 md:gap-16">
-                    <div className="text-center">
-                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
-                            <AnimatedCounter end={displayStores} suffix="+" />
-                        </div>
-                        <p className="mt-1 text-sm font-medium text-neutral">Active Stores</p>
-                    </div>
-                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
-                    <div className="text-center">
-                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
-                            <AnimatedCounter end={displayProducts} suffix="+" />
-                        </div>
-                        <p className="mt-1 text-sm font-medium text-neutral">Products Listed</p>
-                    </div>
-                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
-                    <div className="text-center">
-                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
-                            <AnimatedCounter end={25000} suffix="+" />
-                        </div>
-                        <p className="mt-1 text-sm font-medium text-neutral">Happy Customers</p>
-                    </div>
-                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
-                    <div className="text-center">
-                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
-                            <AnimatedCounter end={100000} suffix="+" />
-                        </div>
-                        <p className="mt-1 text-sm font-medium text-neutral">Orders Delivered</p>
+                <div className="rounded-3xl border border-primary-100 bg-white px-4 py-5 shadow-[0_16px_42px_rgba(2,58,92,0.07)] sm:px-6 md:px-8">
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {supportMetrics.map((item, index) => (
+                            <div
+                                key={item.label}
+                                className={[
+                                    "text-center sm:text-left",
+                                    index > 0 ? "border-primary-100 sm:border-l sm:pl-6" : "",
+                                ].filter(Boolean).join(" ")}
+                            >
+                                <div className="text-2xl font-extrabold tracking-[-0.03em] text-primary-900 sm:text-3xl">
+                                    <AnimatedCounter end={item.value} suffix={item.suffix} />
+                                </div>
+                                <p className="mt-1 text-sm font-semibold text-neutral-dark">{item.label}</p>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </Container>

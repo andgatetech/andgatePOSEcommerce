@@ -12,6 +12,7 @@ import RecentlyViewedSection from "@/components/home/RecentlyViewedSection";
 import CountdownPromoBanner from "@/components/home/CountdownPromoBanner";
 import TrustStatsBar from "@/components/home/TrustStatsBar";
 import HowItWorks from "@/components/home/HowItWorks";
+import ImageStorySection from "@/components/home/ImageStorySection";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
 import { getSharedStores } from "@/lib/catalog";
@@ -110,6 +111,7 @@ export default async function HomePage() {
       <div className="bg-primary-50/50">
         <TrustStatsBar stats={trustStats} />
       </div>
+      <ImageStorySection />
       {/* White bg */}
       <FeaturedCategories categories={featuredCategories} />
       {/* Primary-50 tint */}

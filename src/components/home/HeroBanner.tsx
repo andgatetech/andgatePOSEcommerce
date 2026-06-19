@@ -7,7 +7,13 @@ import type { Swiper as SwiperType } from "swiper";
 import Image from "next/image";
 import Link from "next/link";
 import { GoArrowUpRight } from "react-icons/go";
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import {
+  FiChevronLeft,
+  FiChevronRight,
+  FiShield,
+  FiShoppingBag,
+  FiTruck,
+} from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
 import Container from "@/components/shared/Container";
 
@@ -19,44 +25,50 @@ import "swiper/css/navigation";
 const slides = [
   {
     id: 1,
-    badge: "Exclusive offer",
-    discount: "25% OFF",
-    heading: "Experience a Smarter, More Convenient Home.",
+    badge: "Bangladesh marketplace",
+    discount: "Trusted stores",
+    heading: "Shop smarter from verified local stores.",
     description:
-      "Smart lights, security systems, speakers, and IoT devices designed to bring convenience and intelligence to your everyday life.",
+      "Discover daily essentials, fashion, electronics, and lifestyle products from sellers connected through AndgatePOS.",
     image: "/images/banner/banner (3).png",
-    bg: "#b8d4e3",
+    bg: "#dff1ff",
   },
   {
     id: 2,
-    badge: "New Arrival",
-    discount: "30% OFF",
-    heading: "Premium Sound, Anytime, Anywhere.",
+    badge: "Fresh picks",
+    discount: "New arrivals",
+    heading: "Find products customers are buying now.",
     description:
-      "Discover the latest headphones, earbuds, and audio gear for an immersive music experience on the go.",
+      "Browse popular products, compare prices, and add favorites to your cart in a clean shopping flow.",
     image: "/images/banner/banner (1).png",
-    bg: "#6fadcf",
+    bg: "#c7e3f4",
   },
   {
     id: 3,
-    badge: "Best Deal",
-    discount: "20% OFF",
-    heading: "Fresh Living Starts with Smart Appliances.",
+    badge: "Easy checkout",
+    discount: "COD ready",
+    heading: "Order with confidence across Bangladesh.",
     description:
-      "Explore top-rated refrigerators, kitchen gadgets, and home essentials built for modern living.",
+      "Cash on delivery, local delivery partners, and order tracking help shoppers buy with less uncertainty.",
     image: "/images/banner/banner (2).png",
-    bg: "#e8e4df",
+    bg: "#fff0db",
   },
   {
     id: 4,
-    badge: "Limited Time",
-    discount: "40% OFF",
-    heading: "Cinematic Experience Right at Home.",
+    badge: "For every shop",
+    discount: "Hawkeri stores",
+    heading: "From neighborhood shops to online carts.",
     description:
-      "Ultra HD smart TVs, projectors, and streaming devices to transform your living room into a theater.",
+      "Hawkeri brings Bangladeshi SME products online so buyers can discover more stores in one place.",
     image: "/images/banner/banner (4).png",
-    bg: "#a8cde8",
+    bg: "#d6ecfb",
   },
+];
+
+const trustItems = [
+  { label: "Verified seller network", icon: FiShield },
+  { label: "Fast local delivery flow", icon: FiTruck },
+  { label: "Curated product discovery", icon: FiShoppingBag },
 ];
 
 export default function HeroBanner() {
@@ -64,9 +76,9 @@ export default function HeroBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="relative w-full py-4 md:py-6">
+    <section className="relative w-full bg-gradient-to-b from-primary-50/80 via-white to-white py-4 md:py-6">
       <Container>
-        <div className="relative overflow-hidden rounded-2xl md:rounded-3xl">
+        <div className="relative overflow-hidden rounded-2xl border border-primary-100/70 shadow-[0_24px_70px_rgba(2,58,92,0.12)] md:rounded-3xl">
           <Swiper
             modules={[Autoplay, Navigation]}
             autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -87,50 +99,66 @@ export default function HeroBanner() {
                   style={{ backgroundColor: slide.bg }}
                 >
                   <div className="mx-auto px-8 md:px-12 lg:px-16 xl:px-20">
-                    <div className="flex min-h-[340px] flex-col items-center md:min-h-[420px] md:flex-row lg:min-h-[480px]">
-                      <div className="z-10 w-full pb-6 pt-14 md:w-[48%] md:py-16 lg:py-20">
+                    <div className="flex min-h-[380px] flex-col items-center md:min-h-[440px] md:flex-row lg:min-h-[500px]">
+                      <div className="z-10 w-full pb-6 pt-12 md:w-[50%] md:py-16 lg:py-20">
                         <div className="mb-5 flex items-center gap-3">
                           <span
-                            className="text-[13px] font-semibold italic"
-                            style={{ color: "#3d5a6e" }}
+                            className="rounded-full bg-white/70 px-3 py-1 text-[12px] font-bold uppercase tracking-[0.16em] shadow-sm backdrop-blur"
+                            style={{ color: "#023a5c" }}
                           >
                             {slide.badge}
                           </span>
-                          <span className="rounded-[4px] bg-[#166534] px-3 py-[3px] text-[11px] font-bold uppercase tracking-wide text-white">
+                          <span className="rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_10px_20px_rgba(231,145,55,0.28)]">
                             {slide.discount}
                           </span>
                         </div>
 
-                        <h1 className="mb-4 text-[28px] font-bold leading-[1.15] tracking-[-0.02em] text-[#1a1a2e] md:text-[36px] lg:text-[44px] xl:text-[50px]">
+                        <h1 className="mb-4 max-w-[560px] text-[30px] font-extrabold leading-[1.08] tracking-[-0.02em] text-primary-900 md:text-[40px] lg:text-[52px] xl:text-[58px]">
                           {slide.heading}
                         </h1>
 
-                        <p className="mb-7 max-w-[420px] text-[14px] leading-[1.7] text-[#334155] md:text-[15px]">
+                        <p className="mb-7 max-w-[500px] text-[15px] leading-[1.75] text-slate-700 md:text-[16px]">
                           {slide.description}
                         </p>
 
                         <div className="flex flex-wrap items-center gap-3">
                           <Link
                             href={ROUTES.PRODUCT}
-                            className="group inline-flex items-center gap-2.5 rounded-full bg-[#facc15] px-6 py-3 text-[14px] font-semibold text-[#1a1a2e] transition-all duration-300 hover:bg-[#eab308]"
+                            className="group inline-flex items-center gap-2.5 rounded-full bg-cta px-6 py-3 text-[14px] font-bold text-white shadow-[0_16px_34px_rgba(231,145,55,0.28)] transition-all duration-300 hover:bg-cta-hover"
                           >
-                            Shop Now
-                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                              <GoArrowUpRight className="text-xs text-[#1a1a2e]" />
+                            Shop products
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/95 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                              <GoArrowUpRight className="text-xs text-cta-dark" />
                             </span>
                           </Link>
 
                           <Link
-                            href={ROUTES.CATEGORY}
-                            className="inline-flex items-center rounded-full border border-[#1a1a2e]/20 bg-white/30 px-5 py-3 text-[14px] font-semibold text-[#1a1a2e] backdrop-blur-sm transition-all duration-300 hover:bg-white/55"
+                            href={ROUTES.STORE}
+                            className="inline-flex items-center rounded-full border border-primary-900/15 bg-white/60 px-5 py-3 text-[14px] font-bold text-primary-900 backdrop-blur-sm transition-all duration-300 hover:bg-white"
                           >
-                            Browse Categories
+                            Explore stores
                           </Link>
+                        </div>
+
+                        <div className="mt-7 grid max-w-[560px] gap-2 sm:grid-cols-3">
+                          {trustItems.map((item) => (
+                            <div
+                              key={item.label}
+                              className="flex items-center gap-2 rounded-2xl border border-white/70 bg-white/55 px-3 py-2 text-[12px] font-semibold text-primary-900 shadow-sm backdrop-blur"
+                            >
+                              <item.icon className="h-4 w-4 shrink-0 text-primary" />
+                              <span>{item.label}</span>
+                            </div>
+                          ))}
                         </div>
                       </div>
 
-                      <div className="relative flex w-full items-end justify-center self-end md:w-[52%] md:justify-end">
-                        <div className="relative h-[240px] w-full max-w-[520px] md:h-[320px] lg:h-[400px] xl:h-[440px]">
+                      <div className="relative flex w-full items-end justify-center self-end md:w-[50%] md:justify-end">
+                        <div className="absolute bottom-5 right-4 hidden rounded-2xl border border-white/70 bg-white/70 px-4 py-3 shadow-[0_18px_38px_rgba(2,58,92,0.15)] backdrop-blur md:block">
+                          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-dark">Hawkeri promise</p>
+                          <p className="mt-1 text-sm font-extrabold text-primary-900">Local products, easier shopping</p>
+                        </div>
+                        <div className="relative h-[245px] w-full max-w-[560px] md:h-[335px] lg:h-[420px] xl:h-[455px]">
                           <Image
                             src={slide.image}
                             alt={slide.heading}
@@ -138,7 +166,7 @@ export default function HeroBanner() {
                             priority={slide.id === 1}
                             fetchPriority={slide.id === 1 ? "high" : undefined}
                             sizes="(max-width: 768px) 100vw, 52vw"
-                            className="object-contain object-bottom"
+                            className="object-contain object-bottom drop-shadow-[0_28px_38px_rgba(2,58,92,0.18)]"
                           />
                         </div>
                       </div>
@@ -193,7 +221,7 @@ export default function HeroBanner() {
                     onClick={() => swiperRef.current?.slideToLoop(index)}
                     className="relative h-2.5 w-[42px] cursor-pointer rounded-full transition-colors duration-300"
                     style={{
-                      background: activeIndex === index ? "#0d9488" : "#d1d5db",
+                      background: activeIndex === index ? "#046ca9" : "#d1d5db",
                       border: "none",
                       padding: 0,
                     }}
