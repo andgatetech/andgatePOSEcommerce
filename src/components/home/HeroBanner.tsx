@@ -30,7 +30,7 @@ const slides = [
     heading: "Shop smarter from verified local stores.",
     description:
       "Discover daily essentials, fashion, electronics, and lifestyle products from sellers connected through AndgatePOS.",
-    image: "/images/banner/banner (3).png",
+    image: "/images/hawkeri/online-order-workspace.jpg",
     bg: "#dff1ff",
   },
   {
@@ -40,7 +40,7 @@ const slides = [
     heading: "Find products customers are buying now.",
     description:
       "Browse popular products, compare prices, and add favorites to your cart in a clean shopping flow.",
-    image: "/images/banner/banner (1).png",
+    image: "/images/hawkeri/fresh-market.jpg",
     bg: "#c7e3f4",
   },
   {
@@ -50,7 +50,7 @@ const slides = [
     heading: "Order with confidence across Bangladesh.",
     description:
       "Cash on delivery, local delivery partners, and order tracking help shoppers buy with less uncertainty.",
-    image: "/images/banner/banner (2).png",
+    image: "/images/hawkeri/footwear-store.jpg",
     bg: "#fff0db",
   },
   {
@@ -60,7 +60,7 @@ const slides = [
     heading: "From neighborhood shops to online carts.",
     description:
       "Hawkeri brings Bangladeshi SME products online so buyers can discover more stores in one place.",
-    image: "/images/banner/banner (4).png",
+    image: "/images/hawkeri/beauty-products.jpg",
     bg: "#d6ecfb",
   },
 ];
@@ -76,9 +76,9 @@ export default function HeroBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
 
   return (
-    <section className="relative w-full bg-gradient-to-b from-primary-50/80 via-white to-white py-4 md:py-6">
+    <section className="relative w-full bg-gradient-to-b from-(--color-primary-50)/80 via-white to-white py-4 md:py-6">
       <Container>
-        <div className="relative overflow-hidden rounded-2xl border border-primary-100/70 shadow-[0_24px_70px_rgba(2,58,92,0.12)] md:rounded-3xl">
+        <div className="relative overflow-hidden rounded-[24px] border border-(--color-primary-100) bg-white shadow-[0_24px_70px_rgba(2,58,92,0.10)] md:rounded-[30px]">
           <Swiper
             modules={[Autoplay, Navigation]}
             autoplay={{ delay: 5000, disableOnInteraction: false }}
@@ -99,8 +99,8 @@ export default function HeroBanner() {
                   style={{ backgroundColor: slide.bg }}
                 >
                   <div className="mx-auto px-8 md:px-12 lg:px-16 xl:px-20">
-                    <div className="flex min-h-[380px] flex-col items-center md:min-h-[440px] md:flex-row lg:min-h-[500px]">
-                      <div className="z-10 w-full pb-6 pt-12 md:w-[50%] md:py-16 lg:py-20">
+                    <div className="flex min-h-[350px] flex-col items-center md:min-h-[430px] md:flex-row lg:min-h-[480px]">
+                      <div className="z-10 w-full pb-7 pt-10 md:w-[52%] md:py-14 lg:py-18">
                         <div className="mb-5 flex items-center gap-3">
                           <span
                             className="rounded-full bg-white/70 px-3 py-1 text-[12px] font-bold uppercase tracking-[0.16em] shadow-sm backdrop-blur"
@@ -108,12 +108,12 @@ export default function HeroBanner() {
                           >
                             {slide.badge}
                           </span>
-                          <span className="rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_10px_20px_rgba(231,145,55,0.28)]">
+                          <span className="rounded-full bg-(--color-cta) px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-white shadow-[0_10px_20px_rgba(231,145,55,0.28)]">
                             {slide.discount}
                           </span>
                         </div>
 
-                        <h1 className="mb-4 max-w-[560px] text-[30px] font-extrabold leading-[1.08] tracking-[-0.02em] text-primary-900 md:text-[40px] lg:text-[52px] xl:text-[58px]">
+                        <h1 className="mb-4 max-w-[560px] text-[30px] font-extrabold leading-[1.08] tracking-[-0.02em] text-(--color-primary-900) md:text-[40px] lg:text-[52px] xl:text-[58px]">
                           {slide.heading}
                         </h1>
 
@@ -124,17 +124,17 @@ export default function HeroBanner() {
                         <div className="flex flex-wrap items-center gap-3">
                           <Link
                             href={ROUTES.PRODUCT}
-                            className="group inline-flex items-center gap-2.5 rounded-full bg-cta px-6 py-3 text-[14px] font-bold text-white shadow-[0_16px_34px_rgba(231,145,55,0.28)] transition-all duration-300 hover:bg-cta-hover"
+                            className="group inline-flex items-center gap-2.5 rounded-full bg-(--color-cta) px-6 py-3 text-[14px] font-bold text-white shadow-[0_16px_34px_rgba(231,145,55,0.28)] transition-all duration-300 hover:bg-(--color-cta-hover)"
                           >
                             Shop products
                             <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/95 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                              <GoArrowUpRight className="text-xs text-cta-dark" />
+                              <GoArrowUpRight className="text-xs text-(--color-cta-dark)" />
                             </span>
                           </Link>
 
                           <Link
                             href={ROUTES.STORE}
-                            className="inline-flex items-center rounded-full border border-primary-900/15 bg-white/60 px-5 py-3 text-[14px] font-bold text-primary-900 backdrop-blur-sm transition-all duration-300 hover:bg-white"
+                            className="inline-flex items-center rounded-full border border-(--color-primary-900)/15 bg-white/72 px-5 py-3 text-[14px] font-bold text-(--color-primary-900) backdrop-blur-sm transition-all duration-300 hover:bg-white"
                           >
                             Explore stores
                           </Link>
@@ -144,30 +144,31 @@ export default function HeroBanner() {
                           {trustItems.map((item) => (
                             <div
                               key={item.label}
-                              className="flex items-center gap-2 rounded-2xl border border-white/70 bg-white/55 px-3 py-2 text-[12px] font-semibold text-primary-900 shadow-sm backdrop-blur"
+                              className="flex items-center gap-2 rounded-2xl border border-white/70 bg-white/68 px-3 py-2 text-[12px] font-semibold text-(--color-primary-900) shadow-sm backdrop-blur"
                             >
-                              <item.icon className="h-4 w-4 shrink-0 text-primary" />
+                              <item.icon className="h-4 w-4 shrink-0 text-(--color-primary)" />
                               <span>{item.label}</span>
                             </div>
                           ))}
                         </div>
                       </div>
 
-                      <div className="relative flex w-full items-end justify-center self-end md:w-[50%] md:justify-end">
-                        <div className="absolute bottom-5 right-4 hidden rounded-2xl border border-white/70 bg-white/70 px-4 py-3 shadow-[0_18px_38px_rgba(2,58,92,0.15)] backdrop-blur md:block">
-                          <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-neutral-dark">Hawkeri promise</p>
-                          <p className="mt-1 text-sm font-extrabold text-primary-900">Local products, easier shopping</p>
-                        </div>
-                        <div className="relative h-[245px] w-full max-w-[560px] md:h-[335px] lg:h-[420px] xl:h-[455px]">
+                      <div className="relative hidden w-full items-center justify-center md:flex md:w-[48%] md:justify-end">
+                        <div className="relative h-[300px] w-full max-w-[520px] overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-[0_28px_60px_rgba(2,58,92,0.16)] lg:h-[390px] xl:h-[430px]">
                           <Image
                             src={slide.image}
                             alt={slide.heading}
                             fill
                             priority={slide.id === 1}
                             fetchPriority={slide.id === 1 ? "high" : undefined}
-                            sizes="(max-width: 768px) 100vw, 52vw"
-                            className="object-contain object-bottom drop-shadow-[0_28px_38px_rgba(2,58,92,0.18)]"
+                            sizes="(max-width: 768px) 100vw, 42vw"
+                            className="object-cover transition duration-700"
                           />
+                          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,58,92,0.02)_0%,rgba(2,58,92,0.10)_55%,rgba(2,58,92,0.40)_100%)]" />
+                          <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/30 bg-white/86 px-4 py-3 shadow-[0_18px_38px_rgba(2,58,92,0.14)] backdrop-blur-md">
+                            <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-(--color-neutral-dark)">Hawkeri promise</p>
+                            <p className="mt-1 text-sm font-extrabold text-(--color-primary-900)">Local products, easier shopping</p>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -206,7 +207,7 @@ export default function HeroBanner() {
             <FiChevronRight className="text-lg text-[#4a5568]" />
           </button>
 
-          <div className="pointer-events-none absolute -bottom-[1px] left-1/2 z-20 flex -translate-x-1/2 items-end">
+          <div className="pointer-events-none absolute -bottom-[1px] left-1/2 z-20 hidden -translate-x-1/2 items-end md:flex">
             <svg width="40" height="40" viewBox="0 0 40 40" className="block">
               <path d="M40,0 Q40,40 0,40 L40,40 Z" fill="white" />
             </svg>
