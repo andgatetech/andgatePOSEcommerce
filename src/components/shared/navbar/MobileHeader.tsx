@@ -38,6 +38,7 @@ const mobileNavLinks = [
   { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT },
   { label: "Stores", href: ROUTES.STORE },
   { label: "Brands", href: ROUTES.BRAND },
+  { label: "Sell on Hawkeri", href: ROUTES.BECOME_PARTNER },
   { label: "Order Tracking", href: ROUTES.ORDER_TRACKING },
 ];
 

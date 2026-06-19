@@ -3,6 +3,7 @@ export const ROUTES = {
 
   ABOUT: "/about",
   AFFILIATE: "/affiliate",
+  BECOME_PARTNER: "/become-partner",
   BECOME_VENDOR: "/become-vendor",
   BRAND: "/brand",
   CAREERS: "/careers",
@@ -50,6 +51,7 @@ export const PUBLIC_ROUTES = [
   ROUTES.HOME,
   ROUTES.ABOUT,
   ROUTES.AFFILIATE,
+  ROUTES.BECOME_PARTNER,
   ROUTES.BECOME_VENDOR,
   ROUTES.BRAND,
   ROUTES.CAREERS,

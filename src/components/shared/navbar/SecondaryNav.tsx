@@ -27,6 +27,7 @@ const navLinks = [
   { label: "Popular Picks", href: ROUTES.POPULAR_PRODUCT, hasDropdown: false, icon: FaHeart },
   { label: "Stores", href: ROUTES.STORE, hasDropdown: true, icon: FaStore },
   { label: "Brands", href: ROUTES.BRAND, hasDropdown: true, icon: FaWineBottle },
+  { label: "Sell on Hawkeri", href: ROUTES.BECOME_PARTNER, hasDropdown: false, icon: FaStore },
 ];
 
 interface SecondaryNavProps {
