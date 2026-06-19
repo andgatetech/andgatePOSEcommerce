@@ -6,53 +6,57 @@ import Container from "@/components/shared/Container";
 
 const stories = [
   {
-    title: "Beauty & self care",
-    subtitle: "Skincare, grooming, and daily confidence picks.",
-    image: "/images/banner/female.jpg",
-    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("beauty skincare")}`,
-    badge: "Personal care",
+    title: "Order-ready essentials",
+    subtitle: "Products packed, checked, and ready for customer delivery.",
+    image: "/images/hawkeri/online-order-workspace.jpg",
+    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("online order")}`,
+    badge: "Online shopping",
     className: "md:col-span-5 md:row-span-2",
+    objectPosition: "object-center",
   },
   {
-    title: "Smart lifestyle",
-    subtitle: "Wearables and handy tech for everyday routines.",
-    image: "/images/banner/smart-watch-1.png",
-    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("smart watch")}`,
-    badge: "Tech picks",
+    title: "Fresh grocery picks",
+    subtitle: "Everyday food and household needs from local sellers.",
+    image: "/images/hawkeri/fresh-market.jpg",
+    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("grocery")}`,
+    badge: "Daily needs",
     className: "md:col-span-3",
+    objectPosition: "object-center",
   },
   {
-    title: "Home entertainment",
-    subtitle: "Screens, audio, and family-time upgrades.",
-    image: "/images/banner/promo-bg-1.png",
-    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("home entertainment")}`,
-    badge: "Home setup",
+    title: "Footwear & fashion",
+    subtitle: "Visual product cards that help shoppers choose faster.",
+    image: "/images/hawkeri/footwear-store.jpg",
+    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("shoes")}`,
+    badge: "Fashion",
     className: "md:col-span-4",
+    objectPosition: "object-center",
   },
   {
-    title: "Gift-ready finds",
-    subtitle: "Easy products to send, share, and surprise.",
-    image: "/images/banner/promo-bg-3.jpg",
-    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("gift")}`,
-    badge: "Trending",
+    title: "Beauty & personal care",
+    subtitle: "Clean product photography for small, high-margin items.",
+    image: "/images/hawkeri/beauty-products.jpg",
+    href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("beauty")}`,
+    badge: "Self care",
     className: "md:col-span-7",
+    objectPosition: "object-center",
   },
 ];
 
 export default function ImageStorySection() {
   return (
-    <section className="py-12 md:py-14 lg:py-16">
+    <section className="bg-gradient-to-b from-white via-primary-50/45 to-white py-12 md:py-14 lg:py-16">
       <Container>
         <div className="mb-7 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="max-w-[720px]">
-            <span className="inline-flex rounded-full border border-primary-200 bg-primary-100 px-4 py-1.5 text-[12px] font-bold uppercase tracking-[0.22em] text-primary">
-              Visual shopping
+            <span className="inline-flex rounded-full border border-primary-200 bg-white px-4 py-1.5 text-[12px] font-bold uppercase tracking-[0.22em] text-primary shadow-sm">
+              Hawkeri collections
             </span>
             <h2 className="mt-4 text-[30px] font-extrabold leading-[1.08] tracking-[-0.04em] text-primary-900 md:text-[42px]">
-              Shop by real-life moments
+              Shop familiar products with clearer visuals
             </h2>
             <p className="mt-3 max-w-[600px] text-[15px] leading-7 text-neutral-dark">
-              Help visitors feel the product before they click. Hawkeri can guide shoppers through familiar needs: care, home, tech, and gifting.
+              The homepage should quickly show what customers can buy: grocery, fashion, beauty, and online-order essentials from real sellers.
             </p>
           </div>
 
@@ -73,7 +77,7 @@ export default function ImageStorySection() {
               key={story.title}
               href={story.href}
               className={[
-                "group relative min-h-[280px] overflow-hidden rounded-[28px] border border-primary-100 bg-primary-50 shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1",
+                "group relative min-h-[280px] overflow-hidden rounded-[24px] border border-primary-100 bg-white shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1",
                 story.className,
               ].join(" ")}
             >
@@ -82,12 +86,16 @@ export default function ImageStorySection() {
                 alt={story.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
-                className="object-cover transition duration-700 group-hover:scale-[1.04]"
+                className={[
+                  "object-cover transition duration-700 group-hover:scale-[1.04]",
+                  story.objectPosition,
+                ].join(" ")}
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,58,92,0.05)_0%,rgba(2,58,92,0.18)_44%,rgba(2,58,92,0.74)_100%)]" />
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,58,92,0.02)_0%,rgba(2,58,92,0.16)_42%,rgba(2,58,92,0.76)_100%)]" />
+              <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-[linear-gradient(135deg,rgba(4,108,169,0.22),rgba(231,145,55,0.16))]" />
 
-              <div className="absolute inset-x-4 bottom-4 rounded-[24px] border border-white/20 bg-white/72 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5 md:p-5">
-                <span className="inline-flex rounded-full bg-cta px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
+              <div className="absolute inset-x-4 bottom-4 rounded-[20px] border border-white/25 bg-white/86 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5 md:p-5">
+                <span className="inline-flex rounded-full bg-primary px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
                   {story.badge}
                 </span>
                 <h3 className="mt-3 text-[20px] font-extrabold tracking-[-0.03em] text-primary-900 md:text-[24px]">
@@ -96,7 +104,7 @@ export default function ImageStorySection() {
                 <p className="mt-1.5 max-w-[380px] text-[13px] font-medium leading-6 text-primary-900/75">
                   {story.subtitle}
                 </p>
-                <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-bold text-primary">
+                <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-bold text-cta-dark">
                   Shop now
                   <FiArrowUpRight className="text-[16px]" />
                 </span>
