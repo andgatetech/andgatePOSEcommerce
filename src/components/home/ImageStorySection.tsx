@@ -71,13 +71,13 @@ export default function ImageStorySection() {
           </Link>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-12 md:auto-rows-[235px]">
+        <div className="grid gap-4 md:grid-cols-12 md:auto-rows-[270px]">
           {stories.map((story) => (
             <Link
               key={story.title}
               href={story.href}
               className={[
-                "group relative min-h-[280px] overflow-hidden rounded-[24px] border border-(--color-primary-100) bg-white shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1",
+                "group relative min-h-[320px] overflow-hidden rounded-[24px] border border-(--color-primary-100) bg-white shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1 md:min-h-0",
                 story.className,
               ].join(" ")}
             >
@@ -94,17 +94,18 @@ export default function ImageStorySection() {
               <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,58,92,0.02)_0%,rgba(2,58,92,0.16)_42%,rgba(2,58,92,0.76)_100%)]" />
               <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100 bg-[linear-gradient(135deg,rgba(4,108,169,0.22),rgba(231,145,55,0.16))]" />
 
-              <div className="absolute inset-x-4 bottom-4 rounded-[20px] border border-white/25 bg-white/86 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5 md:p-5">
-                <span className="inline-flex rounded-full bg-(--color-primary) px-3 py-1 text-[11px] font-bold uppercase tracking-[0.14em] text-white">
-                  {story.badge}
-                </span>
-                <h3 className="mt-3 text-[20px] font-extrabold tracking-[-0.03em] text-(--color-primary-900) md:text-[24px]">
+              <span className="absolute left-4 top-4 inline-flex rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.14em] text-(--color-primary-900) shadow-sm backdrop-blur-md md:left-5 md:top-5">
+                {story.badge}
+              </span>
+
+              <div className="absolute inset-x-4 bottom-4 rounded-[18px] border border-white/25 bg-white/90 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5">
+                <h3 className="text-[20px] font-extrabold leading-tight tracking-[-0.03em] text-(--color-primary-900) md:text-[23px]">
                   {story.title}
                 </h3>
-                <p className="mt-1.5 max-w-[380px] text-[13px] font-medium leading-6 text-(--color-primary-900)/75">
+                <p className="mt-2 max-w-[380px] text-[13px] font-medium leading-6 text-(--color-primary-900)/75">
                   {story.subtitle}
                 </p>
-                <span className="mt-4 inline-flex items-center gap-2 text-[13px] font-bold text-(--color-cta-dark)">
+                <span className="mt-4 inline-flex w-fit items-center gap-2 rounded-full bg-(--color-cta-100) px-3 py-1.5 text-[13px] font-bold text-(--color-cta-dark)">
                   Shop now
                   <FiArrowUpRight className="text-[16px]" />
                 </span>

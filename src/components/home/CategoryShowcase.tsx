@@ -9,16 +9,36 @@ interface CategoryShowcaseProps {
     categories: Category[];
 }
 
+const CATEGORY_IMAGE_RULES = [
+    {
+        keywords: ["kid", "child", "baby", "toddler"],
+        image: "/images/hawkeri/home/category-kids-shoes.jpg",
+    },
+    {
+        keywords: ["shoe", "footwear", "sneaker", "sandal"],
+        image: "/images/hawkeri/home/category-footwear.jpg",
+    },
+    {
+        keywords: ["grocery", "food", "fresh", "vegetable", "fruit", "daily"],
+        image: "/images/hawkeri/home/category-grocery.jpg",
+    },
+    {
+        keywords: ["beauty", "cosmetic", "skin", "care", "personal"],
+        image: "/images/hawkeri/home/category-beauty.jpg",
+    },
+] as const;
+
+function getCuratedCategoryImage(category: Category) {
+    const haystack = `${category.name} ${category.slug}`.toLowerCase();
+    return CATEGORY_IMAGE_RULES.find((rule) =>
+        rule.keywords.some((keyword) => haystack.includes(keyword)),
+    )?.image ?? null;
+}
+
 export default function CategoryShowcase({ categories }: CategoryShowcaseProps) {
     if (categories.length < 4) return null;
 
     const topCategories = categories.slice(0, 4);
-    const fallbackImages = [
-        "/images/hawkeri/home/category-grocery.jpg",
-        "/images/hawkeri/home/category-footwear.jpg",
-        "/images/hawkeri/home/category-beauty.jpg",
-        "/images/hawkeri/home/category-store.jpg",
-    ];
 
     return (
         <section className="bg-white py-10 sm:py-14">
@@ -34,8 +54,11 @@ export default function CategoryShowcase({ categories }: CategoryShowcaseProps) 
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    {topCategories.map((cat, i) => {
-                        const image = resolveImageUrl(cat.image_url) || fallbackImages[i % fallbackImages.length];
+                    {topCategories.map((cat) => {
+                        const image =
+                            getCuratedCategoryImage(cat) ||
+                            resolveImageUrl(cat.image_url) ||
+                            "/images/hawkeri/home/category-store.jpg";
                         return (
                         <Link
                             key={cat.id}
