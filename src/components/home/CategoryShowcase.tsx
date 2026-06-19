@@ -14,10 +14,10 @@ export default function CategoryShowcase({ categories }: CategoryShowcaseProps) 
 
     const topCategories = categories.slice(0, 4);
     const fallbackImages = [
-        "/images/hawkeri/fresh-market.jpg",
-        "/images/hawkeri/footwear-store.jpg",
-        "/images/hawkeri/beauty-products.jpg",
-        "/images/hawkeri/online-order-workspace.jpg",
+        "/images/hawkeri/home/category-grocery.jpg",
+        "/images/hawkeri/home/category-footwear.jpg",
+        "/images/hawkeri/home/category-beauty.jpg",
+        "/images/hawkeri/home/category-store.jpg",
     ];
 
     return (

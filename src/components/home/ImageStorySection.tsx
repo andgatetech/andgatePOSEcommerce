@@ -8,7 +8,7 @@ const stories = [
   {
     title: "Order-ready essentials",
     subtitle: "Products packed, checked, and ready for customer delivery.",
-    image: "/images/hawkeri/online-order-workspace.jpg",
+    image: "/images/hawkeri/home/story-order-packing.jpg",
     href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("online order")}`,
     badge: "Online shopping",
     className: "md:col-span-5 md:row-span-2",
@@ -17,7 +17,7 @@ const stories = [
   {
     title: "Fresh grocery picks",
     subtitle: "Everyday food and household needs from local sellers.",
-    image: "/images/hawkeri/fresh-market.jpg",
+    image: "/images/hawkeri/home/story-grocery.jpg",
     href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("grocery")}`,
     badge: "Daily needs",
     className: "md:col-span-3",
@@ -26,7 +26,7 @@ const stories = [
   {
     title: "Footwear & fashion",
     subtitle: "Visual product cards that help shoppers choose faster.",
-    image: "/images/hawkeri/footwear-store.jpg",
+    image: "/images/hawkeri/home/story-footwear.jpg",
     href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("shoes")}`,
     badge: "Fashion",
     className: "md:col-span-4",
@@ -35,7 +35,7 @@ const stories = [
   {
     title: "Beauty & personal care",
     subtitle: "Clean product photography for small, high-margin items.",
-    image: "/images/hawkeri/beauty-products.jpg",
+    image: "/images/hawkeri/home/story-skincare.jpg",
     href: `${ROUTES.PRODUCT}?search=${encodeURIComponent("beauty")}`,
     badge: "Self care",
     className: "md:col-span-7",

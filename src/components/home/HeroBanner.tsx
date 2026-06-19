@@ -30,7 +30,7 @@ const slides = [
     heading: "Shop smarter from verified local stores.",
     description:
       "Discover daily essentials, fashion, electronics, and lifestyle products from sellers connected through AndgatePOS.",
-    image: "/images/hawkeri/online-order-workspace.jpg",
+    image: "/images/hawkeri/home/hero-local-market.jpg",
     bg: "#dff1ff",
   },
   {
@@ -40,7 +40,7 @@ const slides = [
     heading: "Find products customers are buying now.",
     description:
       "Browse popular products, compare prices, and add favorites to your cart in a clean shopping flow.",
-    image: "/images/hawkeri/fresh-market.jpg",
+    image: "/images/hawkeri/home/hero-fashion-shop.jpg",
     bg: "#c7e3f4",
   },
   {
@@ -50,7 +50,7 @@ const slides = [
     heading: "Order with confidence across Bangladesh.",
     description:
       "Cash on delivery, local delivery partners, and order tracking help shoppers buy with less uncertainty.",
-    image: "/images/hawkeri/footwear-store.jpg",
+    image: "/images/hawkeri/home/hero-delivery.jpg",
     bg: "#fff0db",
   },
   {
@@ -60,7 +60,7 @@ const slides = [
     heading: "From neighborhood shops to online carts.",
     description:
       "Hawkeri brings Bangladeshi SME products online so buyers can discover more stores in one place.",
-    image: "/images/hawkeri/beauty-products.jpg",
+    image: "/images/hawkeri/home/hero-beauty-counter.jpg",
     bg: "#d6ecfb",
   },
 ];
