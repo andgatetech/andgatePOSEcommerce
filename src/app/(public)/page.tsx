@@ -29,17 +29,17 @@ async function getPageItems<T>(
   return response.data.items;
 }
 
-async function getHomeProducts(): Promise<EcommerceProduct[]> {
+async function getHomeProducts(): Promise<{ items: EcommerceProduct[]; total: number }> {
   try {
     const response = await serverFetchJson<PaginatedResponse<EcommerceProduct>>(
       API_ROUTES.ECOMMERCE_CATALOG.PRODUCTS,
       { page: 1, per_page: 30, sort_field: "created_at", sort_direction: "desc" },
       { revalidate: 30 },
     );
-    return response.data.items;
+    return { items: response.data.items, total: response.data.pagination?.total ?? response.data.items.length };
   } catch (err) {
     console.error("[HomePage] Failed to fetch products:", err);
-    return [];
+    return { items: [], total: 0 };
   }
 }
 
@@ -90,12 +90,17 @@ export default async function HomePage() {
     getDealsOfTheDay(),
     getSharedStores(),
   ]);
-  const products = dedup(rawProducts);
+  const products = dedup(rawProducts.items);
   const popularProducts = dedup(rawPopular);
   const dealProducts = dedup(rawDeals);
   const topProducts = products.slice(16, 28).length >= 4
     ? products.slice(16, 28)
     : products.slice(0, 12);
+
+  const trustStats = {
+    stores: stores.length,
+    products: rawProducts.total,
+  };
 
   return (
     <main>
@@ -103,7 +108,7 @@ export default async function HomePage() {
       <HeroBanner />
       {/* Primary-50 tint */}
       <div className="bg-primary-50/50">
-        <TrustStatsBar />
+        <TrustStatsBar stats={trustStats} />
       </div>
       {/* White bg */}
       <FeaturedCategories categories={featuredCategories} />

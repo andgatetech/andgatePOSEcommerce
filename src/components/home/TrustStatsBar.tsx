@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Container from "@/components/shared/Container";
-import { FiPackage, FiShoppingBag, FiSmile, FiTruck } from "react-icons/fi";
 
 function AnimatedCounter({ end, suffix = "" }: { end: number; suffix?: string }) {
     const [count, setCount] = useState(0);
@@ -39,32 +38,53 @@ function AnimatedCounter({ end, suffix = "" }: { end: number; suffix?: string })
     return <span ref={ref}>{display}{suffix}</span>;
 }
 
-const stats = [
-    { icon: FiShoppingBag, end: 500, suffix: "+", label: "Active Stores" },
-    { icon: FiPackage, end: 15000, suffix: "+", label: "Products Listed" },
-    { icon: FiSmile, end: 25000, suffix: "+", label: "Happy Customers" },
-    { icon: FiTruck, end: 100000, suffix: "+", label: "Orders Delivered" },
-];
+interface TrustStats {
+    stores: number;
+    products: number;
+}
 
-export default function TrustStatsBar() {
+const formatStat = (n: number): number => {
+    if (n < 10) return Math.max(n, 10); // minimum 10 for display
+    if (n < 50) return Math.ceil(n / 5) * 5;
+    if (n < 100) return Math.ceil(n / 10) * 10;
+    return Math.ceil(n / 100) * 100;
+};
+
+export default function TrustStatsBar({ stats }: { stats: TrustStats }) {
+    const displayStores = formatStat(stats.stores);
+    const displayProducts = formatStat(stats.products);
+
     return (
-        <section className="py-10 sm:py-14">
+        <section className="py-8 sm:py-10">
             <Container>
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {stats.map((stat) => (
-                        <div
-                            key={stat.label}
-                            className="group rounded-2xl border border-primary-100 bg-white p-5 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary-200 hover:shadow-md sm:p-6"
-                        >
-                            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-white shadow-sm transition-transform group-hover:scale-110">
-                                <stat.icon className="h-5 w-5" />
-                            </div>
-                            <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
-                                <AnimatedCounter end={stat.end} suffix={stat.suffix} />
-                            </div>
-                            <p className="mt-1 text-sm font-medium text-neutral">{stat.label}</p>
+                <div className="flex flex-wrap items-center justify-center gap-6 rounded-2xl border border-primary-100 bg-white px-6 py-8 shadow-sm sm:gap-12 sm:px-10 md:gap-16">
+                    <div className="text-center">
+                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
+                            <AnimatedCounter end={displayStores} suffix="+" />
                         </div>
-                    ))}
+                        <p className="mt-1 text-sm font-medium text-neutral">Active Stores</p>
+                    </div>
+                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
+                    <div className="text-center">
+                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
+                            <AnimatedCounter end={displayProducts} suffix="+" />
+                        </div>
+                        <p className="mt-1 text-sm font-medium text-neutral">Products Listed</p>
+                    </div>
+                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
+                    <div className="text-center">
+                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
+                            <AnimatedCounter end={25000} suffix="+" />
+                        </div>
+                        <p className="mt-1 text-sm font-medium text-neutral">Happy Customers</p>
+                    </div>
+                    <div className="hidden h-10 w-px bg-primary-100 sm:block" />
+                    <div className="text-center">
+                        <div className="text-2xl font-extrabold text-primary-900 sm:text-3xl">
+                            <AnimatedCounter end={100000} suffix="+" />
+                        </div>
+                        <p className="mt-1 text-sm font-medium text-neutral">Orders Delivered</p>
+                    </div>
                 </div>
             </Container>
         </section>
