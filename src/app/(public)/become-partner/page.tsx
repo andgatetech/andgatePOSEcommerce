@@ -13,22 +13,18 @@ import {
   FiGlobe,
   FiGrid,
   FiHeadphones,
-  FiMapPin,
   FiMessageCircle,
   FiPackage,
-  FiPieChart,
-  FiSend,
   FiShield,
   FiShoppingBag,
   FiSmartphone,
   FiStar,
-  FiTruck,
-  FiUsers,
   FiZap,
 } from "react-icons/fi";
 import Container from "@/components/shared/Container";
 import { ROUTES } from "@/config/routes";
 import { SITE_URL } from "@/lib/site";
+import PartnerApplicationForm from "./_components/PartnerApplicationForm";
 
 const pageUrl = `${SITE_URL}/become-partner`;
 
@@ -178,11 +174,6 @@ const faqs = [
       "Yes. The Hawkeri and AndgatePOS ecosystem is designed so product and stock operations can be managed through a unified business platform.",
   },
 ];
-
-const inputClass =
-  "h-12 w-full rounded-xl border border-(--color-border) bg-white px-4 text-sm text-(--color-dark) outline-none transition focus:border-(--color-primary) focus:ring-2 focus:ring-(--color-primary-100)";
-
-const labelClass = "mb-2 block text-sm font-bold text-(--color-primary-900)";
 
 const jsonLd = [
   {
@@ -447,133 +438,7 @@ export default function BecomePartnerPage() {
                 <p className="mt-2 text-sm leading-6 text-(--color-neutral-dark)">Call sales at 01577-303608 or include demo timing in the notes field.</p>
               </div>
             </div>
-            <form
-              action="mailto:support@hawkeri.com"
-              method="post"
-              encType="text/plain"
-              className="rounded-[24px] border border-(--color-border) bg-white p-5 shadow-[0_24px_70px_rgba(2,58,92,0.10)] md:p-7"
-            >
-              <div className="grid gap-5 md:grid-cols-2">
-                <div>
-                  <label className={labelClass} htmlFor="business-name">Business Name</label>
-                  <input className={inputClass} id="business-name" name="Business Name" required />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="owner-name">Owner Name</label>
-                  <input className={inputClass} id="owner-name" name="Owner Name" required />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="mobile">Mobile Number</label>
-                  <input className={inputClass} id="mobile" name="Mobile Number" required />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="whatsapp">WhatsApp Number</label>
-                  <input className={inputClass} id="whatsapp" name="WhatsApp Number" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="email">Email</label>
-                  <input className={inputClass} id="email" name="Email" type="email" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="website">Website</label>
-                  <input className={inputClass} id="website" name="Website" placeholder="Optional" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="facebook">Facebook Page</label>
-                  <input className={inputClass} id="facebook" name="Facebook Page" placeholder="Optional" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="category">Business Category</label>
-                  <select className={inputClass} id="category" name="Business Category" defaultValue="">
-                    <option value="" disabled>Select category</option>
-                    {partnerTypes.slice(0, 12).map((type) => <option key={type}>{type}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="business-type">Business Type</label>
-                  <select className={inputClass} id="business-type" name="Business Type" defaultValue="">
-                    <option value="" disabled>Select type</option>
-                    <option>Retail Store</option>
-                    <option>Manufacturer</option>
-                    <option>Wholesaler</option>
-                    <option>Distributor</option>
-                    <option>Home-Based Business</option>
-                    <option>Brand Owner</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="physical-store">Existing Physical Store</label>
-                  <select className={inputClass} id="physical-store" name="Existing Physical Store" defaultValue="">
-                    <option value="" disabled>Select answer</option>
-                    <option>Yes</option>
-                    <option>No</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="online-store">Existing Online Store</label>
-                  <select className={inputClass} id="online-store" name="Existing Online Store" defaultValue="">
-                    <option value="" disabled>Select answer</option>
-                    <option>Yes</option>
-                    <option>No</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="years">Years In Business</label>
-                  <input className={inputClass} id="years" name="Years In Business" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="products">Number Of Products</label>
-                  <input className={inputClass} id="products" name="Number Of Products" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="orders">Monthly Orders</label>
-                  <input className={inputClass} id="orders" name="Monthly Orders" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="pos">Current POS Software</label>
-                  <input className={inputClass} id="pos" name="Current POS Software" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="interest">Interested In</label>
-                  <select className={inputClass} id="interest" name="Interested In" defaultValue="">
-                    <option value="" disabled>Select interest</option>
-                    <option>Hawkeri Marketplace</option>
-                    <option>AndgatePOS</option>
-                    <option>Both</option>
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="division">Division</label>
-                  <input className={inputClass} id="division" name="Division" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="district">District</label>
-                  <input className={inputClass} id="district" name="District" />
-                </div>
-                <div>
-                  <label className={labelClass} htmlFor="area">Area</label>
-                  <input className={inputClass} id="area" name="Area" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelClass} htmlFor="challenges">Current Challenges</label>
-                  <textarea className={`${inputClass} min-h-28 py-3`} id="challenges" name="Current Challenges" />
-                </div>
-                <div className="md:col-span-2">
-                  <label className={labelClass} htmlFor="notes">Additional Notes</label>
-                  <textarea className={`${inputClass} min-h-28 py-3`} id="notes" name="Additional Notes" />
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-(--color-cta) px-6 py-4 text-sm font-extrabold text-white shadow-[0_16px_34px_rgba(231,145,55,0.28)] transition hover:bg-(--color-cta-hover)"
-              >
-                Submit Application
-                <FiSend />
-              </button>
-              <p className="mt-3 text-center text-xs leading-5 text-(--color-text-muted)">
-                This first release opens your email client with the application details, avoiding any change to existing production data flows.
-              </p>
-            </form>
+            <PartnerApplicationForm partnerTypes={partnerTypes} />
           </div>
         </Container>
       </section>
