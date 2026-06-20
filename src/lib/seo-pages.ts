@@ -22,6 +22,76 @@ const commonHighlights = [
   "Vendor storefronts for SMEs and small businesses",
 ];
 
+const commonFaq = [
+  {
+    question: "Why is Hawkeri relevant for Bangladesh ecommerce?",
+    answer:
+      "Hawkeri is focused on local shopping behavior in Bangladesh: marketplace browsing, local sellers, cash on delivery habits, digital payment readiness, order tracking and category-based product discovery.",
+  },
+  {
+    question: "Is Hawkeri only for shoppers?",
+    answer:
+      "No. Hawkeri is useful for both shoppers and sellers. Customers can discover products, while local vendors and SMEs can use marketplace storefronts to sell online.",
+  },
+  {
+    question: "What makes a Bangladesh marketplace page useful for SEO and AIEO?",
+    answer:
+      "Useful marketplace pages explain who the platform serves, what categories are available, how orders and payments work, why local sellers matter, and which buyer questions the page answers directly.",
+  },
+  {
+    question: "Can Hawkeri help small businesses move online?",
+    answer:
+      "Yes. Hawkeri gives sellers a marketplace presence with product listings and store discovery, which can be easier than building a standalone ecommerce website first.",
+  },
+];
+
+function buildAuthoritySections(page: {
+  primaryKeyword: string;
+  secondaryKeywords: string[];
+  audience: string;
+}): SeoPage["sections"] {
+  return [
+    {
+      title: `What people mean when they search for ${page.primaryKeyword}`,
+      body:
+        `When shoppers or sellers search for ${page.primaryKeyword}, they are usually looking for a practical Bangladesh-ready solution, not just a generic website. They want to know whether the marketplace supports local sellers, clear product categories, flexible payment behavior, order tracking, delivery confidence and trustworthy product information. Hawkeri pages are structured to answer those commercial questions directly for both Google and AI answer engines.`,
+      items: [
+        "Clear explanation of the buyer or seller problem",
+        "Bangladesh-specific payment and delivery context",
+        "Internal links to product, category and vendor journeys",
+        "FAQ answers written in direct question-and-answer format",
+      ],
+    },
+    {
+      title: "Bangladesh ecommerce context",
+      body:
+        "Online shopping in Bangladesh is shaped by trust, delivery coverage, seller reputation, price clarity, mobile-first browsing and cash-on-delivery expectations. A marketplace page needs to cover those details naturally so customers understand how the platform fits local buying habits. Hawkeri content focuses on local stores, product discovery, seller pages, order tracking and category-led shopping because those are the questions Bangladeshi buyers ask before placing an order.",
+      items: [
+        "COD and digital payment-friendly buying behavior",
+        "Local seller and store discovery",
+        "Fashion, electronics, beauty, grocery and daily essentials",
+        "Order tracking, support and policy pages for trust",
+      ],
+    },
+    {
+      title: "How this page supports SEO and AIEO",
+      body:
+        `This page supports search engines and AI answer engines by covering the primary keyword, related terms such as ${page.secondaryKeywords.slice(0, 3).join(", ")}, and the real audience behind the search: ${page.audience} The goal is not keyword repetition; the goal is to make Hawkeri easy to understand as a Bangladesh-focused marketplace for shoppers and sellers.`,
+    },
+    {
+      title: "Best next steps on Hawkeri",
+      body:
+        "Visitors who are ready to buy should browse products and categories. Sellers who want online reach should review the vendor path. Customers who need confidence before ordering should check order tracking, return policies, contact information and seller/product details. These internal paths help users move from search intent to action while also helping crawlers understand the site structure.",
+      items: [
+        "Browse products by category",
+        "Explore seller stores and brands",
+        "Review return policy and order tracking",
+        "Become a vendor if you want to sell online",
+      ],
+    },
+  ];
+}
+
 const makePage = (
   slug: string,
   title: string,
@@ -32,23 +102,27 @@ const makePage = (
   sections: SeoPage["sections"],
   faq: SeoPage["faq"],
   secondaryKeywords: string[] = [],
-): SeoPage => ({
-  slug,
-  title,
-  metaTitle: `${title} | Hawkeri Bangladesh`,
-  metaDescription: `${intro} Shop from local sellers on Hawkeri with Bangladesh-ready categories, delivery, cash on delivery and digital payment options.`,
-  h1,
-  eyebrow: "Bangladesh Marketplace",
-  intro,
-  banglaIntro:
-    "Hawkeri বাংলাদেশের ক্রেতা ও ছোট ব্যবসার জন্য একটি local online marketplace, যেখানে trusted seller, cash on delivery, digital payment, category shopping এবং vendor storefront একসাথে পাওয়া যায়।",
-  primaryKeyword,
-  secondaryKeywords,
-  audience,
-  highlights: commonHighlights,
-  sections,
-  faq,
-});
+): SeoPage => {
+  const pageContext = { primaryKeyword, secondaryKeywords, audience };
+
+  return {
+    slug,
+    title,
+    metaTitle: `${title} | Hawkeri Bangladesh`,
+    metaDescription: `${intro} Shop from local sellers on Hawkeri with Bangladesh-ready categories, delivery, cash on delivery and digital payment options.`,
+    h1,
+    eyebrow: "Bangladesh Marketplace",
+    intro,
+    banglaIntro:
+      "Hawkeri বাংলাদেশের ক্রেতা ও ছোট ব্যবসার জন্য একটি local online marketplace, যেখানে trusted seller, cash on delivery, digital payment, category shopping এবং vendor storefront একসাথে পাওয়া যায়।",
+    primaryKeyword,
+    secondaryKeywords,
+    audience,
+    highlights: commonHighlights,
+    sections: [...sections, ...buildAuthoritySections(pageContext)],
+    faq: [...faq, ...commonFaq],
+  };
+};
 
 export const seoPages: SeoPage[] = [
   makePage(

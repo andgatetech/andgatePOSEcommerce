@@ -49,6 +49,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   entries.push(
+    {
+      url: absoluteUrl("/shopping-guides-bangladesh"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.84,
+    },
     ...seoPages.map((page) => ({
       url: absoluteUrl(`/${page.slug}`),
       lastModified: now,

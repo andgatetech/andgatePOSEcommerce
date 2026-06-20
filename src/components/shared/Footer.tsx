@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   FaChevronRight,
-  FaChevronUp,
 } from "react-icons/fa";
 import {
   HiOutlineLocationMarker,
@@ -19,6 +18,7 @@ import { ROUTES } from "@/config/routes";
 const companyLinks = [
   { label: "About Us", href: ROUTES.ABOUT },
   { label: "Contact Us", href: ROUTES.CONTACT },
+  { label: "Shopping Guides", href: "/shopping-guides-bangladesh" },
   { label: "Privacy Policy", href: ROUTES.PRIVACY_POLICY },
   { label: "Terms & Conditions", href: ROUTES.TERMS },
   { label: "Return Policies", href: ROUTES.RETURN_POLICIES },
@@ -39,18 +39,9 @@ const deliveryPartners = [
 ];
 
 export default function Footer() {
-  const [showScrollTop, setShowScrollTop] = useState(false);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleScroll = () => setShowScrollTop(window.scrollY > 300);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  const scrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   async function handleSubscribe(e: React.FormEvent) {
     e.preventDefault();
@@ -282,17 +273,6 @@ export default function Footer() {
         </div>
       </footer>
 
-      {/* Scroll to top */}
-      {showScrollTop && (
-        <button
-          type="button"
-          onClick={scrollToTop}
-          aria-label="Scroll to top"
-          className="fixed bottom-24 right-4 z-50 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition hover:bg-(--color-primary-dark) sm:bottom-6 sm:right-6"
-        >
-          <FaChevronUp size={14} />
-        </button>
-      )}
     </>
   );
 }
