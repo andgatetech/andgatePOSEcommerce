@@ -16,7 +16,27 @@ import ImageStorySection from "@/components/home/ImageStorySection";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { API_ROUTES } from "@/config/apiRoutes";
 import { getSharedStores } from "@/lib/catalog";
+import { SITE_URL } from "@/lib/site";
+import type { Metadata } from "next";
 import type { Category, EcommerceProduct, Store, PaginatedResponse } from "@/types";
+
+export const metadata: Metadata = {
+  title: "Online Shopping in Bangladesh",
+  description:
+    "Shop fashion, beauty, electronics, grocery and daily essentials from local sellers on Hawkeri, a Bangladesh-focused online shopping marketplace.",
+  alternates: {
+    canonical: SITE_URL,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_BD",
+    url: SITE_URL,
+    siteName: "Hawkeri",
+    title: "Online Shopping in Bangladesh | Hawkeri",
+    description:
+      "Discover local sellers, marketplace stores, COD-friendly shopping and daily products on Hawkeri.",
+  },
+};
 
 async function getPageItems<T>(
   path: string,
@@ -105,6 +125,23 @@ export default async function HomePage() {
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "ItemList",
+            name: "Hawkeri featured products",
+            itemListElement: products.slice(0, 12).map((product, index) => ({
+              "@type": "ListItem",
+              position: index + 1,
+              url: `${SITE_URL}/product/${product.slug}`,
+              name: product.product_name,
+            })),
+          }),
+        }}
+      />
+      <h1 className="sr-only">Online Shopping in Bangladesh with Hawkeri</h1>
       {/* White bg */}
       <HeroBanner />
       {/* Primary-50 tint */}

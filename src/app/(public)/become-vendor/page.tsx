@@ -2,10 +2,23 @@ import React from 'react';
 import { Metadata } from 'next';
 import { FaStoreAlt, FaMoneyBillWave, FaShieldAlt } from 'react-icons/fa';
 import Container from "@/components/shared/Container";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: 'Become a Vendor',
-  description: 'Join our marketplace and start selling to thousands of customers.',
+  title: 'Become a Vendor in Bangladesh',
+  description:
+    'Become a Hawkeri vendor and sell online in Bangladesh with a marketplace storefront for fashion, beauty, electronics, grocery and local products.',
+  alternates: {
+    canonical: `${SITE_URL}/become-vendor`,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_BD',
+    url: `${SITE_URL}/become-vendor`,
+    siteName: 'Hawkeri',
+    title: 'Become a Vendor in Bangladesh',
+    description: 'Open a marketplace storefront on Hawkeri and start selling products online in Bangladesh.',
+  },
 };
 
 export default function BecomeVendorPage() {

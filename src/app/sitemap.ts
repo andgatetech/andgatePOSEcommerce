@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { API_ROUTES } from "@/config/apiRoutes";
 import { PUBLIC_ROUTES } from "@/config/routes";
+import { seoPages } from "@/lib/seo-pages";
 import { serverFetchJson } from "@/lib/serverFetch";
 import { SITE_URL } from "@/lib/site";
 import type {
@@ -48,6 +49,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   entries.push(
+    ...seoPages.map((page) => ({
+      url: absoluteUrl(`/${page.slug}`),
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.82,
+    })),
     ...categories.map((category) => ({
       url: absoluteUrl(`/category/${category.slug}`),
       lastModified: category.updated_at ? new Date(category.updated_at) : now,
@@ -74,6 +81,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return entries;
+  return Array.from(new Map(entries.map((entry) => [entry.url, entry])).values());
 }
-

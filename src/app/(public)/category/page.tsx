@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { serverFetchJson } from "@/lib/serverFetch";
+import { SITE_URL } from "@/lib/site";
 import type {
   Category,
   ListQueryParams,
@@ -13,8 +14,21 @@ const DEFAULT_SORT_FIELD = "name";
 const DEFAULT_SORT_DIRECTION: "asc" | "desc" = "asc";
 
 export const metadata: Metadata = {
-  title: "Category",
-  description: "Browse product categories available on Hawkeri.",
+  title: "Online Shopping Categories Bangladesh",
+  description:
+    "Browse Hawkeri product categories for online shopping in Bangladesh including fashion, beauty, electronics, grocery, accessories and daily essentials.",
+  alternates: {
+    canonical: `${SITE_URL}/category`,
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_BD",
+    url: `${SITE_URL}/category`,
+    siteName: "Hawkeri",
+    title: "Online Shopping Categories Bangladesh",
+    description:
+      "Browse Hawkeri categories from local sellers across Bangladesh.",
+  },
 };
 
 interface CategoryPageProps {

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ProductPageDataProvider from "./_components/ProductPageDataProvider";
 import { getSharedBrands, getSharedCategories } from "@/lib/catalog";
+import { SITE_URL } from "@/lib/site";
 
 interface ProductListingPageProps {
   searchParams?: Promise<{
@@ -94,13 +95,21 @@ export async function generateMetadata({
     query.set("search", search);
   }
 
-  const canonical = query.toString() ? `/product?${query.toString()}` : "/product";
+  const canonical = query.toString() ? `${SITE_URL}/product?${query.toString()}` : `${SITE_URL}/product`;
 
   return {
-    title: buildProductListingTitle({ categoryName, brandName, search }),
-    description: buildProductListingDescription({ categoryName, brandName, search }),
+    title: `${buildProductListingTitle({ categoryName, brandName, search })} in Bangladesh`,
+    description: `${buildProductListingDescription({ categoryName, brandName, search })} Shop fashion, beauty, electronics, grocery and daily essentials from local sellers in Bangladesh.`,
     alternates: {
       canonical,
+    },
+    openGraph: {
+      type: "website",
+      locale: "en_BD",
+      url: canonical,
+      siteName: "Hawkeri",
+      title: `${buildProductListingTitle({ categoryName, brandName, search })} in Bangladesh`,
+      description: `${buildProductListingDescription({ categoryName, brandName, search })} Shop from local sellers on Hawkeri.`,
     },
   };
 }

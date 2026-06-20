@@ -213,22 +213,24 @@ export default function Footer() {
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
                     <HiOutlineLocationMarker size={16} className="text-(--color-primary)" />
                   </span>
-                  <span className="text-sm text-(--color-secondary-200)">Dhaka, Bangladesh</span>
+                  <span className="text-sm leading-6 text-(--color-secondary-200)">
+                    House: 34, Road: 3, Block: B, Aftabnagar, Badda, Dhaka, Bangladesh
+                  </span>
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
                     <HiOutlinePhone size={16} className="text-(--color-primary)" />
                   </span>
-                  <a href="tel:01577303608" className="text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)">
-                    01577-303608
+                  <a href="tel:+8801577303608" className="text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)">
+                    +880 1577303608
                   </a>
                 </li>
                 <li className="flex items-center gap-3">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/10">
                     <HiOutlineMail size={16} className="text-(--color-primary)" />
                   </span>
-                  <a href="mailto:andgatetech@gmail.com" className="break-all text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)">
-                    andgatetech@gmail.com
+                  <a href="mailto:support@andgatetech.net" className="break-all text-sm text-(--color-secondary-200) transition hover:text-(--color-primary)">
+                    support@andgatetech.net
                   </a>
                 </li>
               </ul>
