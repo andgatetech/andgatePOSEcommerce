@@ -22,7 +22,7 @@ export default function ScrollToTop() {
         <button
             onClick={scrollToTop}
             aria-label="Scroll to top"
-            className="fixed bottom-20 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-all hover:bg-primary-dark hover:shadow-xl hover:-translate-y-0.5 sm:bottom-6"
+            className="fixed bottom-20 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-full bg-(--color-primary) text-white shadow-lg transition-all hover:bg-(--color-primary-dark) hover:shadow-xl hover:-translate-y-0.5 sm:bottom-6"
         >
             <FiArrowUp className="h-5 w-5" />
         </button>
