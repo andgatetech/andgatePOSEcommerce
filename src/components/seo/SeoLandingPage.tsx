@@ -1,7 +1,7 @@
 import Container from "@/components/shared/Container";
 import { seoPages, type SeoPage } from "@/lib/seo-pages";
 import Link from "next/link";
-import { FaCheckCircle, FaQuestionCircle, FaSearch, FaStore } from "react-icons/fa";
+import { FaArrowLeft, FaCheckCircle, FaQuestionCircle, FaSearch, FaStore } from "react-icons/fa";
 
 export default function SeoLandingPage({ page }: { page: SeoPage }) {
   const relatedPages = seoPages.filter((item) => item.slug !== page.slug).slice(0, 6);
@@ -11,6 +11,13 @@ export default function SeoLandingPage({ page }: { page: SeoPage }) {
       <section className="bg-(--color-primary-900) py-16 text-white">
         <Container>
           <div className="max-w-4xl">
+            <Link
+              href="/"
+              className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-white/80 transition hover:text-white"
+            >
+              <FaArrowLeft className="text-xs" />
+              Back to Hawkeri
+            </Link>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-(--color-cta)">
               <FaSearch />
               {page.eyebrow}

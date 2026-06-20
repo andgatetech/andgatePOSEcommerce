@@ -1,8 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
+import Link from 'next/link';
 import { FaStoreAlt, FaMoneyBillWave, FaShieldAlt } from 'react-icons/fa';
 import Container from "@/components/shared/Container";
 import { SITE_URL } from "@/lib/site";
+import { ROUTES } from "@/config/routes";
 
 export const metadata: Metadata = {
   title: 'Become a Vendor in Bangladesh',
@@ -34,9 +36,12 @@ export default function BecomeVendorPage() {
             <p className="text-lg text-(--color-primary-200) max-w-2xl mx-auto mb-10">
               Tap into our massive ecosystem of digital shoppers. Open your digital storefront in minutes and reach customers across the country with low commission rates.
             </p>
-            <button className="bg-(--color-cta) hover:bg-(--color-cta-hover) text-white font-bold py-4 px-10 rounded-xl transition-all shadow-lg text-lg">
+            <Link
+              href={ROUTES.CONTACT}
+              className="inline-block bg-(--color-cta) hover:bg-(--color-cta-hover) text-white font-bold py-4 px-10 rounded-xl transition-all shadow-lg text-lg"
+            >
               Start Selling Today
-            </button>
+            </Link>
           </div>
           {/* Backer decoration */}
           <div className="absolute -top-24 -right-24 w-96 h-96 bg-(--color-primary) blur-3xl opacity-50 rounded-full"></div>

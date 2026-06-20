@@ -3,7 +3,7 @@ import { seoPages } from "@/lib/seo-pages";
 import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { FaArrowRight, FaSearch, FaStore } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaSearch, FaStore } from "react-icons/fa";
 
 export const metadata: Metadata = {
   title: "Bangladesh Online Shopping Guides",
@@ -61,6 +61,13 @@ export default function ShoppingGuidesBangladeshPage() {
       <section className="bg-(--color-primary-900) py-16 text-white">
         <Container>
           <div className="max-w-4xl">
+            <Link
+              href="/"
+              className="mb-6 inline-flex items-center gap-2 text-sm font-bold text-white/80 transition hover:text-white"
+            >
+              <FaArrowLeft className="text-xs" />
+              Back to Hawkeri
+            </Link>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-bold uppercase tracking-widest text-(--color-cta)">
               <FaSearch />
               Search Guides
