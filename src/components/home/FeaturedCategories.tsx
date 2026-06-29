@@ -39,7 +39,7 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
           </Link>
         </div>
 
-        <div className="rounded-[28px] border border-(--color-primary-100) bg-[linear-gradient(180deg,#ffffff_0%,var(--color-primary-50)_100%)] p-3 shadow-[0_18px_48px_rgba(2,58,92,0.08)] md:p-4">
+        <div className="rounded-[8px] border border-(--color-primary-100) bg-[linear-gradient(180deg,#ffffff_0%,var(--color-primary-50)_100%)] p-3 shadow-[0_18px_48px_rgba(2,58,92,0.08)] md:p-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5 xl:grid-cols-10">
             {categories.map((category) => {
               const image = resolveImageUrl(category.image_url);
@@ -48,9 +48,9 @@ export default function FeaturedCategories({ categories }: FeaturedCategoriesPro
                 <Link
                   key={category.id}
                   href={ROUTE_BUILDERS.categoryDetail(category.slug)}
-                  className="group min-w-0 rounded-[18px] border border-white bg-white p-2.5 text-center shadow-[0_10px_24px_rgba(2,58,92,0.05)] transition duration-300 hover:-translate-y-1 hover:border-(--color-primary-200) hover:shadow-[0_18px_34px_rgba(2,58,92,0.12)]"
+                  className="group min-w-0 rounded-[8px] border border-white bg-white p-2.5 text-center shadow-[0_10px_24px_rgba(2,58,92,0.05)] transition duration-300 hover:-translate-y-1 hover:border-(--color-primary-200) hover:shadow-[0_18px_34px_rgba(2,58,92,0.12)]"
                 >
-                  <div className="relative mx-auto mb-2 flex aspect-square w-full max-w-[108px] items-center justify-center overflow-hidden rounded-[16px] bg-(--color-primary-50)">
+                  <div className="relative mx-auto mb-2 flex aspect-square w-full max-w-[108px] items-center justify-center overflow-hidden rounded-[8px] bg-(--color-primary-50)">
                     {image ? (
                       <Image
                         src={image}

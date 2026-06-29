@@ -63,7 +63,7 @@ export default function CategoryShowcase({ categories }: CategoryShowcaseProps) 
                         <Link
                             key={cat.id}
                             href={ROUTE_BUILDERS.categoryDetail(cat.slug)}
-                            className="group relative overflow-hidden rounded-[26px] border border-(--color-primary-100) bg-white shadow-[0_18px_44px_rgba(2,58,92,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(2,58,92,0.14)]"
+                            className="group relative overflow-hidden rounded-[8px] border border-(--color-primary-100) bg-white shadow-[0_18px_44px_rgba(2,58,92,0.08)] transition-all hover:-translate-y-1 hover:shadow-[0_26px_70px_rgba(2,58,92,0.14)]"
                         >
                             <div className="relative h-56 w-full overflow-hidden">
                                 <Image
@@ -75,7 +75,7 @@ export default function CategoryShowcase({ categories }: CategoryShowcaseProps) 
                                 />
                                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,58,92,0.02)_0%,rgba(2,58,92,0.22)_45%,rgba(2,58,92,0.78)_100%)]" />
                             </div>
-                            <div className="absolute bottom-4 left-4 right-4 rounded-2xl border border-white/20 bg-white/82 p-4 backdrop-blur-md">
+                            <div className="absolute bottom-4 left-4 right-4 rounded-[8px] border border-white/20 bg-white/82 p-4 backdrop-blur-md">
                                 <h3 className="text-lg font-extrabold text-(--color-primary-900)">{cat.name}</h3>
                                 <p className="mt-1 flex items-center gap-1 text-sm font-bold text-(--color-cta-dark)">
                                     Shop now

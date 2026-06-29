@@ -29,7 +29,7 @@ export default function TrustStatsBar({ stats }: { stats: TrustStats }) {
     return (
         <section className="py-6 sm:py-8">
             <Container>
-                <div className="rounded-[24px] border border-(--color-primary-100) bg-white px-4 py-5 shadow-[0_16px_42px_rgba(2,58,92,0.07)] sm:px-6 md:px-8">
+                <div className="rounded-[8px] border border-(--color-primary-100) bg-white px-4 py-5 shadow-[0_16px_42px_rgba(2,58,92,0.07)] sm:px-6 md:px-8">
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {supportMetrics.map((item, index) => (
                             <div

@@ -77,7 +77,7 @@ export default function ImageStorySection() {
               key={story.title}
               href={story.href}
               className={[
-                "group relative min-h-[320px] overflow-hidden rounded-[24px] border border-(--color-primary-100) bg-white shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1 md:min-h-0",
+                "group relative min-h-[320px] overflow-hidden rounded-[8px] border border-(--color-primary-100) bg-white shadow-[0_18px_48px_rgba(2,58,92,0.08)] transition duration-300 hover:-translate-y-1 md:min-h-0",
                 story.className,
               ].join(" ")}
             >
@@ -98,7 +98,7 @@ export default function ImageStorySection() {
                 {story.badge}
               </span>
 
-              <div className="absolute inset-x-4 bottom-4 rounded-[18px] border border-white/25 bg-white/90 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5">
+              <div className="absolute inset-x-4 bottom-4 rounded-[8px] border border-white/25 bg-white/90 p-4 shadow-[0_16px_34px_rgba(2,58,92,0.14)] backdrop-blur-md md:inset-x-5 md:bottom-5">
                 <h3 className="text-[20px] font-extrabold leading-tight tracking-[-0.03em] text-(--color-primary-900) md:text-[23px]">
                   {story.title}
                 </h3>
