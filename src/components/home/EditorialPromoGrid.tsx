@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FiArrowUpRight, FiGift, FiMonitor, FiSmartphone } from "react-icons/fi";
+import { FiArrowUpRight, FiGift, FiMonitor } from "react-icons/fi";
 import { ROUTES } from "@/config/routes";
 import Container from "@/components/shared/Container";
 

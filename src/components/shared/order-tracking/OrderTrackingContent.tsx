@@ -9,7 +9,6 @@ import {
   FiClock,
   FiCreditCard,
   FiHome,
-  FiMapPin,
   FiPackage,
   FiRefreshCw,
   FiSearch,

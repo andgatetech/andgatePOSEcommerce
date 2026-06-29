@@ -451,7 +451,6 @@ export default function ProductDetailPage({ product }: ProductDetailPageProps) {
 
   const shareTitle = product.product_name;
   const shareText = `${product.product_name} from ${product.sold_by.store_name}`;
-  const shareImage = resolvedImages[0] ?? "";
   const canNativeShare = typeof navigator !== "undefined" && "share" in navigator;
 
   async function handleNativeShare() {

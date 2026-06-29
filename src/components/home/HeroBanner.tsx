@@ -17,9 +17,9 @@ import {
 import { ROUTES } from "@/config/routes";
 import Container from "@/components/shared/Container";
 
-// @ts-ignore
+// @ts-expect-error Swiper CSS imports are handled by Next's bundler.
 import "swiper/css";
-// @ts-ignore
+// @ts-expect-error Swiper CSS imports are handled by Next's bundler.
 import "swiper/css/navigation";
 
 const slides = [

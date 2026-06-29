@@ -18,7 +18,7 @@ import { API_ROUTES } from "@/config/apiRoutes";
 import { getSharedStores } from "@/lib/catalog";
 import { SITE_URL } from "@/lib/site";
 import type { Metadata } from "next";
-import type { Category, EcommerceProduct, Store, PaginatedResponse } from "@/types";
+import type { Category, EcommerceProduct, PaginatedResponse } from "@/types";
 
 export const metadata: Metadata = {
   title: "Online Shopping in Bangladesh",
