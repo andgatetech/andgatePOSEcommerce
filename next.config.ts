@@ -85,6 +85,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    unoptimized: true,
     minimumCacheTTL: 2592000,
     dangerouslyAllowLocalIP: process.env.NODE_ENV !== "production",
     remotePatterns: [
