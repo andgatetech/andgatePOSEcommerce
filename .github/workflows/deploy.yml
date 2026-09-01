@@ -1,0 +1,63 @@
+name: Deploy Next.js to VPS Production (Fallback).
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build_and_deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20' # Next.js 16 requires Node >=20.9.0
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build Next.js application
+              run: npm run build
+
+            - name: Deploy to VPS
+              uses: appleboy/ssh-action@v0.1.10
+              with:
+                  host: ${{ secrets.VPS_HOST }}
+                  username: ${{ secrets.VPS_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY }}
+                  port: ${{ secrets.VPS_PORT }}
+                  script: |
+                      # Load the environment variables from your user's profile
+                      source ~/.profile || source ~/.bashrc
+
+                      # /usr/bin/node (system Node 18) otherwise wins PATH resolution over
+                      # nvm — merely sourcing nvm.sh above does not itself select a version,
+                      # so any bare `node`/`next` lookup a child process makes (e.g. `next`'s
+                      # own #!/usr/bin/env node shebang) would silently fall back to it even
+                      # though npm/pm2 are invoked via explicit v20 absolute paths below.
+                      export PATH="/root/.nvm/versions/node/v20.20.2/bin:$PATH"
+
+                      # Navigate to the correct directory on your VPS
+                      cd /var/www/andgateBOSEcommerceHawkeri
+
+                      # Stop the existing PM2 process
+                      /root/.nvm/versions/node/v20.20.2/bin/pm2 stop andgateBOSEcommerceHawkeri || true
+
+                      # delete the existing PM2 process
+                      /root/.nvm/versions/node/v20.20.2/bin/pm2 delete andgateBOSEcommerceHawkeri || true
+
+                      # Pull the latest code from your repository
+                      git stash
+                      git pull origin main
+
+                      # Install dependencies and build
+                      /root/.nvm/versions/node/v20.20.2/bin/npm install
+                      /root/.nvm/versions/node/v20.20.2/bin/npm run build
+
+                      # Restart the PM2 process
+                      PORT=3001 /root/.nvm/versions/node/v20.20.2/bin/pm2 start npm --name andgateBOSEcommerceHawkeri -- start
+                      /root/.nvm/versions/node/v20.20.2/bin/pm2 save
